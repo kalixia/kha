@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>kalixia-ha</artifactId>
+        <groupId>kalixia-ha</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>android</artifactId>
+    <packaging>apk</packaging>
+
+    <properties>
+        <androidannotations.version>2.6</androidannotations.version>
+        <android.version>4.0.1.2</android.version>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.androidannotations</groupId>
+            <artifactId>androidannotations</artifactId>
+            <version>${androidannotations.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.androidannotations</groupId>
+            <artifactId>androidannotations</artifactId>
+            <classifier>api</classifier>
+            <version>${androidannotations.version}</version>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.springframework.android</groupId>-->
+        <!--<artifactId>spring-android-rest-template</artifactId>-->
+        <!--<version>${spring-android.version}</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android</artifactId>
+            <version>${android.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.android.gcm</groupId>
+            <artifactId>gcm-client</artifactId>
+            <version>3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>kalixia-ha</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                <artifactId>android-maven-plugin</artifactId>
+                <version>3.4.1</version>
+                <configuration>
+                    <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+                    <assetsDirectory>${project.basedir}/assets</assetsDirectory>
+                    <resourceDirectory>${project.basedir}/res</resourceDirectory>
+                    <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
+                    <sdk>
+                        <platform>15</platform>
+                    </sdk>
+                    <!--<deleteConflictingFiles>true</deleteConflictingFiles>-->
+                    <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                </configuration>
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.groovy.maven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>
+                                project.modules.each {
+                                    try {
+                                        def manifestFile = new File("${it}/AndroidManifest.xml")
+                                        def ns = new groovy.xml.Namespace("http://schemas.android.com/apk/res/android", "ns")
+                                        def parser = new groovy.util.XmlParser(false, true)
+                                        def rootNode = parser.parse(manifestFile)
+                                        def attributes = rootNode.attributes()
+                                        attributes[ns.versionName] = "${project.version}"
+                                        def writer = new groovy.io.GroovyPrintWriter(manifestFile)
+                                        writer.println('&lt;?xml version="1.0" encoding="UTF-8"?&gt;')
+                                        def xmlWriter = new groovy.util.XmlNodePrinter(writer)
+                                        xmlWriter.setPreserveWhitespace(false)
+                                        xmlWriter.setNamespaceAware(true)
+                                        xmlWriter.print(rootNode)
+                                    } catch (FileNotFoundException e) {
+                                        println('No AndroidManifest.xml file found. Skipping version update.')
+                                        println('Probably not an Android project, but a library.')
+                                        println('Skipping version update.')
+                                    }
+                                }
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

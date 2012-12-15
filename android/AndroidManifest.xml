@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.kalixia.ha.android"
+          android:versionCode="1"
+          android:versionName="1.0">
+
+    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="16" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Permissions for Google Cloud Messaging -->
+    <permission android:name="com.kalixia.ha.android.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <uses-permission android:name="com.kalixia.ha.android.permission.C2D_MESSAGE" />
+    <!-- App receives GCM messages. -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <!-- GCM connects to Google Services. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- GCM requires a Google account. -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <!-- Keeps the processor from sleeping when a message is received. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application android:name=".HAApp_"
+                 android:label="@string/app_name"
+                 android:icon="@drawable/ic_launcher"
+                 android:theme="@android:style/Theme.Holo">
+
+        <activity android:name=".activities.DevicesActivity_" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <!--<activity android:name=".activities.MesDemandesActivity_" android:label="Mes Demandes"/>-->
+        <!--<activity android:name=".activities.NouvelleDemandeActivity_" android:label="Nouvelle demande"/>-->
+        <!--<activity android:name=".activities.DemandeActivity_" android:label="Demande">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.VIEW"/>-->
+                <!--<action android:name="android.intent.action.EDIT"/>-->
+                <!--<category android:name="android.intent.category.DEFAULT"/>-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
+        <!--<activity android:name=".activities.SettingsActivity_" android:label="Préférences"/>-->
+
+        <!-- Integration with Google Cloud Messaging -->
+        <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver"
+                  android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+                <category android:name="com.stepinfo.ddc.android"/>
+            </intent-filter>
+        </receiver>
+
+        <!--<service android:name=".GCMIntentService" />-->
+
+    </application>
+
+    <!--<supports-screens-->
+    <!--android:smallScreens="true"-->
+    <!--android:normalScreens="true"-->
+    <!--android:largeScreens="true"-->
+    <!--android:xlargeScreens="true"-->
+    <!--android:anyDensity="true" />-->
+</manifest>

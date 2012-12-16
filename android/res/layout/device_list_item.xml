@@ -5,10 +5,16 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
 
-    <ListView
+    <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/devicesListView"
-            android:layout_gravity="center"/>
+            android:id="@+id/device_list_item_device_name"
+            android:layout_gravity="left|center_vertical"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/device_list_item_device_id"
+            android:layout_gravity="left|center_vertical"/>
 
 </LinearLayout>

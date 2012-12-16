@@ -13,7 +13,7 @@
     <packaging>apk</packaging>
 
     <properties>
-        <androidannotations.version>2.6</androidannotations.version>
+        <androidannotations.version>2.7</androidannotations.version>
         <android.version>4.0.1.2</android.version>
     </properties>
     
@@ -32,8 +32,8 @@
         </dependency>
         <dependency>
             <groupId>com.googlecode.androidannotations</groupId>
-            <artifactId>androidannotations</artifactId>
-            <classifier>api</classifier>
+            <artifactId>androidannotations-api</artifactId>
+            <!--<classifier>api</classifier>-->
             <version>${androidannotations.version}</version>
         </dependency>
         <!--<dependency>-->
@@ -80,7 +80,7 @@
                     <resourceDirectory>${project.basedir}/res</resourceDirectory>
                     <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
                     <sdk>
-                        <platform>15</platform>
+                        <platform>16</platform>
                     </sdk>
                     <!--<deleteConflictingFiles>true</deleteConflictingFiles>-->
                     <undeployBeforeDeploy>true</undeployBeforeDeploy>

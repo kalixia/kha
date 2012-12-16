@@ -4,7 +4,7 @@
     <facet type="android" name="Android">
       <configuration>
         <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/gen" />
-        <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/gen" />
+        <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/target/generated-sources" />
         <option name="MANIFEST_FILE_RELATIVE_PATH" value="/AndroidManifest.xml" />
         <option name="RES_FOLDER_RELATIVE_PATH" value="/res" />
         <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/assets" />
@@ -13,7 +13,7 @@
         <option name="CUSTOM_APK_RESOURCE_FOLDER" value="" />
         <option name="USE_CUSTOM_COMPILER_MANIFEST" value="false" />
         <option name="CUSTOM_COMPILER_MANIFEST" value="" />
-        <option name="APK_PATH" value="" />
+        <option name="APK_PATH" value="/target/kalixia-ha.apk" />
         <option name="LIBRARY_PROJECT" value="false" />
         <option name="RUN_PROCESS_RESOURCES_MAVEN_TASK" value="true" />
         <option name="GENERATE_UNSIGNED_APK" value="false" />
@@ -46,12 +46,14 @@
       <excludeFolder url="file://$MODULE_DIR$/target/generated-sources/extracted-dependencies" />
       <excludeFolder url="file://$MODULE_DIR$/target/generated-sources/groovy-stubs" />
       <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
+      <excludeFolder url="file://$MODULE_DIR$/target/maven-status" />
+      <excludeFolder url="file://$MODULE_DIR$/target/test-classes" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="model" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.googlecode.androidannotations:androidannotations:2.6" level="project" />
-    <orderEntry type="library" name="Maven: com.sun.codemodel:codemodel:2.4.1" level="project" />
-    <orderEntry type="library" name="Maven: com.googlecode.androidannotations:androidannotations:api:2.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.googlecode.androidannotations:androidannotations:2.7" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.androidannotations:androidannotations-api:2.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.sun.codemodel:codemodel:2.4.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.android:android:4.0.1.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: commons-logging:commons-logging:1.1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.httpcomponents:httpclient:4.0.1" level="project" />
@@ -65,7 +67,7 @@
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.9.4" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-core-asl:1.9.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
-    <orderEntry type="jdk" jdkName="Android 4.0.3 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android 4.1.2 Platform" jdkType="Android SDK" />
   </component>
 </module>
 

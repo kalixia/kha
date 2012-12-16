@@ -2,16 +2,10 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <CheckBoxPreference
-            android:key="calendar"
-            android:title="Ajouter au calendrier"
-            android:summary="Souhaitez-vous ajouter automatiquement vos demandes de congés à votre calendrier ?"
-            />
-
-    <CheckBoxPreference
-            android:key="notifications"
-            android:defaultValue="true"
-            android:title="Afficher les notifications ?"
-            android:summary="Votre téléphone vous alertera quand vos demandes de congés changeront de statut."/>
+    <!--<CheckBoxPreference-->
+            <!--android:key="calendar"-->
+            <!--android:title="Ajouter au calendrier"-->
+            <!--android:summary="Souhaitez-vous ajouter automatiquement vos demandes de congés à votre calendrier ?"-->
+            <!--/>-->
 
 </PreferenceScreen>

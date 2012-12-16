@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--<item android:id="@+id/menu_new_demande"-->
-          <!--android:title="@string/demande_new"-->
-          <!--android:icon="@drawable/ic_content_new"-->
-          <!--android:showAsAction="ifRoom"/>-->
-    <!--<item android:id="@+id/menu_reload"-->
-          <!--android:title="@string/reload"-->
-          <!--android:icon="@drawable/ic_navigation_refresh"-->
-          <!--android:showAsAction="ifRoom"/>-->
+    <item android:id="@+id/menu_reload"
+          android:title="@string/reload"
+          android:icon="@drawable/ic_navigation_refresh"
+          android:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_settings"
           android:title="@string/settings"
           android:icon="@drawable/ic_action_settings"

@@ -5,21 +5,21 @@
              android:layout_height="match_parent">
 
     <fragment
-            android:id="@+id/devicesListFragment"
-            class="com.kalixia.ha.android.fragments.DevicesListFragment_"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="left"
-            android:layout_weight="0.3"
-            />
-
-    <fragment
-            android:id="@+id/deviceDetailsFragment"
-            class="com.kalixia.ha.android.fragments.DeviceDetailsFragment_"
-            android:layout_width="0dp"
+            android:id="@+id/devicesGridListFragment"
+            class="com.kalixia.ha.android.fragments.DevicesGridListFragment_"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout_weight="1"
+            android:layout_margin="5dp"
             />
+
+    <!--<fragment-->
+            <!--android:id="@+id/deviceDetailsFragment"-->
+            <!--class="com.kalixia.ha.android.fragments.DeviceDetailsFragment_"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_weight="1"-->
+            <!--/>-->
 
 </LinearLayout>

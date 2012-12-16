@@ -1,6 +1,7 @@
 package com.kalixia.ha.android.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -12,12 +13,13 @@ import com.kalixia.ha.android.services.DevicesManager;
 import com.kalixia.ha.android.views.DeviceItemView;
 import com.kalixia.ha.android.views.DeviceItemView_;
 import com.kalixia.ha.model.Device;
+import com.kalixia.ha.model.capabilities.Light;
 
 import java.util.List;
 
 @EBean
 public class DevicesListAdapter extends BaseAdapter {
-    private List<Device> devices;
+    private List<? extends Device> devices;
 
     @Bean
     DevicesManager devicesManager;
@@ -44,6 +46,13 @@ public class DevicesListAdapter extends BaseAdapter {
         }
         Device device = getItem(position);
         deviceItemView.bind(device);
+
+        if (device.hasCapability(Light.class)) {
+            Light.Color color = ((Light) device).getColor();
+            deviceItemView.setBackgroundColor(
+                    Color.HSVToColor(new float[]{color.getHue(), color.getSaturation(), color.getValue()}));
+        }
+
         return deviceItemView;
     }
 

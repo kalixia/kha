@@ -6,13 +6,14 @@ import com.googlecode.androidannotations.annotations.FragmentById;
 import com.googlecode.androidannotations.annotations.OptionsItem;
 import com.googlecode.androidannotations.annotations.OptionsMenu;
 import com.kalixia.ha.android.R;
-import com.kalixia.ha.android.fragments.DevicesListFragment;
+import com.kalixia.ha.android.fragments.DevicesGridListFragment;
 
 @EActivity(R.layout.devices_activity)
 @OptionsMenu(R.menu.main)
 public class DevicesActivity extends Activity {
-    @FragmentById(R.id.devicesListFragment)
-    DevicesListFragment devicesListFragment;
+
+    @FragmentById(R.id.devicesGridListFragment)
+    DevicesGridListFragment devicesListFragment;
 
     @OptionsItem(R.id.menu_reload)
     void reloadDevices() {

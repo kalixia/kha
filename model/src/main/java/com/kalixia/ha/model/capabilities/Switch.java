@@ -3,12 +3,12 @@ package com.kalixia.ha.model.capabilities;
 import com.kalixia.ha.model.Capability;
 
 /**
- * A switch can have two states: {@link Status#OPENED} or {@link Status#CLOSED}.
+ * A switch can have two states: {@link Status#ON} or {@link Status#OFF}.
  */
 public interface Switch extends Capability {
-    void open();
-    void close();
+    void on();
+    void off();
     Status getStatus();
 
-    public enum Status { OPENED, CLOSED }
+    public enum Status {ON, OFF}
 }

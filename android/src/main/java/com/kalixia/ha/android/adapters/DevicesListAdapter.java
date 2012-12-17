@@ -48,7 +48,7 @@ public class DevicesListAdapter extends BaseAdapter {
         deviceItemView.bind(device);
 
         if (device.hasCapability(Light.class)) {
-            Light.Color color = ((Light) device).getColor();
+            com.kalixia.ha.model.Color color = ((Light) device).getColor();
             deviceItemView.setBackgroundColor(
                     Color.HSVToColor(new float[]{color.getHue(), color.getSaturation(), color.getValue()}));
         }

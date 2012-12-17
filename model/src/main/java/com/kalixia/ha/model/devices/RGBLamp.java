@@ -1,20 +1,20 @@
 package com.kalixia.ha.model.devices;
 
-import com.kalixia.ha.model.Capability;
+import com.kalixia.ha.model.Color;
+import com.kalixia.ha.model.capabilities.Dimmer;
 import com.kalixia.ha.model.capabilities.Light;
 import com.kalixia.ha.model.capabilities.Switch;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 /**
  * Devices which controls a RGB lamp or RGB Led Strip.
- * Has both {@link Switch} and {@link Light} capabilities.
+ * Has both {@link com.kalixia.ha.model.capabilities.Switch} and {@link Light} capabilities.
  */
-public class RGBLamp extends AbstractDevice implements Light, Switch {
+public class RGBLamp extends AbstractDevice implements Dimmer, Switch {
     private Boolean on;
     private Color color;
+    private float intensity;
 
     @SuppressWarnings("unchecked")
     public RGBLamp(UUID id, String name) {
@@ -32,18 +32,27 @@ public class RGBLamp extends AbstractDevice implements Light, Switch {
     }
 
     @Override
-    public void open() {
+    public void on() {
         on = true;
     }
 
     @Override
-    public void close() {
+    public void off() {
         on = false;
     }
 
     @Override
     public Status getStatus() {
-        return on ? Status.OPENED : Status.CLOSED;
+        return on ? Status.ON : Status.OFF;
     }
 
+    @Override
+    public void setIntensity(float intensity) {
+        this.intensity = intensity;
+    }
+
+    @Override
+    public float getIntensity() {
+        return intensity;
+    }
 }

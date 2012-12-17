@@ -2,8 +2,8 @@ package com.kalixia.ha.android.services;
 
 import com.googlecode.androidannotations.annotations.EBean;
 import com.googlecode.androidannotations.api.Scope;
+import com.kalixia.ha.model.Color;
 import com.kalixia.ha.model.Device;
-import com.kalixia.ha.model.capabilities.Light;
 import com.kalixia.ha.model.devices.RGBLamp;
 
 import java.util.Arrays;
@@ -22,16 +22,16 @@ public class DevicesManager {
         RGBLamp lamp5 = new RGBLamp(UUID.randomUUID(), "Lamp 5");
 
         // set random colors and switch both lamps on
-        lamp1.setColor(new Light.Color(0f, 1f, 1f));
-        lamp2.setColor(new Light.Color(60f, 1f, 1f));
-        lamp3.setColor(new Light.Color(120f, 1f, 1f));
-        lamp4.setColor(new Light.Color(180f, 1f, 1f));
-        lamp5.setColor(new Light.Color(240f, 1f, 1f));
-        lamp1.open();
-        lamp2.open();
-        lamp3.open();
-        lamp4.open();
-        lamp5.open();
+        lamp1.setColor(new Color(0f, 1f, 1f));
+        lamp2.setColor(new Color(60f, 1f, 1f));
+        lamp3.setColor(new Color(120f, 1f, 1f));
+        lamp4.setColor(new Color(180f, 1f, 1f));
+        lamp5.setColor(new Color(240f, 1f, 1f));
+        lamp1.on();
+        lamp2.on();
+        lamp3.on();
+        lamp4.on();
+        lamp5.on();
 
         return Arrays.asList(lamp1, lamp2, lamp3, lamp4, lamp5);
     }

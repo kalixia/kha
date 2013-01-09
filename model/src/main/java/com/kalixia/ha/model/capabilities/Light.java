@@ -9,5 +9,4 @@ import com.kalixia.ha.model.Color;
 public interface Light extends Capability {
     void setColor(Color color);
     Color getColor();
-
 }

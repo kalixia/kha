@@ -11,7 +11,8 @@
 
     <modules>
         <module>model</module>
-        <module>rest-api</module>
+        <!--<module>rest-api</module>-->
+        <module>gateway</module>
         <module>android</module>
     </modules>
 

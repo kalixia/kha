@@ -1,7 +1,7 @@
 package com.kalixia.ha.gateway.servlets;
 
-import com.kalixia.ha.gateway.commands.SwitchOffDeviceCommand;
-import com.kalixia.ha.gateway.commands.SwitchOnDeviceCommand;
+import com.kalixia.ha.gateway.commands.switchs.SwitchOffDeviceCommand;
+import com.kalixia.ha.gateway.commands.switchs.SwitchOnDeviceCommand;
 import com.kalixia.ha.gateway.commands.light.ChangeColorCommand;
 import com.kalixia.ha.model.Color;
 import com.kalixia.ha.model.devices.RGBLamp;

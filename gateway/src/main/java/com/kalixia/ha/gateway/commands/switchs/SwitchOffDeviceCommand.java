@@ -1,14 +1,18 @@
-package com.kalixia.ha.gateway.commands;
+package com.kalixia.ha.gateway.commands.switchs;
 
 import com.kalixia.ha.model.capabilities.Switch;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
+import com.netflix.hystrix.HystrixThreadPoolKey;
 
 public class SwitchOffDeviceCommand extends HystrixCommand<Switch.Status> {
     private final Switch device;
 
     public SwitchOffDeviceCommand(Switch device) {
-        super(HystrixCommandGroupKey.Factory.asKey("switch"));
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Switch"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("switch_on"))
+                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("Gateway")));
         this.device = device;
     }
 

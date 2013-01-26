@@ -8,22 +8,18 @@
         <servlet-name>HystrixMetricsStreamServlet</servlet-name>
         <servlet-class>com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet</servlet-class>
     </servlet>
-
-    <!-- TODO: get this of this! -->
-    <servlet>
-        <servlet-name>test</servlet-name>
-        <servlet-class>com.kalixia.ha.gateway.servlets.TestServlet</servlet-class>
-    </servlet>
+    <!--<servlet>-->
+        <!--<servlet-name>TurbineStreamServlet</servlet-name>-->
+        <!--<servlet-class>com.netflix.turbine.streaming.servlet.TurbineStreamServlet</servlet-class>-->
+    <!--</servlet>-->
 
     <servlet-mapping>
         <servlet-name>HystrixMetricsStreamServlet</servlet-name>
         <url-pattern>/hystrix.stream</url-pattern>
     </servlet-mapping>
-
-    <!-- TODO: get this of this! -->
-    <servlet-mapping>
-        <servlet-name>test</servlet-name>
-        <url-pattern>/test</url-pattern>
-    </servlet-mapping>
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>TurbineStreamServlet</servlet-name>-->
+        <!--<url-pattern>/turbine.stream</url-pattern>-->
+    <!--</servlet-mapping>-->
 
 </web-app>

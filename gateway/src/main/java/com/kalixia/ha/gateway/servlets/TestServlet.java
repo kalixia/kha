@@ -1,5 +1,6 @@
 package com.kalixia.ha.gateway.servlets;
 
+import com.kalixia.ha.gateway.commands.sensors.GetTemperatureCommand;
 import com.kalixia.ha.gateway.commands.switchs.SwitchOffDeviceCommand;
 import com.kalixia.ha.gateway.commands.switchs.SwitchOnDeviceCommand;
 import com.kalixia.ha.gateway.commands.light.ChangeColorCommand;
@@ -33,6 +34,8 @@ public class TestServlet extends HttpServlet {
         new SwitchOnDeviceCommand(lamp).queue();
 
         new ChangeColorCommand(lamp, new Color(120, 1, 1)).queue();
+
+        new GetTemperatureCommand(lamp).queue();
 
         resp.setStatus(HttpServletResponse.SC_OK);
     }

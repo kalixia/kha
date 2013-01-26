@@ -13,6 +13,7 @@
         <module>model</module>
         <!--<module>rest-api</module>-->
         <module>gateway</module>
+        <module>cloud-platform</module>
         <module>android</module>
     </modules>
 

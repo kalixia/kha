@@ -17,6 +17,40 @@
         <module>android</module>
     </modules>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- Netty dependencies -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http</artifactId>
+                <version>4.0.0.Beta1-SNAPSHOT</version>
+            </dependency>
+
+            <!-- Yammer Metrics -->
+            <dependency>
+                <groupId>com.yammer.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yammer.metrics</groupId>
+                <artifactId>metrics-logback</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            
+            <!-- Logging dependencies -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.0.7</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <properties>
+        <metrics.version>2.2.0</metrics.version>
+    </properties>
+
     <build>
         <pluginManagement>
             <plugins>

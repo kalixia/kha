@@ -20,6 +20,19 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- XBee dependencies -->
+        <dependency>
+            <groupId>com.kalixia.xbee</groupId>
+            <artifactId>xbee-api</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+        <!-- Netty dependencies -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+        </dependency>
+
         <!-- Hystrix dependencies -->
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
@@ -37,10 +50,20 @@
             <version>${hystrix.version}</version>
         </dependency>
 
+        <!-- Yammer Metrics -->
+        <dependency>
+            <groupId>com.yammer.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yammer.metrics</groupId>
+            <artifactId>metrics-logback</artifactId>
+        </dependency>
+
+        <!-- Logging dependencies -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.2</version>
         </dependency>
 
         <dependency>

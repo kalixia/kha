@@ -2,6 +2,7 @@ package com.kalixia.ha.gateway.websockets;
 
 import com.yammer.metrics.Metrics;
 import com.yammer.metrics.core.Meter;
+import com.yammer.metrics.core.MetricName;
 import com.yammer.metrics.core.Timer;
 import com.yammer.metrics.core.TimerContext;
 import io.netty.buffer.ByteBuf;
@@ -45,7 +46,8 @@ class WebSocketServerHandler extends ChannelInboundMessageHandlerAdapter<Object>
 
     WebSocketServerHandler(Class<?>... acceptedMsgTypes) {
         super(acceptedMsgTypes);
-        timer = Metrics.newTimer(WebSocketServerHandler.class, "requests", TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
+        timer = Metrics.newTimer(new MetricName("ha", "api", "websockets", null),
+                TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
     }
 
     @Override

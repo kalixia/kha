@@ -4,6 +4,13 @@ import com.kalixia.ha.gateway.websockets.WebSocketsApiServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * {@inheritDoc}
+ *
+ * The implementation transforms either REST or WebSockets requests to <em>universal</em> API requests.
+ * So basically, this implementation constructs {@link ApiRequest}s from the underlying protocols.
+ *
+ */
 public class GatewayImpl implements Gateway {
     private final WebSocketsApiServer wsServer;
     private static final Logger LOGGER = LoggerFactory.getLogger(Gateway.class);

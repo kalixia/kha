@@ -26,6 +26,13 @@
                 <version>4.0.0.Beta1-SNAPSHOT</version>
             </dependency>
 
+            <!-- Jackson dependencies -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
             <!-- Yammer Metrics -->
             <dependency>
                 <groupId>com.yammer.metrics</groupId>
@@ -49,6 +56,7 @@
 
     <properties>
         <metrics.version>2.2.0</metrics.version>
+        <jackson.version>2.1.1</jackson.version>
     </properties>
 
     <build>

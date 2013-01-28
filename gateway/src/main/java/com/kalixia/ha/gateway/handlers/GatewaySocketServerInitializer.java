@@ -1,8 +1,12 @@
-package com.kalixia.ha.gateway.websockets;
+package com.kalixia.ha.gateway.handlers;
 
+import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kalixia.ha.gateway.handlers.ApiProtocolSwitcher;
 import com.kalixia.ha.gateway.handlers.ApiRequestHandler;
+import com.kalixia.ha.gateway.websockets.WebSocketsApiRequestDecoder;
+import com.kalixia.ha.gateway.websockets.WebSocketsApiResponseEncoder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -10,11 +14,14 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 
-class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
+public class GatewaySocketServerInitializer extends ChannelInitializer<SocketChannel> {
     private final ObjectMapper objectMapper;
 
-    WebSocketServerInitializer() {
+    public GatewaySocketServerInitializer() {
         this.objectMapper = new ObjectMapper();
+        SimpleModule nettyModule = new SimpleModule("Netty", new Version(1, 0, 0, null));
+        nettyModule.addSerializer(new ByteBufSerializer());
+        objectMapper.registerModule(nettyModule);
     }
 
     @Override

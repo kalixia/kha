@@ -1,5 +1,6 @@
 package com.kalixia.ha.gateway.websockets;
 
+import com.kalixia.ha.gateway.handlers.GatewaySocketServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.socket.nio.NioEventLoopGroup;
@@ -22,7 +23,7 @@ public class WebSocketsApiServer {
             wsServerBootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
                     .channel(NioServerSocketChannel.class)
                     .localAddress(port)
-                    .childHandler(new WebSocketServerInitializer());
+                    .childHandler(new GatewaySocketServerInitializer());
 
             Channel ch = wsServerBootstrap.bind().sync().channel();
             LOGGER.info("WebSockets API available at port {}.", port);

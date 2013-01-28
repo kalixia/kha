@@ -1,11 +1,9 @@
 package com.kalixia.ha.gateway.websockets;
 
 import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Meter;
 import com.yammer.metrics.core.MetricName;
 import com.yammer.metrics.core.Timer;
 import com.yammer.metrics.core.TimerContext;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -27,35 +25,30 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 import static io.netty.handler.codec.http.HttpHeaders.setContentLength;
 import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
-import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-class WebSocketServerHandler extends ChannelInboundMessageHandlerAdapter<Object> {
+public class WebSocketsServerProtocolUpdater extends ChannelInboundMessageHandlerAdapter<Object> {
     private WebSocketServerHandshaker handshaker;
     private final Timer timer;
     private static final String WEBSOCKET_PATH = "/websocket";
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketServerHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketsServerProtocolUpdater.class);
 
-    WebSocketServerHandler(Class<?>... acceptedMsgTypes) {
+    public WebSocketsServerProtocolUpdater(Class<?>... acceptedMsgTypes) {
         super(acceptedMsgTypes);
         timer = Metrics.newTimer(new MetricName("ha", "api", "websockets", null),
                 TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
     }
 
     @Override
-    public void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception {
+    protected void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FullHttpRequest) {
             handleHttpRequest(ctx, (FullHttpRequest) msg);
-        } else if (msg instanceof WebSocketFrame) {
-            handleWebSocketFrame(ctx, (WebSocketFrame) msg);
         }
     }
 
@@ -72,23 +65,6 @@ class WebSocketServerHandler extends ChannelInboundMessageHandlerAdapter<Object>
             return;
         }
 
-        // Send the demo page and favicon.ico
-        if ("/".equals(req.uri())) {
-            ByteBuf content = WebSocketServerIndexPage.getContent(getWebSocketLocation(req));
-            FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, content);
-
-            res.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
-            setContentLength(res, content.readableBytes());
-
-            sendHttpResponse(ctx, req, res);
-            return;
-        }
-        if ("/favicon.ico".equals(req.uri())) {
-            FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
-            sendHttpResponse(ctx, req, res);
-            return;
-        }
-
         // Handshake
         WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
                 getWebSocketLocation(req), null, false);
@@ -97,34 +73,6 @@ class WebSocketServerHandler extends ChannelInboundMessageHandlerAdapter<Object>
             WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(ctx.channel());
         } else {
             handshaker.handshake(ctx.channel(), req);
-        }
-    }
-
-    private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
-        final TimerContext context = timer.time();
-        try {
-            // Check for closing frame
-            if (frame instanceof CloseWebSocketFrame) {
-                handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame);
-                return;
-            }
-            if (frame instanceof PingWebSocketFrame) {
-                ctx.channel().write(new PongWebSocketFrame(frame.data()));
-                return;
-            }
-            if (!(frame instanceof TextWebSocketFrame)) {
-                throw new UnsupportedOperationException(String.format("%s frame types not supported", frame.getClass()
-                        .getName()));
-            }
-
-            // Send the uppercase string back.
-            String request = ((TextWebSocketFrame) frame).text();
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(String.format("Channel %s received %s", ctx.channel().id(), request));
-            }
-            ctx.channel().write(new TextWebSocketFrame(request.toUpperCase()));
-        } finally {
-            context.stop();
         }
     }
 

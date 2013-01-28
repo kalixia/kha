@@ -12,21 +12,14 @@ import java.util.UUID;
  *
  * This class is intentionally immutable.
  */
-public class ApiRequest {
-    private final UUID id;
+public class ApiRequest extends ApiObject {
     private final String path;
     private final HttpMethod method;
-    private ByteBuf content;
 
     public ApiRequest(UUID id, String path, HttpMethod method, ByteBuf content) {
-        this.id = id;
+        super(id, content);
         this.path = path;
         this.method = method;
-        this.content = content;
-    }
-
-    public UUID getId() {
-        return id;
     }
 
     public String getPath() {
@@ -37,7 +30,14 @@ public class ApiRequest {
         return method;
     }
 
-    public ByteBuf getContent() {
-        return content;
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("ApiRequest");
+        sb.append("{id=").append(getId());
+        sb.append(", path='").append(path).append('\'');
+        sb.append(", method=").append(method);
+        sb.append(", content=").append(getContent());
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -1,6 +1,8 @@
 package com.kalixia.ha.gateway.websockets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kalixia.ha.gateway.handlers.ApiProtocolSwitcher;
+import com.kalixia.ha.gateway.handlers.ApiRequestHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -21,8 +23,12 @@ class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("decoder", new HttpRequestDecoder());
         pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
         pipeline.addLast("encoder", new HttpResponseEncoder());
-//        pipeline.addLast("handler", new WebSocketServerHandler());
-//        pipeline.addLast("api-request-encoder-ws", new WebSocketsApiRequestEncoder(objectMapper));
-        pipeline.addLast("web-sockets-client-page", new WebSocketsClientPage());
+
+        pipeline.addLast("api-protocol-switcher", new ApiProtocolSwitcher(objectMapper));
+
+        pipeline.addLast("api-response-encoder-ws", new WebSocketsApiResponseEncoder(objectMapper));
+        pipeline.addLast("api-request-decoder-ws", new WebSocketsApiRequestDecoder(objectMapper));
+
+        pipeline.addLast("api-request-handler", new ApiRequestHandler());
     }
 }

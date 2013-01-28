@@ -15,11 +15,13 @@ import java.util.UUID;
 public class ApiRequest extends ApiObject {
     private final String path;
     private final HttpMethod method;
+    private final String clientAddress;
 
-    public ApiRequest(UUID id, String path, HttpMethod method, ByteBuf content) {
+    public ApiRequest(UUID id, String path, HttpMethod method, ByteBuf content, String clientAddress) {
         super(id, content);
         this.path = path;
         this.method = method;
+        this.clientAddress = clientAddress;
     }
 
     public String getPath() {
@@ -30,6 +32,10 @@ public class ApiRequest extends ApiObject {
         return method;
     }
 
+    public String getClientAddress() {
+        return clientAddress;
+    }
+
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("ApiRequest");
@@ -37,6 +43,7 @@ public class ApiRequest extends ApiObject {
         sb.append(", path='").append(path).append('\'');
         sb.append(", method=").append(method);
         sb.append(", content=").append(getContent());
+        sb.append(", clientAddress=").append(getClientAddress());
         sb.append('}');
         return sb.toString();
     }

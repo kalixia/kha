@@ -14,6 +14,8 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.UUID;
 
 /**
@@ -37,8 +39,9 @@ public class WebSocketsApiRequestDecoder extends MessageToMessageDecoder<WebSock
             ByteBuf content = Unpooled.copiedBuffer(wsRequest.getEntity().getBytes(CharsetUtil.UTF_8));
 
             UUID requestID = wsRequest.getId() != null ? wsRequest.getId() : UUID.randomUUID();
+            InetSocketAddress clientAddress = (InetSocketAddress) ctx.channel().remoteAddress();
             return new ApiRequest(requestID, wsRequest.getPath(),
-                    HttpMethod.valueOf(wsRequest.getMethod()), content);
+                    HttpMethod.valueOf(wsRequest.getMethod()), content, clientAddress.getHostName());
         } else {
             return null;
         }

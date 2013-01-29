@@ -11,7 +11,11 @@ public class UriTemplateUtils {
      * @return
      */
     public static Pattern extractRegexPattern(String uriTemplate) {
-        return Pattern.compile('^' + uriTemplatePattern.matcher(uriTemplate).replaceAll("(.*)") + '$');
+        // strip last '/' if present
+        if (uriTemplate.endsWith("/"))
+            uriTemplate = uriTemplate.substring(0, uriTemplate.length() - 1);
+
+        return Pattern.compile('^' + uriTemplatePattern.matcher(uriTemplate).replaceAll("(.*)") + "/?$");
     }
 
 }

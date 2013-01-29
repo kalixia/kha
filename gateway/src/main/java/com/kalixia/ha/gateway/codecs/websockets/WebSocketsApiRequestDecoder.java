@@ -34,7 +34,13 @@ public class WebSocketsApiRequestDecoder extends MessageToMessageDecoder<WebSock
             TextWebSocketFrame textFrame = (TextWebSocketFrame) frame;
 
             WebSocketRequest wsRequest = mapper.readValue(textFrame.text(), WebSocketRequest.class);
-            ByteBuf content = Unpooled.copiedBuffer(wsRequest.getEntity().getBytes(CharsetUtil.UTF_8));
+
+            // extract entity, if available
+            ByteBuf content;
+            if (wsRequest.getEntity() != null)
+                content = Unpooled.copiedBuffer(wsRequest.getEntity().getBytes(CharsetUtil.UTF_8));
+            else
+                content = Unpooled.buffer();
 
             UUID requestID = wsRequest.getId() != null ? wsRequest.getId() : UUID.randomUUID();
             InetSocketAddress clientAddress = (InetSocketAddress) ctx.channel().remoteAddress();

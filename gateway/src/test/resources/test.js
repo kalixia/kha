@@ -8,11 +8,16 @@ if (window.WebSocket) {
     socket = new WebSocket("ws://localhost:8081/websocket");
     socket.onmessage = function (event) {
         var ta = document.getElementById('responseText');
-        ta.value = ta.value + '\n' + event.data
+        ta.value = ta.value + '\n' + event.data;
     };
     socket.onopen = function (event) {
         var ta = document.getElementById('responseText');
         ta.value = "Web Socket opened!";
+
+        socket.send(JSON.stringify({
+            path: '/devices',
+            method: 'GET'
+        }));
     };
     socket.onclose = function (event) {
         var ta = document.getElementById('responseText');

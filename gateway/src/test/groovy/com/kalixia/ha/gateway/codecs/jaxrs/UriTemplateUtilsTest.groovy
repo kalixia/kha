@@ -11,8 +11,10 @@ class UriTemplateUtilsTest extends spock.lang.Specification {
 
         where:
         uri_template                    | pattern
-        "/devices/{id}"                 | "^/devices/(.*)\$"
-        "/devices/{id}/temperature"     | "^/devices/(.*)/temperature\$"
+        "/devices"                      | "^/devices/?\$"
+        "/devices/"                     | "^/devices/?\$"
+        "/devices/{id}"                 | "^/devices/(.*)/?\$"
+        "/devices/{id}/temperature"     | "^/devices/(.*)/temperature/?\$"
     }
 
 }

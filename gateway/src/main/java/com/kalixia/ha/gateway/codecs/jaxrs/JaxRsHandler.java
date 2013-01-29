@@ -3,6 +3,7 @@ package com.kalixia.ha.gateway.codecs.jaxrs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kalixia.ha.gateway.ApiRequest;
 import com.kalixia.ha.gateway.ApiResponse;
+import com.kalixia.ha.gateway.codecs.jaxrs.converters.Converters;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
@@ -44,7 +45,12 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
             Path resourcePath = (Path) clazz.getAnnotation(Path.class);
             for (Method method : clazz.getDeclaredMethods()) {
                 Path methodPath = method.getAnnotation(Path.class);
-                String uriTemplate = resourcePath.value() + '/' + methodPath.value();
+                String uriTemplate;
+                if ("/".equals(methodPath.value())) {
+                    uriTemplate = resourcePath.value();
+                } else {
+                    uriTemplate = resourcePath.value() + '/' + methodPath.value();
+                }
                 Pattern pattern = UriTemplateUtils.extractRegexPattern(uriTemplate);
                 LOGGER.debug("Found URI template {}. Compiled into {} regex.", uriTemplate, pattern);
                 uriTemplateToMethod.put(pattern, method);
@@ -69,11 +75,12 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
             if (matcher.matches()) {
                 method = uriTemplateToMethod.get(pattern);
                 parameters = new ArrayList<Object>();
+                Class<?>[] parameterTypes = method.getParameterTypes();
                 LOGGER.debug("Found matching JAX-RS resource {}", method);
                 for (int i = 1; i <= matcher.groupCount(); i++) {
                     String parameterAsString = matcher.group(i);
-                    Object parameter = UUID.fromString(parameterAsString);      // TODO: find a way to add many converters!
-                    LOGGER.info("Extracted path parameter {}", parameter);
+                    Object parameter = Converters.fromString(parameterTypes[i - 1], parameterAsString);
+                    LOGGER.debug("Extracted path parameter {}", parameter);
                     parameters.add(parameter);
                 }
             }
@@ -85,8 +92,14 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
         }
 
         // invoke the JAX-RS resource
-        Object result = method.invoke(method.getDeclaringClass().newInstance(),
+        LOGGER.debug("Invoking method {} with parameters {}", method, parameters);
+        Object result;
+        if (parameters.size() > 0) {
+            result = method.invoke(method.getDeclaringClass().newInstance(),
                 parameters.toArray(new Object[]{parameters.size()}));
+        } else {
+            result = method.invoke(method.getDeclaringClass().newInstance());
+        }
 
         // TODO: figure out the serialization stuff (meaning what kind of content to produce)!
         byte[] content = objectMapper.writeValueAsBytes(result);

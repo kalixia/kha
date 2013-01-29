@@ -25,7 +25,7 @@ public class ApiProtocolSwitcher extends MessageToMessageDecoder<Object> {
             if (((FullHttpRequest) msg).uri().equals("/websocket")) {
                 LOGGER.info("Should add WebSockets API handlers...");
                 ctx.pipeline().addLast("web-sockets-client-page", new WebSocketsServerProtocolUpdater());
-                ctx.pipeline().remove(ApiProtocolSwitcher.class);
+                ctx.pipeline().removeAndForward(ApiProtocolSwitcher.class);
             } else {
                 LOGGER.info("Should add REST API handlers...");
                 // TODO: add REST API handlers

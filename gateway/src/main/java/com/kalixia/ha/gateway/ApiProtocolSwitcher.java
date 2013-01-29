@@ -1,7 +1,7 @@
-package com.kalixia.ha.gateway.handlers;
+package com.kalixia.ha.gateway;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kalixia.ha.gateway.websockets.WebSocketsServerProtocolUpdater;
+import com.kalixia.ha.gateway.codecs.websockets.WebSocketsServerProtocolUpdater;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.FullHttpRequest;

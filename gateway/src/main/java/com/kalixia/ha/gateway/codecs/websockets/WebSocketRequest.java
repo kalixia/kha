@@ -1,6 +1,5 @@
-package com.kalixia.ha.gateway.websockets;
+package com.kalixia.ha.gateway.codecs.websockets;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

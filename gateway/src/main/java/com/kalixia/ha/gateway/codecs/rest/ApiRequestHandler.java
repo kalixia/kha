@@ -1,4 +1,4 @@
-package com.kalixia.ha.gateway.handlers;
+package com.kalixia.ha.gateway.codecs.rest;
 
 import com.kalixia.ha.gateway.ApiRequest;
 import com.kalixia.ha.gateway.ApiResponse;

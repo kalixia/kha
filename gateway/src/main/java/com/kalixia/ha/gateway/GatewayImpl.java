@@ -1,6 +1,5 @@
 package com.kalixia.ha.gateway;
 
-import com.kalixia.ha.gateway.websockets.WebSocketsApiServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,34 +11,27 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class GatewayImpl implements Gateway {
-    private final WebSocketsApiServer wsServer;
+    private final ApiServer wsServer;
     private static final Logger LOGGER = LoggerFactory.getLogger(Gateway.class);
 
     public GatewayImpl() {
-        this.wsServer = new WebSocketsApiServer(8081);
+        this.wsServer = new ApiServer(8081);
     }
 
     @Override
     public void start() throws InterruptedException {
-        startApiREST();
-        startApiWS();
+        startApi();
         startCloudRelay();
     }
 
     @Override
     public void stop() {
         stopCloudRelay();
-        stopApiWS();
-        stopApiREST();
+        stopApi();
     }
 
-    private void startApiREST() {
-        LOGGER.info("Starting REST API...");
-        // TODO: write code!
-    }
-
-    private void startApiWS() throws InterruptedException {
-        LOGGER.info("Starting WebSockets API...");
+    private void startApi() throws InterruptedException {
+        LOGGER.info("Starting API Server...");
         wsServer.start();
     }
 
@@ -48,14 +40,9 @@ public class GatewayImpl implements Gateway {
         // TODO: write code!
     }
 
-    private void stopApiREST() {
-        LOGGER.info("Stopping REST API...");
+    private void stopApi() {
+        LOGGER.info("Stopping API Server...");
         wsServer.stop();
-    }
-
-    private void stopApiWS() {
-        LOGGER.info("Stopping WebSockets API...");
-        // TODO: write code!
     }
 
     private void stopCloudRelay() {

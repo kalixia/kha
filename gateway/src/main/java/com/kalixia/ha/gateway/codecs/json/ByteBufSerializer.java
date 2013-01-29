@@ -1,4 +1,4 @@
-package com.kalixia.ha.gateway.handlers;
+package com.kalixia.ha.gateway.codecs.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,7 +9,7 @@ import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
 
-class ByteBufSerializer extends JsonSerializer<ByteBuf> {
+public class ByteBufSerializer extends JsonSerializer<ByteBuf> {
     @Override
     public void serialize(ByteBuf byteBuf, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
             throws IOException, JsonProcessingException {

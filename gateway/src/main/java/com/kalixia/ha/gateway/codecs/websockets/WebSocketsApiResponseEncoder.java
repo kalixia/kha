@@ -1,4 +1,4 @@
-package com.kalixia.ha.gateway.websockets;
+package com.kalixia.ha.gateway.codecs.websockets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kalixia.ha.gateway.ApiResponse;

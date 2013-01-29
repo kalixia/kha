@@ -1,0 +1,17 @@
+package com.kalixia.ha.gateway.codecs.jaxrs;
+
+import java.util.regex.Pattern;
+
+public class UriTemplateUtils {
+    private static final Pattern uriTemplatePattern = Pattern.compile("\\{(.*)\\}");
+
+    /**
+     * Extract a Java regex pattern from a given JAX-RS URI template.
+     * @param uriTemplate
+     * @return
+     */
+    public static Pattern extractRegexPattern(String uriTemplate) {
+        return Pattern.compile('^' + uriTemplatePattern.matcher(uriTemplate).replaceAll("(.*)") + '$');
+    }
+
+}

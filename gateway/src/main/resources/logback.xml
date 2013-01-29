@@ -10,7 +10,9 @@
 
     <appender name="metrics" class="com.yammer.metrics.logback.InstrumentedAppender"/>
 
-    <root level="debug">
+    <logger name="com.kalixia" level="DEBUG"/>
+
+    <root level="info">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="metrics" />
     </root>

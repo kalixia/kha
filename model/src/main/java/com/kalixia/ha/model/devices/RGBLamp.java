@@ -13,7 +13,7 @@ import java.util.UUID;
  * Has both {@link com.kalixia.ha.model.capabilities.Switch} and {@link Light} capabilities.
  */
 public class RGBLamp extends AbstractDevice implements Dimmer, Switch, Temperature {
-    private Boolean on;
+    private boolean on;
     private Color color;
     private float intensity;
     private float celsius;

@@ -51,12 +51,27 @@
                 <artifactId>logback-classic</artifactId>
                 <version>1.0.7</version>
             </dependency>
+            
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>org.spockframework</groupId>
+                <artifactId>spock-core</artifactId>
+                <version>${spock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.10</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <properties>
         <metrics.version>2.2.0</metrics.version>
         <jackson.version>2.1.1</jackson.version>
+        <spock.version>0.7-groovy-1.8</spock.version>
     </properties>
 
     <build>
@@ -70,6 +85,51 @@
                         <target>1.6</target>
                         <encoding>UTF-8</encoding>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.gmaven</groupId>
+                    <artifactId>gmaven-plugin</artifactId>
+                    <version>1.3</version>
+                    <configuration>
+                        <providerSelection>1.8</providerSelection>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>testCompile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.gmaven.runtime</groupId>
+                            <artifactId>gmaven-runtime-1.8</artifactId>
+                            <version>1.5</version>
+                            <exclusions>
+                                <exclusion>
+                                    <groupId>org.codehaus.groovy</groupId>
+                                    <artifactId>groovy-all</artifactId>
+                                </exclusion>
+                            </exclusions>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-all</artifactId>
+                            <version>1.8.6</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.spockframework</groupId>
+                    <artifactId>spock-maven</artifactId>
+                    <version>${spock.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>find-specs</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

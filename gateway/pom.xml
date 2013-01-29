@@ -39,6 +39,16 @@
             <artifactId>jsr311-api</artifactId>
             <version>1.1.1</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.damnhandy</groupId>-->
+            <!--<artifactId>handy-uri-templates</artifactId>-->
+            <!--<version>1.1.7</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>net.sf.scannotation</groupId>
+            <artifactId>scannotation</artifactId>
+            <version>1.0.2</version>
+        </dependency>
 
         <!-- Hystrix dependencies -->
         <dependency>
@@ -84,6 +94,16 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Tests dependencies -->
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
 
     </dependencies>
@@ -163,7 +183,14 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.spockframework</groupId>-->
+                <!--<artifactId>spock-maven</artifactId>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 

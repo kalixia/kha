@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -22,40 +23,49 @@ import java.util.regex.Pattern;
 
 public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest> {
     /** A map of paths as strings to underlying JAX-RS resource method to be called. */
-    private Map<Pattern, Method> uriTemplateToMethod;
+    private static Map<Pattern, Method> uriTemplateToMethod;
     private final ObjectMapper objectMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRsHandler.class);
+
+    static {
+        try {
+            // initialize Scannotation database
+            URL[] urls = ClasspathUrlFinder.findClassPaths();
+            AnnotationDB db = new AnnotationDB();
+            db.scanArchives(urls);
+            // scan each JAX-RS resource for URI templates
+            Set<String> resourceClassNames = db.getAnnotationIndex().get(Path.class.getName());
+            uriTemplateToMethod = new HashMap<Pattern, Method>();
+            for (String resourceName : resourceClassNames) {
+                LOGGER.debug("Found JAX-RS resource '{}'", resourceName);
+                Class clazz = Class.forName(resourceName);
+                Path resourcePath = (Path) clazz.getAnnotation(Path.class);
+                for (Method method : clazz.getDeclaredMethods()) {
+                    Path methodPath = method.getAnnotation(Path.class);
+                    String uriTemplate;
+                    if ("/".equals(methodPath.value())) {
+                        uriTemplate = resourcePath.value();
+                    } else {
+                        uriTemplate = resourcePath.value() + '/' + methodPath.value();
+                    }
+                    Pattern pattern = UriTemplateUtils.extractRegexPattern(uriTemplate);
+                    LOGGER.debug("Found URI template {}. Compiled into {} regex.", uriTemplate, pattern);
+                    uriTemplateToMethod.put(pattern, method);
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.error("Can't scan classes for JAX-RS annotations", e);
+            uriTemplateToMethod = Collections.emptyMap();
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("Can't load JAX-RS resource class", e);
+            uriTemplateToMethod = Collections.emptyMap();
+        }
+    }
 
     public JaxRsHandler(ObjectMapper objectMapper)
             throws IOException, ClassNotFoundException, AnnotationDB.CrossReferenceException {
         super(ApiRequest.class);
         this.objectMapper = objectMapper;
-
-        // initialize Scannotation database
-        URL[] urls = ClasspathUrlFinder.findClassPaths();
-        AnnotationDB db = new AnnotationDB();
-        db.scanArchives(urls);
-
-        // scan each JAX-RS resource for URI templates
-        Set<String> resourceClassNames = db.getAnnotationIndex().get(Path.class.getName());
-        uriTemplateToMethod = new HashMap<Pattern, Method>();
-        for (String resourceName : resourceClassNames) {
-            LOGGER.debug("Found JAX-RS resource '{}'", resourceName);
-            Class clazz = Class.forName(resourceName);
-            Path resourcePath = (Path) clazz.getAnnotation(Path.class);
-            for (Method method : clazz.getDeclaredMethods()) {
-                Path methodPath = method.getAnnotation(Path.class);
-                String uriTemplate;
-                if ("/".equals(methodPath.value())) {
-                    uriTemplate = resourcePath.value();
-                } else {
-                    uriTemplate = resourcePath.value() + '/' + methodPath.value();
-                }
-                Pattern pattern = UriTemplateUtils.extractRegexPattern(uriTemplate);
-                LOGGER.debug("Found URI template {}. Compiled into {} regex.", uriTemplate, pattern);
-                uriTemplateToMethod.put(pattern, method);
-            }
-        }
     }
 
     /**
@@ -71,7 +81,7 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
         Method method = null;
         List<Object> parameters = null;
         for (Pattern pattern : uriTemplateToMethod.keySet()) {
-            Matcher matcher = pattern.matcher(request.getPath());
+            Matcher matcher = pattern.matcher(request.uri());
             if (matcher.matches()) {
                 method = uriTemplateToMethod.get(pattern);
                 parameters = new ArrayList<Object>();
@@ -86,7 +96,7 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
             }
         }
         if (method == null) {
-            LOGGER.info("Could not locate a JAX-RS resource for path '{}'", request.getPath());
+            LOGGER.info("Could not locate a JAX-RS resource for path '{}'", request.uri());
             // TODO: return a 404 error
             return;
         }
@@ -105,7 +115,7 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
         byte[] content = objectMapper.writeValueAsBytes(result);
 
         // TODO: find a way to do this without in-memory serialization (prefer streams instead)
-        ctx.write(new ApiResponse(request.getId(), Unpooled.wrappedBuffer(content)));
+        ctx.write(new ApiResponse(request.id(), Unpooled.wrappedBuffer(content), MediaType.APPLICATION_JSON));
     }
 
     @Override

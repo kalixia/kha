@@ -13,37 +13,37 @@ import java.util.UUID;
  * This class is intentionally immutable.
  */
 public class ApiRequest extends ApiObject {
-    private final String path;
+    private final String uri;
     private final HttpMethod method;
     private final String clientAddress;
 
-    public ApiRequest(UUID id, String path, HttpMethod method, ByteBuf content, String clientAddress) {
-        super(id, content);
-        this.path = path;
+    public ApiRequest(UUID id, String uri, HttpMethod method, ByteBuf content, String contentType, String clientAddress) {
+        super(id, content, contentType);
+        this.uri = uri;
         this.method = method;
         this.clientAddress = clientAddress;
     }
 
-    public String getPath() {
-        return path;
+    public String uri() {
+        return uri;
     }
 
-    public HttpMethod getMethod() {
+    public HttpMethod method() {
         return method;
     }
 
-    public String getClientAddress() {
+    public String clientAddress() {
         return clientAddress;
     }
 
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("ApiRequest");
-        sb.append("{id=").append(getId());
-        sb.append(", path='").append(path).append('\'');
-        sb.append(", method=").append(method);
-        sb.append(", content=").append(getContent());
-        sb.append(", clientAddress=").append(getClientAddress());
+        sb.append("{id=").append(id());
+        sb.append(", path='").append(uri()).append('\'');
+        sb.append(", method=").append(method());
+        sb.append(", content=").append(content());
+        sb.append(", clientAddress=").append(clientAddress());
         sb.append('}');
         return sb.toString();
     }

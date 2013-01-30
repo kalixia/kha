@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class GatewayImpl implements Gateway {
-    private final ApiServer wsServer;
+    private final ApiServer apiServer;
     private static final Logger LOGGER = LoggerFactory.getLogger(Gateway.class);
 
     public GatewayImpl() {
-        this.wsServer = new ApiServer(8081);
+        this.apiServer = new ApiServer(8081);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class GatewayImpl implements Gateway {
 
     private void startApi() throws InterruptedException {
         LOGGER.info("Starting API Server...");
-        wsServer.start();
+        apiServer.start();
     }
 
     private void startCloudRelay() {
@@ -42,7 +42,7 @@ public class GatewayImpl implements Gateway {
 
     private void stopApi() {
         LOGGER.info("Stopping API Server...");
-        wsServer.stop();
+        apiServer.stop();
     }
 
     private void stopCloudRelay() {

@@ -29,26 +29,20 @@ import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-public class WebSocketsServerProtocolUpdater extends ChannelInboundMessageHandlerAdapter<Object> {
+public class WebSocketsServerProtocolUpdater extends ChannelInboundMessageHandlerAdapter<FullHttpRequest> {
     private WebSocketServerHandshaker handshaker;
     private final Timer timer;
     private static final String WEBSOCKET_PATH = "/websocket";
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketsServerProtocolUpdater.class);
 
-    public WebSocketsServerProtocolUpdater(Class<?>... acceptedMsgTypes) {
-        super(acceptedMsgTypes);
+    public WebSocketsServerProtocolUpdater() {
+        super(FullHttpRequest.class);
         timer = Metrics.newTimer(new MetricName("ha", "api", "websockets", null),
                 TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
     }
 
     @Override
-    protected void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof FullHttpRequest) {
-            handleHttpRequest(ctx, (FullHttpRequest) msg);
-        }
-    }
-
-    private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
+    protected void messageReceived(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
         // Handle a bad request.
         if (!req.decoderResult().isSuccess()) {
             sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, BAD_REQUEST));
@@ -92,14 +86,14 @@ public class WebSocketsServerProtocolUpdater extends ChannelInboundMessageHandle
         ctx.close();
     }
 
-    @Override
-    protected void freeInboundMessage(Object msg) throws Exception {
-        if (msg instanceof PingWebSocketFrame || msg instanceof CloseWebSocketFrame) {
-            // Will be freed once wrote back
-            return;
-        }
-        super.freeInboundMessage(msg);
-    }
+//    @Override
+//    protected void freeInboundMessage(Object msg) throws Exception {
+//        if (msg instanceof PingWebSocketFrame || msg instanceof CloseWebSocketFrame) {
+//            Will be freed once wrote back
+//            return;
+//        }
+//        super.freeInboundMessage(msg);
+//    }
 
     private static String getWebSocketLocation(FullHttpRequest req) {
         return "ws://" + req.headers().get(HOST) + WEBSOCKET_PATH;

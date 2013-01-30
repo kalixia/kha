@@ -2,6 +2,7 @@ package com.kalixia.ha.gateway;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ public class ApiServer {
             apiBootstrap.group(new NioEventLoopGroup(), new NioEventLoopGroup())
                     .channel(NioServerSocketChannel.class)
                     .localAddress(port)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .childHandler(new ApiServerChannelInitializer());
 
             Channel ch = apiBootstrap.bind().sync().channel();

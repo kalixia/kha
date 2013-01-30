@@ -6,18 +6,24 @@ import java.util.UUID;
 
 public class ApiObject {
     private final UUID id;
-    private ByteBuf content;
+    private final ByteBuf content;
+    private final String contentType;
 
-    public ApiObject(UUID id, ByteBuf content) {
+    public ApiObject(UUID id, ByteBuf content, String contentType) {
         this.id = id;
         this.content = content;
+        this.contentType = contentType;
     }
 
-    public UUID getId() {
+    public UUID id() {
         return id;
     }
 
-    public ByteBuf getContent() {
+    public ByteBuf content() {
         return content;
+    }
+
+    public String contentType() {
+        return contentType;
     }
 }

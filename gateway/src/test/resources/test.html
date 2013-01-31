@@ -1,9 +1,10 @@
-<html>
+<html class="no-js">
 
 <head>
     <title>Web Socket Test</title>
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="http://modernizr.com/downloads/modernizr.js"></script>
     <script type="text/javascript" src="test.js"></script>
 
     <style>
@@ -23,31 +24,37 @@
         }
     </style>
     <script type="text/javascript">
-        $(function() {
-            var series = [1, 1, 2, 3, 5, 8];
+        if (!Modernizr.websockets) {
+            alert("Your browser does not have WebSockets support. Sorry, this page won't work for you!");
+        } else if (!Modernizr.svg) {
+            alert("Your browser does not have SVG support. Sorry, this page won't work for you!");
+        } else {
+            $(function() {
+                var series = [1, 1, 2, 3, 5, 8];
 
-            var vis = d3.select('#visualization');
+                var vis = d3.select('#visualization');
 
-            function toPx(i) {
-                return (i * 10) + 'px';
-            }
+                function toPx(i) {
+                    return (i * 10) + 'px';
+                }
 
-            function widthTransform(i) {
-                return (i * 10) + 'px';
-            }
+                function widthTransform(i) {
+                    return (i * 10) + 'px';
+                }
 
-            vis
-                .selectAll('div')
-                .data(series)
-                    .enter()
-                        .append('div')
-                        .style('top', toPx)
-                        .style('left', toPx)
-                        .transition()
-                            .duration(1000)
-                            .style('width', widthTransform)
-                            .style('height', widthTransform);
-        });
+                vis
+                    .selectAll('div')
+                    .data(series)
+                        .enter()
+                            .append('div')
+                            .style('top', toPx)
+                            .style('left', toPx)
+                            .transition()
+                                .duration(1000)
+                                .style('width', widthTransform)
+                                .style('height', widthTransform);
+            });
+        }
     </script>
 
 </head>

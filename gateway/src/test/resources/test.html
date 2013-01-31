@@ -1,9 +1,58 @@
 <html>
 
-<head><title>Web Socket Test</title></head>
+<head>
+    <title>Web Socket Test</title>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script type="text/javascript" src="test.js"></script>
+
+    <style>
+        #visualization {
+            float: right;
+            width: 500px;
+            height: 300px;
+            border: 1px solid red;
+            position: relative;
+        }
+        #visualization div {
+            border: 1px solid blue;
+            background: rgba(50, 50, 255, 0.3);
+            height: 5px;
+            width: 5px;
+            position: absolute;
+        }
+    </style>
+    <script type="text/javascript">
+        $(function() {
+            var series = [1, 1, 2, 3, 5, 8];
+
+            var vis = d3.select('#visualization');
+
+            function toPx(i) {
+                return (i * 10) + 'px';
+            }
+
+            function widthTransform(i) {
+                return (i * 10) + 'px';
+            }
+
+            vis
+                .selectAll('div')
+                .data(series)
+                    .enter()
+                        .append('div')
+                        .style('top', toPx)
+                        .style('left', toPx)
+                        .transition()
+                            .duration(1000)
+                            .style('width', widthTransform)
+                            .style('height', widthTransform);
+        });
+    </script>
+
+</head>
 
 <body>
-<script type="text/javascript" src="test.js"></script>
 
 <form onsubmit="return false;">
     <input type="text" name="message" value="Hello, World!"/>
@@ -12,6 +61,8 @@
     <h3>Output</h3>
 
     <textarea id="responseText" style="width:500px;height:300px;"></textarea>
+
+    <div id="visualization"></div>
 </form>
 
 </body>

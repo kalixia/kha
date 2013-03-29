@@ -33,10 +33,10 @@
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-metrics-event-stream</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.netflix.turbine</groupId>
-            <artifactId>turbine-core</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.netflix.turbine</groupId>-->
+            <!--<artifactId>turbine-core</artifactId>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>ch.qos.logback</groupId>

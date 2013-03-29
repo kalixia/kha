@@ -23,7 +23,7 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-codec-http</artifactId>
-                <version>4.0.0.Beta1-SNAPSHOT</version>
+                <version>4.0.0.CR1</version>
             </dependency>
 
             <!-- Hystrix dependencies -->
@@ -42,11 +42,11 @@
                 <artifactId>hystrix-metrics-event-stream</artifactId>
                 <version>${hystrix.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.netflix.turbine</groupId>
-                <artifactId>turbine-core</artifactId>
-                <version>0.2-SNAPSHOT</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>com.netflix.turbine</groupId>-->
+                <!--<artifactId>turbine-core</artifactId>-->
+                <!--<version>0.2-SNAPSHOT</version>-->
+            <!--</dependency>-->
 
             <!-- Jackson dependencies -->
             <dependency>

@@ -34,7 +34,7 @@ public class ApiProtocolSwitcher extends MessageToMessageDecoder<Object> {
     protected Object decode(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FullHttpRequest) {
             ChannelPipeline pipeline = ctx.pipeline();
-            if (((FullHttpRequest) msg).uri().equals("/websocket")) {
+            if (((FullHttpRequest) msg).getUri().equals("/websocket")) {
                 LOGGER.debug("Switching to WebSockets pipeline...");
                 pipeline.addAfter("api-protocol-switcher", "ws-protocol-updater", new WebSocketsServerProtocolUpdater());
                 pipeline.addAfter("ws-protocol-updater", "api-response-encoder-ws", new WebSocketsApiResponseEncoder());

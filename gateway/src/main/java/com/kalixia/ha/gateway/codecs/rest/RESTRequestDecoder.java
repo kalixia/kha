@@ -36,7 +36,7 @@ public class RESTRequestDecoder extends MessageToMessageDecoder<FullHttpRequest>
 
         InetSocketAddress clientAddress = (InetSocketAddress) ctx.channel().remoteAddress();
         return new ApiRequest(requestID,
-                request.uri(), request.method(),
+                request.getUri(), request.getMethod(),
                 request.data(), contentType,
                 clientAddress.getHostName());
     }

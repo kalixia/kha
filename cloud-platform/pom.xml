@@ -24,22 +24,18 @@
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-core</artifactId>
-            <version>${hystrix.version}</version>
         </dependency>
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-yammer-metrics-publisher</artifactId>
-            <version>${hystrix.version}</version>
         </dependency>
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-metrics-event-stream</artifactId>
-            <version>${hystrix.version}</version>
         </dependency>
         <dependency>
             <groupId>com.netflix.turbine</groupId>
             <artifactId>turbine-core</artifactId>
-            <version>0.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -56,10 +52,6 @@
         </dependency>
 
     </dependencies>
-
-    <properties>
-        <hystrix.version>1.2.2</hystrix.version>
-    </properties>
 
     <build>
         <plugins>

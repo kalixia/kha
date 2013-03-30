@@ -94,7 +94,7 @@
         <hystrix.version>1.2.14</hystrix.version>
         <metrics.version>2.2.0</metrics.version>
         <jackson.version>2.1.1</jackson.version>
-        <spock.version>0.7-groovy-1.8</spock.version>
+        <spock.version>0.7-groovy-2.0</spock.version>
     </properties>
 
     <build>

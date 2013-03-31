@@ -76,7 +76,7 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
      * @throws Exception
      */
     @Override
-    protected void messageReceived(ChannelHandlerContext ctx, ApiRequest request) throws Exception {
+    public void messageReceived(ChannelHandlerContext ctx, ApiRequest request) throws Exception {
         // locate the JAX-RS resource based on the requested path
         Method method = null;
         List<Object> parameters = null;
@@ -84,7 +84,7 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
             Matcher matcher = pattern.matcher(request.uri());
             if (matcher.matches()) {
                 method = uriTemplateToMethod.get(pattern);
-                parameters = new ArrayList<Object>();
+                parameters = new ArrayList<>();
                 Class<?>[] parameterTypes = method.getParameterTypes();
                 LOGGER.debug("Found matching JAX-RS resource {}", method);
                 for (int i = 1; i <= matcher.groupCount(); i++) {

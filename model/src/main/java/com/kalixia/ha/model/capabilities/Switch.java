@@ -8,7 +8,7 @@ import com.kalixia.ha.model.Capability;
 public interface Switch extends Capability {
     void on();
     void off();
-    Status getStatus();
+    Switch.Status getStatus();
 
     public enum Status {ON, OFF}
 }

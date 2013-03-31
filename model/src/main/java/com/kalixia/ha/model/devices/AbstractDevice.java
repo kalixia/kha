@@ -3,7 +3,11 @@ package com.kalixia.ha.model.devices;
 import com.kalixia.ha.model.Capability;
 import com.kalixia.ha.model.Device;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Abstract device class easing code a little bit.
@@ -35,5 +39,15 @@ abstract class AbstractDevice implements Device {
     @Override
     public boolean hasCapability(Class<? extends Capability> capability) {
         return capabilities.contains(capability);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("AbstractDevice{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", capabilities=").append(capabilities);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -1,22 +1,24 @@
-package com.kalixia.ha.model.devices;
+package com.kalixia.ha.model.devices
 
-import com.kalixia.ha.model.Color;
-import com.kalixia.ha.model.capabilities.Dimmer;
-import com.kalixia.ha.model.capabilities.Light;
-import com.kalixia.ha.model.capabilities.Switch;
-import com.kalixia.ha.model.capabilities.Temperature;
-
-import java.util.UUID;
+import com.kalixia.ha.model.Color
+import com.kalixia.ha.model.capabilities.Dimmer
+import com.kalixia.ha.model.capabilities.Light
+import com.kalixia.ha.model.capabilities.Switch
+import com.kalixia.ha.model.capabilities.Temperature
+import groovy.transform.CompileStatic
+import groovy.transform.ToString
 
 /**
  * Devices which controls a RGB lamp or RGB Led Strip.
- * Has both {@link com.kalixia.ha.model.capabilities.Switch} and {@link Light} capabilities.
+ * Has both {@link com.kalixia.ha.model.capabilities.Switch} and {@link com.kalixia.ha.model.capabilities.Light} capabilities.
  */
+@CompileStatic
+@ToString(includeNames = true, includeSuper = true)
 public class RGBLamp extends AbstractDevice implements Dimmer, Switch, Temperature {
-    private boolean on;
-    private Color color;
-    private float intensity;
-    private float celsius;
+    boolean on
+    Color color
+    float intensity
+    float celsius
 
     @SuppressWarnings("unchecked")
     public RGBLamp(UUID id, String name) {
@@ -44,8 +46,8 @@ public class RGBLamp extends AbstractDevice implements Dimmer, Switch, Temperatu
     }
 
     @Override
-    public Status getStatus() {
-        return on ? Status.ON : Status.OFF;
+    public Switch.Status getStatus() {
+        return on ? Switch.Status.ON : Switch.Status.OFF;
     }
 
     @Override

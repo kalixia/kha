@@ -1,13 +1,15 @@
 package com.kalixia.ha.api
 
-import com.kalixia.ha.model.Device
+import com.kalixia.ha.model.sensors.DataPoint
+import org.joda.time.Instant
 
 class DevicesServiceTest extends spock.lang.Specification {
     def DevicesService service = new DevicesServiceImpl()
 
+    /*
     def "find all devices"() {
         given: "fetching all devices"
-        def devices = service.findAllDevices()
+        def devices = service.findAllDevicesOfUser()
         def devicesAsList = devices.toList().last()
         expect: "get some"
 //        devices.take(1)
@@ -17,6 +19,14 @@ class DevicesServiceTest extends spock.lang.Specification {
 //        })
         devicesAsList.size() > 0
         devicesAsList.size() == 2
+    }
+    */
+
+    def "test data points"() {
+        when:
+        DataPoint<Double> dp = new DataPoint<>(12, new Instant())
+        then:
+        println "DataPoint is: $dp"
     }
 
 //    def "test searching for missing device"() {

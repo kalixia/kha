@@ -9,20 +9,45 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rest-api</artifactId>
+    <artifactId>services</artifactId>
 
     <dependencies>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>services</artifactId>
+            <artifactId>model</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-        <!-- JAX-RS dependencies -->
+        <!-- RxJava dependencies -->
         <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-groovy</artifactId>
+        </dependency>
+        
+        <!-- Astyanax dependencies -->
+        <dependency>
+            <groupId>com.netflix.astyanax</groupId>
+            <artifactId>astyanax-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.astyanax</groupId>
+            <artifactId>astyanax-thrift</artifactId>
+        </dependency>
+
+
+        <!-- Dagger dependencies -->
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>dagger</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>dagger-compiler</artifactId>
         </dependency>
 
         <!-- Groovy dependencies -->

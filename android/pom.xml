@@ -71,6 +71,15 @@
         <finalName>kalixia-ha</finalName>
         <plugins>
             <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
                 <version>3.4.1</version>
@@ -88,9 +97,11 @@
                 <extensions>true</extensions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.groovy.maven</groupId>
+                <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
-                <version>1.0</version>
+                <configuration>
+                    <targetBytecode>1.5</targetBytecode>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>

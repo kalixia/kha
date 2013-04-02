@@ -11,6 +11,7 @@
 
     <modules>
         <module>model</module>
+        <module>services</module>
         <module>rest-api</module>
         <module>gateway</module>
         <module>cloud-platform</module>
@@ -60,6 +61,37 @@
                 <!--<version>0.2-SNAPSHOT</version>-->
             <!--</dependency>-->
 
+            <!-- Astyanax dependencies -->
+            <dependency>
+                <groupId>com.netflix.astyanax</groupId>
+                <artifactId>astyanax-core</artifactId>
+                <version>${astyanax.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netflix.astyanax</groupId>
+                <artifactId>astyanax-thrift</artifactId>
+                <version>${astyanax.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.netflix.astyanax</groupId>
+                <artifactId>astyanax-recipes</artifactId>
+                <version>${astyanax.version}</version>
+            </dependency>
+
+            <!-- Dagger dependencies -->
+            <dependency>
+                <groupId>com.squareup</groupId>
+                <artifactId>dagger</artifactId>
+                <version>${dagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup</groupId>
+                <artifactId>dagger-compiler</artifactId>
+                <version>${dagger.version}</version>
+                <optional>true</optional>
+            </dependency>
+
             <!-- Jackson dependencies -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -77,6 +109,20 @@
                 <groupId>com.yammer.metrics</groupId>
                 <artifactId>metrics-logback</artifactId>
                 <version>${metrics.version}</version>
+            </dependency>
+
+            <!-- Joda Time dependencies -->
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>1.6.2</version>
+            </dependency>
+
+            <!-- JAX-RS dependencies -->
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>jsr311-api</artifactId>
+                <version>1.1.1</version>
             </dependency>
 
             <!-- Groovy dependencies -->
@@ -121,6 +167,8 @@
         <jackson.version>2.1.1</jackson.version>
         <spock.version>0.7-groovy-2.0</spock.version>
         <rxjava.version>0.6.1</rxjava.version>
+        <astyanax.version>1.56.34</astyanax.version>
+        <dagger.version>0.9.1</dagger.version>
         <groovy.version>2.1.2</groovy.version>
     </properties>
 

@@ -1,6 +1,5 @@
 package com.kalixia.ha.model.capabilities;
 
-import com.kalixia.ha.model.Capability;
 import com.kalixia.ha.model.Color;
 
 /**

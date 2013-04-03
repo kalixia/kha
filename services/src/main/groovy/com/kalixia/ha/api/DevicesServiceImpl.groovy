@@ -6,7 +6,11 @@ import com.kalixia.ha.model.devices.RGBLamp
 import rx.Observable
 import rx.Observer
 
+import javax.inject.Inject
+
 class DevicesServiceImpl implements DevicesService {
+    @Inject DevicesDao dao
+
     def List<? extends Device> devices = [
         new RGBLamp(UUID.randomUUID(), "device1"),
         new RGBLamp(UUID.randomUUID(), "device2")

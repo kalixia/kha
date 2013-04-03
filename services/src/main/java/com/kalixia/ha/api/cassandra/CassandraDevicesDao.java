@@ -1,7 +1,9 @@
 package com.kalixia.ha.api.cassandra;
 
 import com.google.common.collect.ImmutableMap;
+import com.kalixia.ha.api.DevicesDao;
 import com.kalixia.ha.api.SensorsDao;
+import com.kalixia.ha.model.Device;
 import com.kalixia.ha.model.sensors.DataPoint;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -12,31 +14,20 @@ import com.netflix.astyanax.serializers.DateSerializer;
 import com.netflix.astyanax.serializers.IntegerSerializer;
 import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.serializers.TimeUUIDSerializer;
-import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormatterBuilder;
+import rx.Observable;
 
 import java.util.Date;
 import java.util.UUID;
 
-public class CassandraSensorsDao<T> implements SensorsDao<T> {
-    private final ColumnFamily<UUID, String> cfSensors;
-    private final ColumnFamily<UUID, Date> cfSensorsData;
-    private final ColumnFamily<String, Integer> cfSensorsStats;
+public class CassandraDevicesDao<T> implements DevicesDao {
+//    private final ColumnFamily<UUID, String> cfSensors;
+//    private final ColumnFamily<UUID, Date> cfSensorsData;
+//    private final ColumnFamily<String, Integer> cfSensorsStats;
 
-    public CassandraSensorsDao(Keyspace keyspace) throws ConnectionException {
-        cfSensors = new ColumnFamily<>("Sensors", TimeUUIDSerializer.get(), StringSerializer.get());
-        cfSensorsData = new ColumnFamily<>("SensorsData", TimeUUIDSerializer.get(), DateSerializer.get());
-        cfSensorsStats = new ColumnFamily<>("SensorsStats", StringSerializer.get(), IntegerSerializer.get());
-//        cfStatsRowKeyFormatter = new DateTimeFormatterBuilder()
-//                .appendYear(4, 4)
-//                .appendLiteral('/')
-//                .appendMonthOfYear(2)
-//                .appendLiteral('/')
-//                .appendDayOfMonth(2)
-//                .appendLiteral(':')
-//                .appendHourOfDay(2)
-//                .appendLiteral('h')
-//                .toFormatter();
+    public CassandraDevicesDao(Keyspace keyspace) throws ConnectionException {
+//        cfSensors = new ColumnFamily<>("Sensors", TimeUUIDSerializer.get(), StringSerializer.get());
+//        cfSensorsData = new ColumnFamily<>("SensorsData", TimeUUIDSerializer.get(), DateSerializer.get());
+//        cfSensorsStats = new ColumnFamily<>("SensorsStats", StringSerializer.get(), IntegerSerializer.get());
 
         // analyse du schéma du keyspace
         KeyspaceDefinition keyspaceDefinition;
@@ -55,6 +46,7 @@ public class CassandraSensorsDao<T> implements SensorsDao<T> {
             keyspaceDefinition = keyspace.describeKeyspace();
         }
 
+        /*
         // création de la CF Sensors si elle n'existe pas
         if (keyspaceDefinition.getColumnFamily(cfSensors.getName()) == null) {
             // column family is missing -- create it!
@@ -91,10 +83,11 @@ public class CassandraSensorsDao<T> implements SensorsDao<T> {
                     .put("comparator_type", ComparatorType.INTEGERTYPE.getTypeName())
                     .build());
         }
+        */
     }
 
     @Override
-    public DataPoint<T> getLastValue(UUID id) {
-        return null;
+    public Observable<? extends Device> findAllDevices() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

@@ -5,6 +5,7 @@ import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.connectionpool.ConnectionPoolConfiguration;
 import com.netflix.astyanax.connectionpool.NodeDiscoveryType;
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType;
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
@@ -12,22 +13,30 @@ import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import dagger.Module;
 import dagger.Provides;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 
 @Module
 public class CassandraModule {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraModule.class);
 
-    @Provides SensorsDao buildSensorsDao(Keyspace keyspace) {
-        return new CassandraSensorsDao<>(keyspace);
+    @Provides SensorsDao provideSensorsDao(Keyspace keyspace) {
+        try {
+            return new CassandraSensorsDao<>(keyspace);
+        } catch (ConnectionException e) {
+            LOGGER.error("Can't initialize Sensors DAO", e);
+            return null;
+        }
     }
 
-    @Provides @Singleton Keyspace buildKeyspace(AstyanaxContext<Keyspace> ctx) {
+    @Provides @Singleton Keyspace provideKeyspace(AstyanaxContext<Keyspace> ctx) {
         ctx.start();
         return ctx.getEntity();
     }
 
-    @Provides @Singleton AstyanaxContext<Keyspace> buildContext(ConnectionPoolConfiguration pool) {
+    @Provides @Singleton AstyanaxContext<Keyspace> provideContext(ConnectionPoolConfiguration pool) {
         AstyanaxContext<Keyspace> context = new AstyanaxContext.Builder()
                 .forCluster("MyCluster")
                 .forKeyspace("test")
@@ -44,7 +53,7 @@ public class CassandraModule {
         return context;
     }
 
-    @Provides @Singleton ConnectionPoolConfiguration buildConnectionPool() {
+    @Provides @Singleton ConnectionPoolConfiguration provideConnectionPool() {
         ConnectionPoolConfigurationImpl pool = new ConnectionPoolConfigurationImpl("MyConnectionPool")
                 .setPort(9160)
                 .setMaxConnsPerHost(3)

@@ -67,6 +67,10 @@
             <groupId>org.spockframework</groupId>
             <artifactId>spock-core</artifactId>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.lordofthejars</groupId>-->
+            <!--<artifactId>nosqlunit-cassandra</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

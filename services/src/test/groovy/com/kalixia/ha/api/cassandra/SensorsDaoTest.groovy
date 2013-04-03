@@ -1,21 +1,33 @@
 package com.kalixia.ha.api.cassandra
 
 import com.kalixia.ha.api.SensorsDao
+import com.netflix.astyanax.test.EmbeddedCassandra
 import dagger.Module
 import dagger.ObjectGraph
-import dagger.Provides
+import spock.lang.Shared
 
 import javax.inject.Inject
 
+
 class SensorsDaoTest extends spock.lang.Specification {
-//    @Inject SensorsDao dao
+    @Inject SensorsDao dao
+    @Shared EmbeddedCassandra cassandra
+
+    def setupSpec() {
+        cassandra = new EmbeddedCassandra()
+        cassandra.start()
+    }
+
+    def cleanupSpec() {
+        cassandra.stop()
+    }
 
     def "test dagger injection"() {
         when:
-        ObjectGraph objectGraph = ObjectGraph.create(new TestModule());//.inject(this)
+        ObjectGraph.create(new TestModule()).inject(this)
+
         then:
-        objectGraph.get(SensorsDao.class) != null
-//        dao != null
+        dao != null
     }
 
     @Module(
@@ -24,9 +36,6 @@ class SensorsDaoTest extends spock.lang.Specification {
             overrides = true
     )
     static class TestModule {
-//        @Provides @Singleton Heater provideHeater() {
-//            return Mockito.mock(Heater.class);
-//        }
     }
 
 }

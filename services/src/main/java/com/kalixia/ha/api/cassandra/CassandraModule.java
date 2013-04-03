@@ -15,12 +15,12 @@ import dagger.Provides;
 
 import javax.inject.Singleton;
 
-@Module//(entryPoints = SensorsDao.class)
+@Module
 public class CassandraModule {
 
-//    @Provides SensorsDao buildSensorsDao(Keyspace keyspace) {
-//        return new CassandraSensorsDao<>(keyspace);
-//    }
+    @Provides SensorsDao buildSensorsDao(Keyspace keyspace) {
+        return new CassandraSensorsDao<>(keyspace);
+    }
 
     @Provides @Singleton Keyspace buildKeyspace(AstyanaxContext<Keyspace> ctx) {
         ctx.start();

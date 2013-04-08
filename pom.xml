@@ -178,7 +178,7 @@
         <metrics.version>2.2.0</metrics.version>
         <jackson.version>2.1.1</jackson.version>
         <spock.version>0.7-groovy-2.0</spock.version>
-        <rxjava.version>0.6.1</rxjava.version>
+        <rxjava.version>0.6.3</rxjava.version>
         <astyanax.version>1.56.34</astyanax.version>
         <dagger.version>0.9.1</dagger.version>
         <groovy.version>2.1.2</groovy.version>

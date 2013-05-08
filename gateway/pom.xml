@@ -16,7 +16,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>model</artifactId>
+            <artifactId>rest-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 

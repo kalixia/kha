@@ -114,6 +114,12 @@
                 <groupId>com.yammer.metrics</groupId>
                 <artifactId>metrics-logback</artifactId>
                 <version>${metrics.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-core</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Joda Time dependencies -->
@@ -174,14 +180,14 @@
     </dependencyManagement>
 
     <properties>
-        <hystrix.version>1.2.14</hystrix.version>
+        <hystrix.version>1.2.16</hystrix.version>
+        <rxjava.version>0.8.2</rxjava.version>
+        <astyanax.version>1.56.37</astyanax.version>
         <metrics.version>2.2.0</metrics.version>
-        <jackson.version>2.1.1</jackson.version>
+        <jackson.version>2.2.1</jackson.version>
         <spock.version>0.7-groovy-2.0</spock.version>
-        <rxjava.version>0.6.3</rxjava.version>
-        <astyanax.version>1.56.34</astyanax.version>
         <dagger.version>0.9.1</dagger.version>
-        <groovy.version>2.1.2</groovy.version>
+        <groovy.version>2.1.3</groovy.version>
     </properties>
 
     <build>

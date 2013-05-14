@@ -19,10 +19,10 @@ class DeviceResource {
     @Path("/")
     public List<? extends Device> findAllDevices() {
         def devices = []
-        service.findAllDevices().subscribe({ Device device ->
-            println device
-            devices << device
-        })
+//        service.findAllDevices().subscribe({ Device device ->
+//            println device
+//            devices << device
+//        })
         return devices
     }
 

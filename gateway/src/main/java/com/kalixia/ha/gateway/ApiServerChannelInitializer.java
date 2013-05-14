@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kalixia.ha.gateway.codecs.jaxrs.JaxRsHandler;
 import com.kalixia.ha.gateway.codecs.json.ByteBufSerializer;
+import com.kalixia.ha.gateway.codecs.rest.RESTCodec;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -21,6 +22,8 @@ import java.io.IOException;
 public class ApiServerChannelInitializer extends ChannelInitializer<SocketChannel> {
     private final ObjectMapper objectMapper;
     private final ChannelHandler jaxRsHandler;
+    private static final ChannelHandler debugger = new MessageLoggingHandler(LogLevel.TRACE);
+    private static final ChannelHandler apiRequestLogger = new MessageLoggingHandler(RESTCodec.class, LogLevel.DEBUG);
 
     public ApiServerChannelInitializer() throws AnnotationDB.CrossReferenceException, IOException, ClassNotFoundException {
         this.objectMapper = new ObjectMapper();
@@ -40,10 +43,10 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
 
         // Alters the pipeline depending on either REST or WebSockets requests
         pipeline.addLast("api-protocol-switcher", new ApiProtocolSwitcher(objectMapper));
-        pipeline.addLast("debugger", new MessageLoggingHandler(LogLevel.TRACE));
+        pipeline.addLast("debugger", debugger);
 
         // Logging handlers for API requests
-        pipeline.addLast("api-request-logger", new MessageLoggingHandler(ApiRequest.class, LogLevel.DEBUG));
+        pipeline.addLast("api-request-logger", apiRequestLogger);
 
         // JAX-RS handlers
         pipeline.addLast("jax-rs-handler", jaxRsHandler);

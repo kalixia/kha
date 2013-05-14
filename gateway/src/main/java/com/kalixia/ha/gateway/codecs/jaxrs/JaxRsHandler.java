@@ -5,6 +5,7 @@ import com.kalixia.ha.gateway.ApiRequest;
 import com.kalixia.ha.gateway.ApiResponse;
 import com.kalixia.ha.gateway.codecs.jaxrs.converters.Converters;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -23,6 +24,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@ChannelHandler.Sharable
 public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest> {
     /** A map of paths as strings to underlying JAX-RS resource method to be called. */
     private static Map<Pattern, Method> uriTemplateToMethod;
@@ -115,6 +117,7 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
             try {
                 result = method.invoke(method.getDeclaringClass().newInstance());
             } catch (Exception e) {
+                LOGGER.error("Can't invoke JAX-RS resource", e);
                 ctx.write(new ApiResponse(request.id(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
                         Unpooled.wrappedBuffer("Unexpected error".getBytes("UTF-8")), MediaType.TEXT_PLAIN));
                 return;

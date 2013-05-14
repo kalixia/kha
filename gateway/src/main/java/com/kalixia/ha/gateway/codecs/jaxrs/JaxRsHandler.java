@@ -7,6 +7,7 @@ import com.kalixia.ha.gateway.codecs.jaxrs.converters.Converters;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import org.scannotation.AnnotationDB;
 import org.scannotation.ClasspathUrlFinder;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
@@ -37,11 +39,13 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
             Set<String> resourceClassNames = db.getAnnotationIndex().get(Path.class.getName());
             uriTemplateToMethod = new HashMap<Pattern, Method>();
             for (String resourceName : resourceClassNames) {
-                LOGGER.debug("Found JAX-RS resource '{}'", resourceName);
+                LOGGER.info("Found JAX-RS resource '{}'", resourceName);
                 Class clazz = Class.forName(resourceName);
                 Path resourcePath = (Path) clazz.getAnnotation(Path.class);
                 for (Method method : clazz.getDeclaredMethods()) {
                     Path methodPath = method.getAnnotation(Path.class);
+                    if (methodPath == null)
+                        continue;
                     String uriTemplate;
                     if ("/".equals(methodPath.value())) {
                         uriTemplate = resourcePath.value();
@@ -108,14 +112,21 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
             result = method.invoke(method.getDeclaringClass().newInstance(),
                 parameters.toArray(new Object[]{parameters.size()}));
         } else {
-            result = method.invoke(method.getDeclaringClass().newInstance());
+            try {
+                result = method.invoke(method.getDeclaringClass().newInstance());
+            } catch (Exception e) {
+                ctx.write(new ApiResponse(request.id(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                        Unpooled.wrappedBuffer("Unexpected error".getBytes("UTF-8")), MediaType.TEXT_PLAIN));
+                return;
+            }
         }
 
         // TODO: figure out the serialization stuff (meaning what kind of content to produce)!
         byte[] content = objectMapper.writeValueAsBytes(result);
 
         // TODO: find a way to do this without in-memory serialization (prefer streams instead)
-        ctx.write(new ApiResponse(request.id(), Unpooled.wrappedBuffer(content), MediaType.APPLICATION_JSON));
+        ctx.write(new ApiResponse(request.id(), HttpResponseStatus.OK,
+                Unpooled.wrappedBuffer(content), MediaType.APPLICATION_JSON));
     }
 
     @Override

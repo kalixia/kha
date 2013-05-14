@@ -15,7 +15,7 @@ public class GatewayImpl implements Gateway {
     private static final Logger LOGGER = LoggerFactory.getLogger(Gateway.class);
 
     public GatewayImpl() {
-        this.apiServer = new ApiServer(8081);
+        this.apiServer = new ApiServer(8082);
     }
 
     @Override

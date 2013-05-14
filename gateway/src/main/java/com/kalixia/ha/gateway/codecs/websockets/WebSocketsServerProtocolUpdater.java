@@ -41,8 +41,6 @@ public class WebSocketsServerProtocolUpdater extends ChannelInboundMessageHandle
                 TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
     }
 
-
-
     @Override
     public void messageReceived(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
         // Handle a bad request.
@@ -71,8 +69,8 @@ public class WebSocketsServerProtocolUpdater extends ChannelInboundMessageHandle
     private static void sendHttpResponse(ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res) {
         // Generate an error page if response status code is not OK (200).
         if (res.getStatus().code() != 200) {
-            res.data().writeBytes(Unpooled.copiedBuffer(res.getStatus().toString(), CharsetUtil.UTF_8));
-            setContentLength(res, res.data().readableBytes());
+            res.content().writeBytes(Unpooled.copiedBuffer(res.getStatus().toString(), CharsetUtil.UTF_8));
+            setContentLength(res, res.content().readableBytes());
         }
 
         // Send the response and close the connection if necessary.

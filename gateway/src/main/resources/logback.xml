@@ -8,14 +8,15 @@
         </encoder>
     </appender>
 
-    <appender name="metrics" class="com.yammer.metrics.logback.InstrumentedAppender"/>
+    <!--<appender name="metrics" class="com.yammer.metrics.logback.InstrumentedAppender"/>-->
 
     <logger name="com.kalixia" level="DEBUG"/>
-    <logger name="io.netty.handler.logging.MessageLoggingHandler" level="DEBUG"/>
+    <!--<logger name="io.netty.handler.logging.MessageLoggingHandler" level="DEBUG"/>-->
+    <logger name="io.netty" level="DEBUG"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="metrics" />
+        <!--<appender-ref ref="metrics" />-->
     </root>
 
 </configuration>

@@ -1,6 +1,7 @@
 package com.kalixia.ha.gateway.codecs.websockets;
 
 import com.kalixia.ha.gateway.ApiResponse;
+import io.netty.buffer.MessageBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -15,8 +16,8 @@ public class WebSocketsApiResponseEncoder extends MessageToMessageEncoder<ApiRes
     }
 
     @Override
-    protected Object encode(ChannelHandlerContext ctx, ApiResponse msg) throws Exception {
-        return new TextWebSocketFrame(msg.content());
+    protected void encode(ChannelHandlerContext ctx, ApiResponse msg, MessageBuf<Object> out) throws Exception {
+        out.add(new TextWebSocketFrame(msg.content()));
     }
 
 }

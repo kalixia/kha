@@ -2,6 +2,8 @@ package com.kalixia.ha.gateway.codecs.rest;
 
 import com.kalixia.ha.gateway.ApiRequest;
 import com.kalixia.ha.gateway.MDCLogging;
+import io.netty.buffer.MessageBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
@@ -14,15 +16,17 @@ import org.slf4j.MDC;
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
+@ChannelHandler.Sharable
 public class RESTRequestDecoder extends MessageToMessageDecoder<FullHttpRequest> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RESTRequestDecoder.class);
 
-    public RESTRequestDecoder() {
-        super(DefaultFullHttpRequest.class);
-    }
+//    public RESTRequestDecoder() {
+//        super(FullHttpRequest.class);
+//        super(DefaultFullHttpRequest.class);
+//    }
 
     @Override
-    protected Object decode(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, FullHttpRequest request, MessageBuf<Object> out) throws Exception {
         UUID requestID;
         String requestIDasString = request.headers().get("X-Api-Request-ID");
         if (requestIDasString != null && "".equals(requestIDasString)) {
@@ -35,10 +39,15 @@ public class RESTRequestDecoder extends MessageToMessageDecoder<FullHttpRequest>
         String contentType = request.headers().get(HttpHeaders.Names.ACCEPT);
 
         InetSocketAddress clientAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-        return new ApiRequest(requestID,
+        out.add(new ApiRequest(requestID,
                 request.getUri(), request.getMethod(),
-                request.data(), contentType,
-                clientAddress.getHostName());
+                request.content(), contentType,
+                clientAddress.getHostName()));
+    }
+
+    @Override
+    public boolean acceptInboundMessage(Object msg) throws Exception {
+        return super.acceptInboundMessage(msg);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     @Override

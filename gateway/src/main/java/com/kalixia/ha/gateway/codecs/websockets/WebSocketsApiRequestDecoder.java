@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kalixia.ha.gateway.ApiRequest;
 import com.kalixia.ha.gateway.MDCLogging;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.MessageBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
@@ -32,7 +33,7 @@ public class WebSocketsApiRequestDecoder extends MessageToMessageDecoder<TextWeb
     }
 
     @Override
-    protected Object decode(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, TextWebSocketFrame frame, MessageBuf<Object> out) throws Exception {
         WebSocketRequest wsRequest = mapper.readValue(frame.text(), WebSocketRequest.class);
 
         // extract entity, if available
@@ -45,9 +46,9 @@ public class WebSocketsApiRequestDecoder extends MessageToMessageDecoder<TextWeb
         UUID requestID = wsRequest.getId() != null ? wsRequest.getId() : UUID.randomUUID();
         MDC.put(MDCLogging.MDC_REQUEST_ID, requestID.toString());
         InetSocketAddress clientAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-        return new ApiRequest(requestID, wsRequest.getPath(),
+        out.add(new ApiRequest(requestID, wsRequest.getPath(),
                 HttpMethod.valueOf(wsRequest.getMethod()), content, MediaType.APPLICATION_JSON,
-                clientAddress.getHostName());
+                clientAddress.getHostName()));
     }
 
     @Override

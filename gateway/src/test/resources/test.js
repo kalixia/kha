@@ -5,7 +5,7 @@ if (!window.WebSocket) {
 }
 
 if (window.WebSocket) {
-    socket = new WebSocket("ws://localhost:8081/websocket");
+    socket = new WebSocket("ws://localhost:8082/websocket");
     socket.onmessage = function (event) {
         var ta = document.getElementById('responseText');
         ta.value = ta.value + '\n' + event.data;
@@ -38,7 +38,7 @@ function send(message) {
         });
         socket.send(JSON.stringify({
             path: '/devices/' + uuid,
-            method: 'POST',
+            method: 'GET',
             entity: message
         }));
     } else {

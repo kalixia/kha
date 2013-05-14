@@ -14,10 +14,11 @@ import org.scannotation.ClasspathUrlFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
@@ -90,19 +91,35 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
             Matcher matcher = pattern.matcher(request.uri());
             if (matcher.matches()) {
                 method = uriTemplateToMethod.get(pattern);
-                parameters = new ArrayList<>();
-                Class<?>[] parameterTypes = method.getParameterTypes();
-                LOGGER.debug("Found matching JAX-RS resource {}", method);
-                for (int i = 1; i <= matcher.groupCount(); i++) {
-                    String parameterAsString = matcher.group(i);
-                    Object parameter = Converters.fromString(parameterTypes[i - 1], parameterAsString);
-                    LOGGER.debug("Extracted path parameter {}", parameter);
-                    parameters.add(parameter);
+
+                // check if the HttpMethod matches
+                HttpMethod annotatedHttpMethod = null;
+                Annotation[] methodAnnotations = method.getAnnotations();
+                for (Annotation annotation : methodAnnotations) {
+                    annotatedHttpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
+                    if (annotatedHttpMethod != null);
+                        break;
+                }
+
+                if (request.method().name().equalsIgnoreCase(annotatedHttpMethod.value())) {
+                    // extract parameters from the uri
+                    parameters = new ArrayList<Object>();
+                    Class<?>[] parameterTypes = method.getParameterTypes();
+                    LOGGER.debug("Found matching JAX-RS resource {}", method);
+                    for (int i = 1; i <= matcher.groupCount(); i++) {
+                        String parameterAsString = matcher.group(i);
+                        Object parameter = Converters.fromString(parameterTypes[i - 1], parameterAsString);
+                        LOGGER.debug("Extracted path parameter {}", parameter);
+                        parameters.add(parameter);
+                    }
+                } else {
+                    method = null;
                 }
             }
         }
         if (method == null) {
-            LOGGER.info("Could not locate a JAX-RS resource for path '{}'", request.uri());
+            LOGGER.info("Could not locate a JAX-RS resource for path '{}' and method {}",
+                    request.uri(), request.method());
             // TODO: return a 404 error
             return;
         }
@@ -110,18 +127,19 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
         // invoke the JAX-RS resource
         LOGGER.debug("Invoking method {} with parameters {}", method, parameters);
         Object result;
-        if (parameters.size() > 0) {
-            result = method.invoke(method.getDeclaringClass().newInstance(),
-                parameters.toArray(new Object[]{parameters.size()}));
-        } else {
-            try {
+
+        try {
+            if (parameters.size() > 0) {
+                result = method.invoke(method.getDeclaringClass().newInstance(),
+                        parameters.toArray(new Object[]{parameters.size()}));
+            } else {
                 result = method.invoke(method.getDeclaringClass().newInstance());
-            } catch (Exception e) {
-                LOGGER.error("Can't invoke JAX-RS resource", e);
-                ctx.write(new ApiResponse(request.id(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                        Unpooled.wrappedBuffer("Unexpected error".getBytes("UTF-8")), MediaType.TEXT_PLAIN));
-                return;
             }
+        } catch (Exception e) {
+            LOGGER.error("Can't invoke JAX-RS resource", e);
+            ctx.write(new ApiResponse(request.id(), HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                    Unpooled.wrappedBuffer("Unexpected error".getBytes("UTF-8")), MediaType.TEXT_PLAIN));
+            return;
         }
 
         // TODO: figure out the serialization stuff (meaning what kind of content to produce)!

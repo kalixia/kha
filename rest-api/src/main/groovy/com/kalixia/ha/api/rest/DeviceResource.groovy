@@ -29,7 +29,8 @@ class DeviceResource {
     @GET
     @Path("{id}")
     public Device findDeviceById(@PathParam("id") UUID id) {
-        return service.findDeviceById(id).single()
+        return null
+//        return service.findDeviceById(id).single()
     }
 
 }

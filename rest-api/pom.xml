@@ -47,6 +47,14 @@
             <artifactId>junit</artifactId>
         </dependency>
 
+        <!-- APT dependencies -->
+        <dependency>
+            <groupId>kalixia-ha</groupId>
+            <artifactId>rest-apt-generator</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -55,6 +63,33 @@
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>2.0.5</version>
+                <executions>
+                    <execution>
+                        <id>generate-code</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <processors>
+                                <processor>com.kalixia.ha.tools.apt.rest.RESTHandlersAptGenerator</processor>
+                            </processors>
+                            <!--<systemProperties>-->
+                            <!--<logback.configurationFile>${project.basedir}/etc/jannocessor-logback.xml</logback.configurationFile>-->
+                            <!--</systemProperties>-->
+                            <!--<options>-->
+                            <!--<templates.path>${project.basedir}/src/main/resources</templates.path>-->
+                            <!--</options>-->
+                            <defaultOutputDirectory>${project.basedir}/target/generated-sources/</defaultOutputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

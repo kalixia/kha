@@ -15,9 +15,6 @@ import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.MessageLoggingHandler;
-import org.scannotation.AnnotationDB;
-
-import java.io.IOException;
 
 public class ApiServerChannelInitializer extends ChannelInitializer<SocketChannel> {
     private final ObjectMapper objectMapper;
@@ -25,7 +22,7 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
     private static final ChannelHandler debugger = new MessageLoggingHandler(LogLevel.TRACE);
     private static final ChannelHandler apiRequestLogger = new MessageLoggingHandler(RESTCodec.class, LogLevel.DEBUG);
 
-    public ApiServerChannelInitializer() throws AnnotationDB.CrossReferenceException, IOException, ClassNotFoundException {
+    public ApiServerChannelInitializer() {
         this.objectMapper = new ObjectMapper();
         SimpleModule nettyModule = new SimpleModule("Netty", new Version(1, 0, 0, null));
         nettyModule.addSerializer(new ByteBufSerializer());

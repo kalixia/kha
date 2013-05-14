@@ -4,13 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kalixia.ha.gateway.ApiRequest;
 import com.kalixia.ha.gateway.ApiResponse;
 import com.kalixia.ha.gateway.codecs.jaxrs.converters.Converters;
+import eu.infomas.annotation.AnnotationDetector;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import org.scannotation.AnnotationDB;
-import org.scannotation.ClasspathUrlFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +19,13 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,12 +38,21 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
 
     static {
         try {
-            // initialize Scannotation database
-            URL[] urls = ClasspathUrlFinder.findClassPaths();
-            AnnotationDB db = new AnnotationDB();
-            db.scanArchives(urls);
+            final Set<String> resourceClassNames = new HashSet<>();
+            final AnnotationDetector.Reporter jaxRsResourcesReporter = new AnnotationDetector.TypeReporter() {
+                @Override
+                @SuppressWarnings("unchecked")
+                public Class<? extends Annotation>[] annotations() { return new Class[]{Path.class}; }
+
+                @Override
+                public void reportTypeAnnotation(Class<? extends Annotation> annotation, String className) {
+                    resourceClassNames.add(className);
+                }
+            };
+            final AnnotationDetector cf = new AnnotationDetector(jaxRsResourcesReporter);
+            cf.detect();
+
             // scan each JAX-RS resource for URI templates
-            Set<String> resourceClassNames = db.getAnnotationIndex().get(Path.class.getName());
             uriTemplateToMethod = new HashMap<Pattern, Method>();
             for (String resourceName : resourceClassNames) {
                 LOGGER.info("Found JAX-RS resource '{}'", resourceName);
@@ -69,8 +82,7 @@ public class JaxRsHandler extends ChannelInboundMessageHandlerAdapter<ApiRequest
         }
     }
 
-    public JaxRsHandler(ObjectMapper objectMapper)
-            throws IOException, ClassNotFoundException, AnnotationDB.CrossReferenceException {
+    public JaxRsHandler(ObjectMapper objectMapper) {
         super(ApiRequest.class);
         this.objectMapper = objectMapper;
     }

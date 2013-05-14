@@ -26,6 +26,11 @@
                 <artifactId>netty-all</artifactId>
                 <version>4.0.0.CR3-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>3.17.1-GA</version>
+            </dependency>
 
             <!-- RxJava dependencies -->
             <dependency>
@@ -141,6 +146,13 @@
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy</artifactId>
                 <version>${groovy.version}</version>
+            </dependency>
+
+            <!-- Annotations Scanner dependencies -->
+            <dependency>
+                <groupId>eu.infomas</groupId>
+                <artifactId>annotation-detector</artifactId>
+                <version>3.0.1</version>
             </dependency>
             
             <!-- Logging dependencies -->

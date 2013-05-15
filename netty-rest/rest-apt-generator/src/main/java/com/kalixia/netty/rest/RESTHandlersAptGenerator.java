@@ -3,18 +3,23 @@ package com.kalixia.netty.rest;
 import com.squareup.java.JavaWriter;
 
 import javax.annotation.Generated;
+import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Completion;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
@@ -28,39 +33,43 @@ import static java.lang.reflect.Modifier.PRIVATE;
 import static java.lang.reflect.Modifier.PROTECTED;
 import static java.lang.reflect.Modifier.PUBLIC;
 
-public class RESTHandlersAptGenerator implements Processor {
+@SupportedAnnotationTypes({ "javax.ws.rs.*" /*, "dagger.Provides", "dagger.Module" */ })
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
+public class RESTHandlersAptGenerator extends AbstractProcessor {
     public static final String GENERATOR_NAME = "netty-rest";
     private ProcessingEnvironment environment;
     private Filer filer;
+    private Elements elementUtils;
     private Messager messager;
-    private static final Set<String> supportedAnnotations = new HashSet<>();
 
     @Override
     public void init(ProcessingEnvironment environment) {
         this.environment = environment;
         this.filer = environment.getFiler();
+        this.elementUtils = environment.getElementUtils();
         this.messager = environment.getMessager();
-        supportedAnnotations.add("javax.ws.*");
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         Set<? extends Element> resources = roundEnv.getRootElements();
         for (Element resource : resources) {
-            Name resourceClassName = resource.getSimpleName();
+            PackageElement resourcePackage = elementUtils.getPackageOf(resource);
+            String resourceClassName = resource.getSimpleName().toString();
+            String resourceFQN = resourcePackage.toString() + '.' + resourceClassName;
             // HACK: why should I skip generated files like this??
             if (resourceClassName.toString().endsWith("Handler"))
                 continue;
             System.out.printf("About to process JAX-RS resource '%s'%n", resourceClassName);
             Writer handlerWriter = null;
             try {
-                String handlerClassName = resourceClassName + "Handler";
+                String handlerClassName = resourceFQN + "Handler";
                 JavaFileObject handlerFile = filer.createSourceFile(handlerClassName, resource);
                 System.out.printf("About to generate file %s%n", handlerFile.getName());
                 handlerWriter = handlerFile.openWriter();
                 JavaWriter writer = new JavaWriter(handlerWriter);
                 writer
-                        .emitPackage("com.example")
+                        .emitPackage(resourcePackage.toString())
                         // add imports
                         .emitImports("com.kalixia.netty.rest.ApiRequest")
                         .emitImports("io.netty.channel.ChannelHandlerContext")
@@ -129,18 +138,4 @@ public class RESTHandlersAptGenerator implements Processor {
         return Collections.emptyList();
     }
 
-    @Override
-    public Set<String> getSupportedOptions() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Set<String> getSupportedAnnotationTypes() {
-        return supportedAnnotations;
-    }
-
-    @Override
-    public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.RELEASE_7;
-    }
 }

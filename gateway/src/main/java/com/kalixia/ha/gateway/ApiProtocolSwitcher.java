@@ -1,10 +1,11 @@
 package com.kalixia.ha.gateway;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kalixia.ha.gateway.codecs.rest.RESTCodec;
-import com.kalixia.ha.gateway.codecs.websockets.WebSocketsApiRequestDecoder;
-import com.kalixia.ha.gateway.codecs.websockets.WebSocketsApiResponseEncoder;
-import com.kalixia.ha.gateway.codecs.websockets.WebSocketsServerProtocolUpdater;
+import com.kalixia.netty.rest.MDCLogging;
+import com.kalixia.netty.rest.codecs.rest.RESTCodec;
+import com.kalixia.netty.rest.codecs.websockets.WebSocketsApiRequestDecoder;
+import com.kalixia.netty.rest.codecs.websockets.WebSocketsApiResponseEncoder;
+import com.kalixia.netty.rest.codecs.websockets.WebSocketsServerProtocolUpdater;
 import io.netty.buffer.BufUtil;
 import io.netty.buffer.MessageBuf;
 import io.netty.channel.ChannelHandler;

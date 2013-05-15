@@ -53,31 +53,6 @@
             </exclusions>
         </dependency>
 
-        <!-- Netty dependencies -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-        </dependency>
-
-        <!-- JAX-RS dependencies -->
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.damnhandy</groupId>-->
-            <!--<artifactId>handy-uri-templates</artifactId>-->
-            <!--<version>1.1.7</version>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>eu.infomas</groupId>
-            <artifactId>annotation-detector</artifactId>
-        </dependency>
-
         <!-- Hystrix dependencies -->
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
@@ -90,28 +65,6 @@
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-metrics-event-stream</artifactId>
-        </dependency>
-
-        <!-- Jackson dependencies -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-
-        <!-- Yammer Metrics -->
-        <dependency>
-            <groupId>com.yammer.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.yammer.metrics</groupId>
-            <artifactId>metrics-logback</artifactId>
-        </dependency>
-
-        <!-- Logging dependencies -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
         </dependency>
 
         <dependency>
@@ -204,14 +157,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-            </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.spockframework</groupId>-->
-                <!--<artifactId>spock-maven</artifactId>-->
-            <!--</plugin>-->
         </plugins>
     </build>
 

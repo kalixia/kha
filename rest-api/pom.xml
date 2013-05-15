@@ -19,10 +19,22 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>netty-rest-codec</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- JAX-RS dependencies -->
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>jsr311-api</artifactId>
+        </dependency>
+
+        <!-- Netty dependencies -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
         </dependency>
 
         <!-- Groovy dependencies -->
@@ -51,7 +63,7 @@
         <dependency>
             <groupId>kalixia-ha</groupId>
             <artifactId>rest-apt-generator</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -76,17 +88,24 @@
                         <phase>compile</phase>
                         <configuration>
                             <processors>
-                                <processor>com.kalixia.ha.tools.apt.rest.RESTHandlersAptGenerator</processor>
+                                <processor>com.kalixia.netty.rest.RESTHandlersAptGenerator</processor>
                             </processors>
-                            <!--<systemProperties>-->
-                            <!--<logback.configurationFile>${project.basedir}/etc/jannocessor-logback.xml</logback.configurationFile>-->
-                            <!--</systemProperties>-->
-                            <!--<options>-->
-                            <!--<templates.path>${project.basedir}/src/main/resources</templates.path>-->
-                            <!--</options>-->
-                            <defaultOutputDirectory>${project.basedir}/target/generated-sources/</defaultOutputDirectory>
+                            <defaultOutputDirectory>${project.basedir}/target/generated-sources/netty</defaultOutputDirectory>
                         </configuration>
                     </execution>
+                    <!--<execution>-->
+                        <!--<id>generate-test-code</id>-->
+                        <!--<goals>-->
+                            <!--<goal>process</goal>-->
+                        <!--</goals>-->
+                        <!--<phase>test-compile</phase>-->
+                        <!--<configuration>-->
+                            <!--<processors>-->
+                                <!--<processor>com.kalixia.netty.rest.RESTHandlersAptGenerator</processor>-->
+                            <!--</processors>-->
+                            <!--<defaultOutputDirectory>${project.basedir}/target/generated-test-sources/netty</defaultOutputDirectory>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
                 </executions>
             </plugin>
 

@@ -1,0 +1,20 @@
+package com.kalixia.netty.rest.codecs.jaxrs
+
+import spock.lang.Unroll
+
+class UriTemplateUtilsTest extends spock.lang.Specification {
+
+    @Unroll
+    def "uri template #uri_template is compiled to #pattern regex"() {
+        expect:
+        UriTemplateUtils.extractRegexPattern(uri_template).toString() == pattern
+
+        where:
+        uri_template                    | pattern
+        "/devices"                      | "^/devices/?\$"
+        "/devices/"                     | "^/devices/?\$"
+        "/devices/{id}"                 | "^/devices/(.*)/?\$"
+        "/devices/{id}/temperature"     | "^/devices/(.*)/temperature/?\$"
+    }
+
+}

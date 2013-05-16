@@ -28,7 +28,7 @@
         <!-- JAX-RS dependencies -->
         <dependency>
             <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
+            <artifactId>javax.ws.rs-api</artifactId>
         </dependency>
 
         <!-- Netty dependencies -->

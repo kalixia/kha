@@ -3,6 +3,7 @@ package com.kalixia.ha.gateway;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
 import com.kalixia.netty.rest.codecs.jaxrs.JaxRsHandler;
 import com.kalixia.netty.rest.codecs.json.ByteBufSerializer;
 import com.kalixia.netty.rest.codecs.rest.RESTCodec;
@@ -46,6 +47,8 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
         pipeline.addLast("api-request-logger", apiRequestLogger);
 
         // JAX-RS handlers
-        pipeline.addLast("jax-rs-handler", jaxRsHandler);
+//        pipeline.addLast("jax-rs-handler", jaxRsHandler);
+
+        pipeline.addLast("jax-rs-handler", new GeneratedJaxRsModuleHandler(objectMapper));
     }
 }

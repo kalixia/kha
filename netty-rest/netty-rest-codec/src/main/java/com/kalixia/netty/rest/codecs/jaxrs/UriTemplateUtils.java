@@ -32,6 +32,11 @@ public class UriTemplateUtils {
         return Pattern.compile('^' + uriTemplatePattern.matcher(uriTemplate).replaceAll("(.*)") + "/?$");
     }
 
+    public static boolean hasParameters(String uriTemplate) {
+        UriTemplate template = createUriTemplateOrGetFromCache(uriTemplate);
+        return template.getNumberOfTemplateVariables() > 0;
+    }
+
     public static Map<String, String> extractParameters(String uriTemplate, String uri) {
         UriTemplate template = createUriTemplateOrGetFromCache(uriTemplate);
         Map<String, String> parametersMap = new HashMap<>();

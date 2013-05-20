@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 
-@Module
+@Module(library = true)
 public class CassandraModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(CassandraModule.class);
 

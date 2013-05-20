@@ -14,7 +14,7 @@
 
     <modules>
         <module>netty-rest-codec</module>
-        <module>rest-apt-generator</module>
+        <module>netty-rest-compiler</module>
     </modules>
 
 </project>

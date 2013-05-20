@@ -25,91 +25,47 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- JAX-RS dependencies -->
         <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-        </dependency>
-
-        <!-- Netty dependencies -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-
-        <!-- Groovy dependencies -->
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-        </dependency>
-
-        <!-- Logging dependencies -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
-
-        <!-- Tests dependencies -->
-        <dependency>
-            <groupId>org.spockframework</groupId>
-            <artifactId>spock-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-
-        <!-- APT dependencies -->
-        <dependency>
-            <groupId>kalixia-ha</groupId>
-            <artifactId>rest-apt-generator</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>netty-rest-compiler</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
+        <!-- JAX-RS dependencies -->
+        <!--<dependency>-->
+            <!--<groupId>javax.ws.rs</groupId>-->
+            <!--<artifactId>javax.ws.rs-api</artifactId>-->
+        <!--</dependency>-->
+
+        <!-- Netty dependencies -->
+        <!--<dependency>-->
+            <!--<groupId>io.netty</groupId>-->
+            <!--<artifactId>netty-all</artifactId>-->
+        <!--</dependency>-->
+
+        <!-- Groovy dependencies -->
+        <!--<dependency>-->
+            <!--<groupId>org.codehaus.groovy</groupId>-->
+            <!--<artifactId>groovy-all</artifactId>-->
+        <!--</dependency>-->
+
+        <!-- Logging dependencies -->
+        <!--<dependency>-->
+            <!--<groupId>ch.qos.logback</groupId>-->
+            <!--<artifactId>logback-classic</artifactId>-->
+        <!--</dependency>-->
+
+        <!-- Tests dependencies -->
+        <!--<dependency>-->
+            <!--<groupId>org.spockframework</groupId>-->
+            <!--<artifactId>spock-core</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>junit</groupId>-->
+            <!--<artifactId>junit</artifactId>-->
+        <!--</dependency>-->
+
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.bsc.maven</groupId>
-                <artifactId>maven-processor-plugin</artifactId>
-                <version>2.0.5</version>
-                <executions>
-                    <execution>
-                        <id>generate-code</id>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <phase>compile</phase>
-                        <configuration>
-                            <processors>
-                                <processor>com.kalixia.netty.rest.RESTHandlersAptGenerator</processor>
-                            </processors>
-                            <defaultOutputDirectory>${project.basedir}/target/generated-sources/netty</defaultOutputDirectory>
-                        </configuration>
-                    </execution>
-                    <!--<execution>-->
-                        <!--<id>generate-test-code</id>-->
-                        <!--<goals>-->
-                            <!--<goal>process</goal>-->
-                        <!--</goals>-->
-                        <!--<phase>test-compile</phase>-->
-                        <!--<configuration>-->
-                            <!--<processors>-->
-                                <!--<processor>com.kalixia.netty.rest.RESTHandlersAptGenerator</processor>-->
-                            <!--</processors>-->
-                            <!--<defaultOutputDirectory>${project.basedir}/target/generated-test-sources/netty</defaultOutputDirectory>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                </executions>
-            </plugin>
-
-        </plugins>
-    </build>
 
 </project>

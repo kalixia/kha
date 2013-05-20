@@ -29,9 +29,10 @@ public class GeneratedJaxRsModuleHandler extends MessageToMessageDecoder<ApiRequ
 
     public GeneratedJaxRsModuleHandler(ObjectMapper objectMapper) {
         this.handlers = new HashSet<>(Arrays.asList(
-                new HelloResourceMethodHandler(objectMapper),
-                new EchoResourceMethodHandler(objectMapper)
+                new HelloResourceHELLOHandler(objectMapper),
+                new EchoResourceECHOHandler(objectMapper)
         ));
+//        handlers = null;
     }
 
     @Override

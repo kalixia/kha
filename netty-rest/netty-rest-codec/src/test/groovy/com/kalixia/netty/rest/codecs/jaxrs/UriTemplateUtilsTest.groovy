@@ -31,6 +31,18 @@ class UriTemplateUtilsTest extends spock.lang.Specification {
     }
 
     @Unroll
+    def "test of parameters in uri template #uri_template"() {
+        expect:
+        UriTemplateUtils.hasParameters(uri_template) == result
+
+        where:
+        uri_template                     || result
+        "/hello"                         || false
+        "/echo/{message}"                || true
+        "/users/{user}/devices/{device}" || true
+    }
+
+    @Unroll
     def "extraction of parameters from #uri with template #uri_template"() {
         given:
         def parameters = UriTemplateUtils.extractParameters(uri_template, uri)

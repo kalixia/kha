@@ -33,7 +33,6 @@
         <dependency>
             <groupId>com.googlecode.androidannotations</groupId>
             <artifactId>androidannotations-api</artifactId>
-            <!--<classifier>api</classifier>-->
             <version>${androidannotations.version}</version>
         </dependency>
         <!--<dependency>-->

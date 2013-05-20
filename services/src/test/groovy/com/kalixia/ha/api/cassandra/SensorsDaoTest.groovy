@@ -32,7 +32,7 @@ class SensorsDaoTest extends spock.lang.Specification {
 
     @Module(
             includes = CassandraModule.class,
-            entryPoints = [SensorsDaoTest.class, SensorsDao.class],
+//            entryPoints = [SensorsDaoTest.class, SensorsDao.class],
             overrides = true
     )
     static class TestModule {

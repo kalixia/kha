@@ -30,7 +30,8 @@ public class GeneratedJaxRsModuleHandler extends MessageToMessageDecoder<ApiRequ
     public GeneratedJaxRsModuleHandler(ObjectMapper objectMapper) {
         this.handlers = new HashSet<>(Arrays.asList(
                 new HelloResourceHELLOHandler(objectMapper),
-                new EchoResourceECHOHandler(objectMapper)
+                new EchoResourceECHOHandler(objectMapper),
+                new DoNothingResourceDONOTHINGHandler(objectMapper)
         ));
 //        handlers = null;
     }
@@ -55,6 +56,5 @@ public class GeneratedJaxRsModuleHandler extends MessageToMessageDecoder<ApiRequ
         LOGGER.info("Could not locate a JAX-RS resource for path '{}' and method {}", request.uri(), request.method());
 
         ctx.write(new ApiResponse(request.id(), HttpResponseStatus.NOT_FOUND, ERROR_WRONG_URL, MediaType.TEXT_PLAIN));
-        return;
     }
 }

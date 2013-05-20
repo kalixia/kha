@@ -181,6 +181,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                     .emitImports("com.fasterxml.jackson.databind.ObjectMapper")
 //                        .emitImports("io.netty.channel.ChannelHandler.Sharable")
                     .emitImports("io.netty.buffer.Unpooled")
+                    .emitImports("io.netty.handler.codec.http.HttpMethod")
                     .emitImports("io.netty.handler.codec.http.HttpResponseStatus")
                     .emitImports("javax.ws.rs.core.MediaType")
                     .emitImports("java.util.Map")
@@ -200,7 +201,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                     .emitField("String", "URI_TEMPLATE", PRIVATE | STATIC | FINAL, stringLiteral(uriTemplate))
             ;
             generateConstructor(writer, handlerClassName);
-            generateMatchesMethod(writer, uriTemplate);
+            generateMatchesMethod(writer, uriTemplate, method);
             generateHandleMethod(writer, method);
             // end class
             writer.endType();
@@ -225,15 +226,25 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                 .endMethod();
     }
 
-    private JavaWriter generateMatchesMethod(JavaWriter writer, String uriTemplate) throws IOException {
+    private JavaWriter generateMatchesMethod(JavaWriter writer, String uriTemplate, JaxRsMethodInfo methodInfo)
+            throws IOException {
         writer
                 .emitEmptyLine()
                 .emitAnnotation(Override.class)
                 .beginMethod("boolean", "matches", PUBLIC, "ApiRequest", "request");
+
+        // check against HTTP method
+        writer.emitStatement("boolean verbMatches = HttpMethod.%s.equals(request.method())", methodInfo.getVerb());
+
+        // check against URI template
         if (UriTemplateUtils.hasParameters(uriTemplate))
-            writer.emitStatement("return UriTemplateUtils.extractParameters(URI_TEMPLATE, request.uri()).size() > 0");
+            writer.emitStatement("boolean uriMatches = UriTemplateUtils.extractParameters(URI_TEMPLATE, request.uri()).size() > 0");
         else
-            writer.emitStatement("return %s.equals(request.uri())", stringLiteral(uriTemplate));
+            writer.emitStatement("boolean uriMatches = %s.equals(request.uri())", stringLiteral(uriTemplate));
+
+        // return result
+        writer.emitStatement("return verbMatches && uriMatches");
+
         return writer.endMethod();
     }
 

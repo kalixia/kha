@@ -83,10 +83,10 @@
     <orderEntry type="module" module-name="netty-rest-codec" />
     <orderEntry type="library" name="Maven: io.netty:netty-all:4.0.0.CR3" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.17.1-GA" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-server:2.0-rc1" level="project" />
-    <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-common:2.0-rc1" level="project" />
     <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0-rc3" level="project" />
     <orderEntry type="library" name="Maven: javax.annotation:javax.annotation-api:1.2-b02" level="project" />
+    <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-server:2.0-rc1" level="project" />
+    <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-common:2.0-rc1" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.hk2:hk2-api:2.1.78" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.hk2:osgi-resource-locator:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.hk2:hk2-utils:2.1.78" level="project" />

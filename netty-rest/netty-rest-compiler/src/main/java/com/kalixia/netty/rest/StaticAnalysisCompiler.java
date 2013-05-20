@@ -20,7 +20,9 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -176,6 +178,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                     .emitImports("com.kalixia.netty.rest.ApiResponse")
                     .emitImports("com.kalixia.netty.rest.codecs.jaxrs.GeneratedJaxRsMethodHandler")
                     .emitImports("com.kalixia.netty.rest.codecs.jaxrs.UriTemplateUtils")
+                    .emitImports("com.kalixia.netty.rest.codecs.jaxrs.converters.Converters")
                     .emitImports("com.fasterxml.jackson.databind.ObjectMapper")
 //                        .emitImports("io.netty.channel.ChannelHandler.Sharable")
                     .emitImports("io.netty.buffer.Unpooled")
@@ -256,17 +259,39 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
         // analyze @PathParam annotations
         Map<String, String> parametersMap = analyzePathParamAnnotations(methodInfo);
 
+        writer.beginControlFlow("try");
+
         // check if JAX-RS resource method has parameters; if so extract them from URI
         if (methodInfo.hasParameters()) {
-            writer.emitStatement("Map<String,String> parameters = UriTemplateUtils.extractParameters(URI_TEMPLATE, request.uri())");
+            writer.emitStatement("Map<String, String> parameters = UriTemplateUtils.extractParameters(URI_TEMPLATE, request.uri())");
             // extract each parameter
             for (JaxRsParamInfo parameter : methodInfo.getParameters()) {
-                writer.emitStatement("String %s = parameters.get(\"%s\")",
-                        parameter.getName(), parametersMap.get(parameter.getName()));
+                String uriTemplateParameter = parametersMap.get(parameter.getName());
+                if (uriTemplateParameter == null) {
+                    messager.printMessage(Diagnostic.Kind.ERROR,
+                            String.format("Missing binding to parameter '%s'", parameter.getName()),
+                            parameter.getElement());
+                }
+
+                TypeMirror type = parameter.getType();
+                if (String.class.getName().equals(type.toString())) {
+                    writer.emitStatement("String %s = parameters.get(\"%s\")",
+                            parameter.getName(), uriTemplateParameter);
+                } else if (type.toString().startsWith("java.lang")) {
+                    String shortName = type.toString().substring(type.toString().lastIndexOf('.') + 1);
+                    writer.emitStatement("%s %s = %s.parse%s(parameters.get(\"%s\"))",
+                            shortName, parameter.getName(), shortName, shortName, uriTemplateParameter);
+                } else if (type.getKind().isPrimitive()) {
+                    char firstChar = type.toString().charAt(0);
+                    String shortName = Character.toUpperCase(firstChar) + type.toString().substring(1);
+                    writer.emitStatement("%s %s = %s.parse%s(parameters.get(\"%s\"))",
+                            type, parameter.getName(), shortName, shortName, uriTemplateParameter);
+                } else {
+                    writer.emitStatement("%s %s = Converters.fromString(%s.class, parameters.get(\"%s\"))",
+                            type, parameter.getName(), type, uriTemplateParameter);
+                }
             }
         }
-
-        writer.beginControlFlow("try");
 
         // call JAX-RS resource method
         if (methodInfo.hasParameters()) {

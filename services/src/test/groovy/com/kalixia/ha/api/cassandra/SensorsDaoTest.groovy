@@ -2,12 +2,9 @@ package com.kalixia.ha.api.cassandra
 
 import com.kalixia.ha.api.SensorsDao
 import com.netflix.astyanax.test.EmbeddedCassandra
-import dagger.Module
-import dagger.ObjectGraph
 import spock.lang.Shared
 
 import javax.inject.Inject
-
 
 class SensorsDaoTest extends spock.lang.Specification {
     @Inject SensorsDao dao
@@ -22,20 +19,20 @@ class SensorsDaoTest extends spock.lang.Specification {
         cassandra.stop()
     }
 
-    def "test dagger injection"() {
-        when:
-        ObjectGraph.create(new TestModule()).inject(this)
+//    def "test dagger injection"() {
+//        when:
+//        ObjectGraph.create(new TestModule()).inject(this)
+//
+//        then:
+//        dao != null
+//    }
 
-        then:
-        dao != null
-    }
-
-    @Module(
-            includes = CassandraModule.class,
-//            entryPoints = [SensorsDaoTest.class, SensorsDao.class],
-            overrides = true
-    )
-    static class TestModule {
-    }
+//    @Module(
+//            includes = CassandraModule.class,
+//            injects = [SensorsDaoTest.class, SensorsDao.class],
+//            overrides = true
+//    )
+//    static class TestModule {
+//    }
 
 }

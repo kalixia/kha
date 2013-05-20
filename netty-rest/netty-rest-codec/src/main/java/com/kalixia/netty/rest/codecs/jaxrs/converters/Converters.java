@@ -12,7 +12,7 @@ public class Converters {
         List<? extends Converter> converters = Arrays.asList(
             new UUIDConverter()
         );
-        convertersMap = new HashMap<Class, Converter>();
+        convertersMap = new HashMap<>();
         for (Converter converter : converters) {
             List<Class> acceptedClasses = converter.acceptClasses();
             for (Class clazz : acceptedClasses) {

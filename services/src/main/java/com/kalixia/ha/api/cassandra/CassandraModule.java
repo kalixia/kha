@@ -22,7 +22,7 @@ import javax.inject.Singleton;
 public class CassandraModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(CassandraModule.class);
 
-    @Provides SensorsDao provideSensorsDao(Keyspace keyspace) {
+    @Provides @Singleton SensorsDao provideSensorsDao(Keyspace keyspace) {
         try {
             return new CassandraSensorsDao<>(keyspace);
         } catch (ConnectionException e) {

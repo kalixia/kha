@@ -1,8 +1,7 @@
 TODO:
 -----
 
-* add support for @PathVariable
-* add support for Converters
+* add support for Converters in methods arguments
 * use a better name for GeneratedJaxRsMethodHandlers
 * generate source code for GeneratedJaxRsModuleHandler
 * add support for @QueryParam

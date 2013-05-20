@@ -26,19 +26,6 @@
             <version>1.0.5</version>
         </dependency>
 
-        <!-- JAX-RS dependencies -->
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-        </dependency>
-
-        <!-- Netty dependencies -->
-        <!--<dependency>-->
-            <!--<groupId>io.netty</groupId>-->
-            <!--<artifactId>netty-all</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
     </dependencies>
 
     <build>

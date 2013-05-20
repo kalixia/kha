@@ -32,13 +32,15 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.squareup.java.JavaWriter.stringLiteral;
@@ -61,7 +63,6 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
         this.filer = environment.getFiler();
         this.elementUtils = environment.getElementUtils();
         this.messager = environment.getMessager();
-        messager.printMessage(Diagnostic.Kind.WARNING, "Initializing Netty REST compiler...");
     }
 
     @Override
@@ -76,7 +77,6 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
             // extract class being analyzed
             PackageElement resourcePackage = elementUtils.getPackageOf(resource);
             String resourceClassName = resource.getSimpleName().toString();
-            String resourceFQN = resourcePackage.toString() + '.' + resourceClassName;
 
             List<? extends Element> enclosedElements = resource.getEnclosedElements();
             for (Element elem : enclosedElements) {
@@ -90,10 +90,9 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                     continue;
                 String uriTemplate = extractUriTemplate(resource, elem);
                 String methodName = elem.getSimpleName().toString();
-                TypeMirror elemType = elem.asType();
-                String returnType = methodElement.getReturnType().toString();       // TODO: use real value instead!
-                List<JaxRsParamInfo> parameters = extractParameters(methodElement); // TODO: use real value instead!
-                JaxRsMethodInfo methodInfo = new JaxRsMethodInfo(verb, uriTemplate, methodName, returnType, parameters);
+                String returnType = methodElement.getReturnType().toString();
+                List<JaxRsParamInfo> parameters = extractParameters(methodElement);
+                JaxRsMethodInfo methodInfo = new JaxRsMethodInfo(elem, verb, uriTemplate, methodName, returnType, parameters);
                 generateHandlerClass(resourceClassName, resourcePackage, uriTemplate, methodInfo);
             }
         }
@@ -152,8 +151,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
         for (VariableElement parameter : parameters) {
             String name = parameter.getSimpleName().toString();
             TypeMirror type = parameter.asType();
-            List<? extends AnnotationMirror> annotations = parameter.getAnnotationMirrors();
-            JaxRsParamInfo paramInfo = new JaxRsParamInfo(name, type, annotations);
+            JaxRsParamInfo paramInfo = new JaxRsParamInfo(name, type, parameter);
             parametersInfo.add(paramInfo);
         }
         return parametersInfo;
@@ -201,7 +199,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                     .emitField("String", "URI_TEMPLATE", PRIVATE | STATIC | FINAL, stringLiteral(uriTemplate))
             ;
             generateConstructor(writer, handlerClassName);
-            generateMatchesMethod(writer, uriTemplate, method);
+            generateMatchesMethod(writer, method);
             generateHandleMethod(writer, method);
             // end class
             writer.endType();
@@ -212,7 +210,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                 try {
                     handlerWriter.close();
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    messager.printMessage(Diagnostic.Kind.ERROR, "Can't close generated source file");
                 }
             }
         }
@@ -226,7 +224,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                 .endMethod();
     }
 
-    private JavaWriter generateMatchesMethod(JavaWriter writer, String uriTemplate, JaxRsMethodInfo methodInfo)
+    private JavaWriter generateMatchesMethod(JavaWriter writer, JaxRsMethodInfo methodInfo)
             throws IOException {
         writer
                 .emitEmptyLine()
@@ -237,10 +235,10 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
         writer.emitStatement("boolean verbMatches = HttpMethod.%s.equals(request.method())", methodInfo.getVerb());
 
         // check against URI template
-        if (UriTemplateUtils.hasParameters(uriTemplate))
+        if (UriTemplateUtils.hasParameters(methodInfo.getUriTemplate()))
             writer.emitStatement("boolean uriMatches = UriTemplateUtils.extractParameters(URI_TEMPLATE, request.uri()).size() > 0");
         else
-            writer.emitStatement("boolean uriMatches = %s.equals(request.uri())", stringLiteral(uriTemplate));
+            writer.emitStatement("boolean uriMatches = %s.equals(request.uri())", stringLiteral(methodInfo.getUriTemplate()));
 
         // return result
         writer.emitStatement("return verbMatches && uriMatches");
@@ -248,19 +246,23 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
         return writer.endMethod();
     }
 
-    public JavaWriter generateHandleMethod(JavaWriter writer, JaxRsMethodInfo methodInfo) throws IOException {
+    public JavaWriter generateHandleMethod(JavaWriter writer, JaxRsMethodInfo methodInfo)
+            throws IOException {
         writer
                 .emitEmptyLine()
                 .emitAnnotation(Override.class)
                 .beginMethod("ApiResponse", "handle", PUBLIC, "ApiRequest", "request");
 
+        // analyze @PathParam annotations
+        Map<String, String> parametersMap = analyzePathParamAnnotations(methodInfo);
+
         // check if JAX-RS resource method has parameters; if so extract them from URI
         if (methodInfo.hasParameters()) {
             writer.emitStatement("Map<String,String> parameters = UriTemplateUtils.extractParameters(URI_TEMPLATE, request.uri())");
-
             // extract each parameter
             for (JaxRsParamInfo parameter : methodInfo.getParameters()) {
-                writer.emitStatement("String %s = parameters.get(\"%s\")", parameter.getName(), parameter.getName());
+                writer.emitStatement("String %s = parameters.get(\"%s\")",
+                        parameter.getName(), parametersMap.get(parameter.getName()));
             }
         }
 
@@ -268,9 +270,17 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
 
         // call JAX-RS resource method
         if (methodInfo.hasParameters()) {
-            writer
-                    // TODO: use real method name and parameters
-                    .emitStatement("Object result = delegate.%s(%s)", methodInfo.getMethodName(), "message");
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < methodInfo.getParameters().size(); i++) {
+                JaxRsParamInfo paramInfo = methodInfo.getParameters().get(i);
+                builder.append(paramInfo.getName());
+                if (i + 1 < methodInfo.getParameters().size())
+                    builder.append(", ");
+            }
+            if (methodInfo.hasReturnType())
+                writer.emitStatement("Object result = delegate.%s(%s)", methodInfo.getMethodName(), builder.toString());
+            else
+                writer.emitStatement("delegate.%s(%s)", methodInfo.getMethodName(), builder.toString());
         } else if (methodInfo.hasReturnType()) {
             writer.emitStatement("Object result = delegate.%s()", methodInfo.getMethodName());
         } else {
@@ -296,6 +306,22 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
 
 
         return writer.endMethod();
+    }
+
+    /**
+     * Build a map whose key is the name of the parameter of the JAX-RS resource and whose value is the @PathParam value
+     * @param methodInfo the metamodel for the method
+     * @return the map of associated parameters
+     */
+    private Map<String, String> analyzePathParamAnnotations(JaxRsMethodInfo methodInfo) {
+        Map<String, String> parametersToUriTemplateParameter = new HashMap<>();
+        for (JaxRsParamInfo paramInfo : methodInfo.getParameters()) {
+            PathParam pathParam = paramInfo.getElement().getAnnotation(PathParam.class);
+            if (pathParam != null) {
+                parametersToUriTemplateParameter.put(paramInfo.getName(), pathParam.value());
+            }
+        }
+        return parametersToUriTemplateParameter;
     }
 
     @Override

@@ -1,18 +1,19 @@
 package com.kalixia.netty.rest;
 
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
 
 class JaxRsParamInfo {
     private final String name;
     private final TypeMirror type;
-    private final List<? extends AnnotationMirror> annotations;
+    private final VariableElement element;
 
-    JaxRsParamInfo(String name, TypeMirror type, List<? extends AnnotationMirror> annotations) {
+    JaxRsParamInfo(String name, TypeMirror type, VariableElement element) {
         this.name = name;
         this.type = type;
-        this.annotations = annotations;
+        this.element = element;
     }
 
     String getName() {
@@ -23,8 +24,8 @@ class JaxRsParamInfo {
         return type;
     }
 
-    List<? extends AnnotationMirror> getAnnotations() {
-        return annotations;
+    VariableElement getElement() {
+        return element;
     }
 
     @Override
@@ -32,7 +33,7 @@ class JaxRsParamInfo {
         final StringBuilder sb = new StringBuilder("JaxRsParamInfo{");
         sb.append("name='").append(name).append('\'');
         sb.append(", type=").append(type);
-        sb.append(", annotations=").append(annotations);
+        sb.append(", element=").append(element);
         sb.append('}');
         return sb.toString();
     }

@@ -94,7 +94,6 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                 String returnType = methodElement.getReturnType().toString();       // TODO: use real value instead!
                 List<JaxRsParamInfo> parameters = extractParameters(methodElement); // TODO: use real value instead!
                 JaxRsMethodInfo methodInfo = new JaxRsMethodInfo(verb, uriTemplate, methodName, returnType, parameters);
-                System.out.printf("Found JAX-RS method %s with metadata %s%n", elem, methodInfo);
                 generateHandlerClass(resourceClassName, resourcePackage, uriTemplate, methodInfo);
             }
         }
@@ -245,32 +244,43 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                 .beginMethod("ApiResponse", "handle", PUBLIC, "ApiRequest", "request");
 
         // check if JAX-RS resource method has parameters; if so extract them from URI
-        if (methodInfo.getParameters().size() > 0) {
-        writer
-                .emitStatement("Map<String,String> parameters = UriTemplateUtils.extractParameters(URI_TEMPLATE, request.uri())");
+        if (methodInfo.hasParameters()) {
+            writer.emitStatement("Map<String,String> parameters = UriTemplateUtils.extractParameters(URI_TEMPLATE, request.uri())");
 
-        // extract each parameter
-        for (JaxRsParamInfo parameter : methodInfo.getParameters()) {
-            writer.emitStatement("String %s = parameters.get(\"%s\")", parameter.getName(), parameter.getName());
+            // extract each parameter
+            for (JaxRsParamInfo parameter : methodInfo.getParameters()) {
+                writer.emitStatement("String %s = parameters.get(\"%s\")", parameter.getName(), parameter.getName());
+            }
         }
 
-        writer
-                // TODO: use real method name and parameters
-                .emitStatement("Object result = delegate.%s(%s)", methodInfo.getMethodName(), "message");
-        } else  {
+        writer.beginControlFlow("try");
+
+        // call JAX-RS resource method
+        if (methodInfo.hasParameters()) {
+            writer
+                    // TODO: use real method name and parameters
+                    .emitStatement("Object result = delegate.%s(%s)", methodInfo.getMethodName(), "message");
+        } else if (methodInfo.hasReturnType()) {
             writer.emitStatement("Object result = delegate.%s()", methodInfo.getMethodName());
+        } else {
+            writer.emitStatement("delegate.%s()", methodInfo.getMethodName());
+        }
+
+        // convert result only if there is one
+        if (methodInfo.hasReturnType()) {
+            writer.emitStatement("byte[] content = objectMapper.writeValueAsBytes(result)")
+                    // return ApiResponse object
+                    .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.OK, " +
+                            "Unpooled.wrappedBuffer(content), MediaType.APPLICATION_JSON)");
+        } else {
+            writer.emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.NO_CONTENT, " +
+                    "Unpooled.EMPTY_BUFFER, MediaType.APPLICATION_JSON)");
         }
 
         writer
-                .beginControlFlow("try")
-                        // TODO: convert result to JSon only if method returns something
-                    .emitStatement("byte[] content = objectMapper.writeValueAsBytes(result);")
-                        // return ApiResponse object
-                    .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.OK, " +
-                        "Unpooled.wrappedBuffer(content), MediaType.APPLICATION_JSON)")
                 .nextControlFlow("catch (Exception e)")
-                    .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.INTERNAL_SERVER_ERROR, " +
-                            "Unpooled.copiedBuffer(e.getMessage().getBytes()), MediaType.TEXT_PLAIN)")
+                .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.INTERNAL_SERVER_ERROR, " +
+                        "Unpooled.copiedBuffer(e.getMessage().getBytes()), MediaType.TEXT_PLAIN)")
                 .endControlFlow();
 
 

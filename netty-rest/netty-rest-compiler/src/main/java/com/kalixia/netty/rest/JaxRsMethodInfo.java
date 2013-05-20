@@ -37,6 +37,14 @@ class JaxRsMethodInfo {
         return parameters;
     }
 
+    boolean hasParameters() {
+        return getParameters().size() > 0;
+    }
+
+    boolean hasReturnType() {
+        return !"void".equals(returnType);
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("JaxRsMethodInfo{");

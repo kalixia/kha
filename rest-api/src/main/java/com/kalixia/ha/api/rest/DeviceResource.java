@@ -20,7 +20,6 @@ public class DeviceResource {
     DevicesService service;
 
     @GET
-    @Path("/")
     public List<? extends Device> findAllDevices() {
 //        def devices = []
 //        service.findAllDevices().subscribe({ Device device ->

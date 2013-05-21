@@ -19,28 +19,14 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,10 +40,11 @@ import static java.lang.reflect.Modifier.STATIC;
 @SupportedAnnotationTypes({ "javax.ws.rs.*" })
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class StaticAnalysisCompiler extends AbstractProcessor {
-    public static final String GENERATOR_NAME = "netty-rest";
     private Filer filer;
     private Elements elementUtils;
     private Messager messager;
+    private final JaxRsAnalyzer analyzer = new JaxRsAnalyzer();
+    public static final String GENERATOR_NAME = "netty-rest";
 
     @Override
     public void init(ProcessingEnvironment environment) {
@@ -87,76 +74,18 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                 ExecutableElement methodElement = (ExecutableElement) elem;
 
                 // figure out if @GET, @POST, @DELETE, @PUT, etc are annotated on the method
-                String verb = extractVerb(elem);
+                String verb = analyzer.extractVerb(elem);
                 if (verb == null)
                     continue;
-                String uriTemplate = extractUriTemplate(resource, elem);
+                String uriTemplate = analyzer.extractUriTemplate(resource, elem);
                 String methodName = elem.getSimpleName().toString();
                 String returnType = methodElement.getReturnType().toString();
-                List<JaxRsParamInfo> parameters = extractParameters(methodElement);
+                List<JaxRsParamInfo> parameters = analyzer.extractParameters(methodElement);
                 JaxRsMethodInfo methodInfo = new JaxRsMethodInfo(elem, verb, uriTemplate, methodName, returnType, parameters);
                 generateHandlerClass(resourceClassName, resourcePackage, uriTemplate, methodInfo);
             }
         }
         return false;
-    }
-
-    private String extractVerb(Element elem) {
-        Annotation annotation;
-
-        // check for GET method
-        annotation = elem.getAnnotation(GET.class);
-        if (annotation != null)
-            return HttpMethod.GET;
-
-        // check for POST method
-        annotation = elem.getAnnotation(POST.class);
-        if (annotation != null)
-            return HttpMethod.POST;
-
-        // check for PUT method
-        annotation = elem.getAnnotation(PUT.class);
-        if (annotation != null)
-            return HttpMethod.PUT;
-
-        // check for DELETE method
-        annotation = elem.getAnnotation(DELETE.class);
-        if (annotation != null)
-            return HttpMethod.DELETE;
-
-        // check for HEAD method
-        annotation = elem.getAnnotation(HEAD.class);
-        if (annotation != null)
-            return HttpMethod.HEAD;
-
-        // check for OPTIONS method
-        annotation = elem.getAnnotation(OPTIONS.class);
-        if (annotation != null)
-            return HttpMethod.OPTIONS;
-
-        return null;
-    }
-
-    private String extractUriTemplate(Element resource, Element element) {
-        Path resourcePath = resource.getAnnotation(Path.class);
-        Path elementPath = element.getAnnotation(Path.class);
-        if (resourcePath == null) {
-            return elementPath == null ? "" : elementPath.value();
-        } else {
-            return elementPath == null ? resourcePath.value() : resourcePath.value() + '/' + elementPath.value();
-        }
-    }
-
-    private List<JaxRsParamInfo> extractParameters(ExecutableElement method) {
-        List<? extends VariableElement> parameters = method.getParameters();
-        List<JaxRsParamInfo> parametersInfo = new ArrayList<>();
-        for (VariableElement parameter : parameters) {
-            String name = parameter.getSimpleName().toString();
-            TypeMirror type = parameter.asType();
-            JaxRsParamInfo paramInfo = new JaxRsParamInfo(name, type, parameter);
-            parametersInfo.add(paramInfo);
-        }
-        return parametersInfo;
     }
 
     private void generateHandlerClass(String resourceClassName, PackageElement resourcePackage,
@@ -257,7 +186,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                 .beginMethod("ApiResponse", "handle", PUBLIC, "ApiRequest", "request");
 
         // analyze @PathParam annotations
-        Map<String, String> parametersMap = analyzePathParamAnnotations(methodInfo);
+        Map<String, String> parametersMap = analyzer.analyzePathParamAnnotations(methodInfo);
 
         writer.beginControlFlow("try");
 
@@ -324,6 +253,9 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
         }
 
         writer
+                .nextControlFlow("catch (IllegalArgumentException e)")
+                .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.BAD_REQUEST, " +
+                        "Unpooled.copiedBuffer(e.getMessage().getBytes()), MediaType.TEXT_PLAIN)")
                 .nextControlFlow("catch (Exception e)")
                 .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.INTERNAL_SERVER_ERROR, " +
                         "Unpooled.copiedBuffer(e.getMessage().getBytes()), MediaType.TEXT_PLAIN)")
@@ -331,22 +263,6 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
 
 
         return writer.endMethod();
-    }
-
-    /**
-     * Build a map whose key is the name of the parameter of the JAX-RS resource and whose value is the @PathParam value
-     * @param methodInfo the metamodel for the method
-     * @return the map of associated parameters
-     */
-    private Map<String, String> analyzePathParamAnnotations(JaxRsMethodInfo methodInfo) {
-        Map<String, String> parametersToUriTemplateParameter = new HashMap<>();
-        for (JaxRsParamInfo paramInfo : methodInfo.getParameters()) {
-            PathParam pathParam = paramInfo.getElement().getAnnotation(PathParam.class);
-            if (pathParam != null) {
-                parametersToUriTemplateParameter.put(paramInfo.getName(), pathParam.value());
-            }
-        }
-        return parametersToUriTemplateParameter;
     }
 
     @Override

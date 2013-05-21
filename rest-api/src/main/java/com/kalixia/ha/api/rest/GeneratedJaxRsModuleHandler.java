@@ -32,7 +32,8 @@ public class GeneratedJaxRsModuleHandler extends MessageToMessageDecoder<ApiRequ
                 new HelloResourceHELLOHandler(objectMapper),
                 new HelloResourceHELLO2Handler(objectMapper),
                 new EchoResourceECHOHandler(objectMapper),
-                new DoNothingResourceDONOTHINGHandler(objectMapper)
+                new DoNothingResourceDONOTHINGHandler(objectMapper),
+                new ObjectsResourceECHOUUIDHandler(objectMapper)
         ));
     }
 

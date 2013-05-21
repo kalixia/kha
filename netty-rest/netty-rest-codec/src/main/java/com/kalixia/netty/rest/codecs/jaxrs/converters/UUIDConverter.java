@@ -12,13 +12,13 @@ public class UUIDConverter implements Converter<UUID> {
     }
 
     @Override
-    public String asString(UUID uuid) {
+    public String toString(UUID uuid) {
         return uuid.toString();
     }
 
     @Override
-    public UUID fromString(String str) {
-        return UUID.fromString(str);
+    public UUID fromString(String value) {
+        return UUID.fromString(value);
     }
 
 }

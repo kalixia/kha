@@ -10,15 +10,17 @@ class JaxRsMethodInfo {
     private final String methodName;
     private final String returnType;
     private final List<JaxRsParamInfo> parameters;
+    private final String[] produces;
 
     JaxRsMethodInfo(Element element, String verb, String uriTemplate, String methodName, String returnType,
-                    List<JaxRsParamInfo> parameters) {
+                    List<JaxRsParamInfo> parameters, String[] produces) {
         this.element = element;
         this.verb = verb;
         this.uriTemplate = uriTemplate;
         this.methodName = methodName;
         this.returnType = returnType;
         this.parameters = parameters;
+        this.produces = produces;
     }
 
     Element getElement() {
@@ -41,6 +43,10 @@ class JaxRsMethodInfo {
         return returnType;
     }
 
+    boolean hasReturnType() {
+        return !"void".equals(returnType);
+    }
+
     List<JaxRsParamInfo> getParameters() {
         return parameters;
     }
@@ -49,8 +55,8 @@ class JaxRsMethodInfo {
         return getParameters().size() > 0;
     }
 
-    boolean hasReturnType() {
-        return !"void".equals(returnType);
+    String[] getProduces() {
+        return produces;
     }
 
     @Override

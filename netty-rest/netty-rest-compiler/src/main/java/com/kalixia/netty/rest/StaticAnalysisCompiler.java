@@ -17,6 +17,8 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,7 +73,16 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                 String methodName = elem.getSimpleName().toString();
                 String returnType = methodElement.getReturnType().toString();
                 List<JaxRsParamInfo> parameters = analyzer.extractParameters(methodElement);
-                JaxRsMethodInfo methodInfo = new JaxRsMethodInfo(elem, verb, uriTemplate, methodName, returnType, parameters);
+                // process @Produces annotations
+                Produces producesAnnotation = resource.getAnnotation(Produces.class);
+                if (producesAnnotation == null)
+                    producesAnnotation = methodElement.getAnnotation(Produces.class);
+                String[] produces = null;
+                if (producesAnnotation != null)
+                    produces = producesAnnotation.value();
+                else
+                    produces = new String[] { MediaType.TEXT_PLAIN };
+                JaxRsMethodInfo methodInfo = new JaxRsMethodInfo(elem, verb, uriTemplate, methodName, returnType, parameters, produces);
                 generatedHandlers.add(methodGenerator.generateHandlerClass(resourceClassName, resourcePackage, uriTemplate, methodInfo));
             }
         }

@@ -185,14 +185,15 @@ public class JaxRsMethodGenerator {
         }
 
         // convert result only if there is one
+        String produces = methodInfo.getProduces()[0];
         if (methodInfo.hasReturnType()) {
             writer.emitStatement("byte[] content = objectMapper.writeValueAsBytes(result)")
                     // return ApiResponse object
                     .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.OK, " +
-                            "Unpooled.wrappedBuffer(content), MediaType.APPLICATION_JSON)");
+                            "Unpooled.wrappedBuffer(content), %s)", stringLiteral(produces));
         } else {
             writer.emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.NO_CONTENT, " +
-                    "Unpooled.EMPTY_BUFFER, MediaType.APPLICATION_JSON)");
+                    "Unpooled.EMPTY_BUFFER, %s)", stringLiteral(produces));
         }
 
         writer

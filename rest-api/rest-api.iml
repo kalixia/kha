@@ -4,11 +4,6 @@
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src/test/groovy" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/target/generated-test-sources/netty" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/netty" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/apt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/annotations" isTestSource="false" />
@@ -20,11 +15,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: com.netflix.rxjava:rxjava-core:0.6.1" level="project" />
-    <orderEntry type="library" name="Maven: com.netflix.rxjava:rxjava-groovy:0.6.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.spockframework:spock-core:0.7-groovy-1.8" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.codehaus.groovy:groovy-all:1.8.8" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.10" level="project" />
     <orderEntry type="module" module-name="services" />
     <orderEntry type="module" module-name="model" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:1.6.2" level="project" />

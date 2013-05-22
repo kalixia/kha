@@ -46,7 +46,7 @@ public class JaxRsMethodGenerator {
                             // add imports
                     .emitImports("com.kalixia.netty.rest.ApiRequest")
                     .emitImports("com.kalixia.netty.rest.ApiResponse")
-                    .emitImports("com.kalixia.netty.rest.codecs.jaxrs.GeneratedJaxRsMethodHandler")
+                    .emitImports("com.kalixia.netty.rest.GeneratedJaxRsMethodHandler")
                     .emitImports("com.kalixia.netty.rest.codecs.jaxrs.UriTemplateUtils")
                     .emitImports("com.kalixia.netty.rest.codecs.jaxrs.converters.Converters")
                     .emitImports("com.fasterxml.jackson.databind.ObjectMapper")

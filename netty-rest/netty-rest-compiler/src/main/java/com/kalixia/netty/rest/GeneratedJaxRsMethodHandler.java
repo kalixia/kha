@@ -1,4 +1,4 @@
-package com.kalixia.netty.rest.codecs.jaxrs;
+package com.kalixia.netty.rest;
 
 import com.kalixia.netty.rest.ApiRequest;
 import com.kalixia.netty.rest.ApiResponse;

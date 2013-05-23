@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
-import com.kalixia.netty.rest.codecs.jaxrs.JaxRsHandler;
 import com.kalixia.netty.rest.codecs.json.ByteBufSerializer;
 import com.kalixia.netty.rest.codecs.rest.RESTCodec;
 import io.netty.channel.ChannelHandler;
@@ -19,7 +18,7 @@ import io.netty.handler.logging.MessageLoggingHandler;
 
 public class ApiServerChannelInitializer extends ChannelInitializer<SocketChannel> {
     private final ObjectMapper objectMapper;
-    private final ChannelHandler jaxRsHandler;
+    private final GeneratedJaxRsModuleHandler jaxRsHandlers;
     private static final ChannelHandler debugger = new MessageLoggingHandler(LogLevel.TRACE);
     private static final ChannelHandler apiRequestLogger = new MessageLoggingHandler(RESTCodec.class, LogLevel.DEBUG);
 
@@ -28,7 +27,7 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
         SimpleModule nettyModule = new SimpleModule("Netty", new Version(1, 0, 0, null));
         nettyModule.addSerializer(new ByteBufSerializer());
         objectMapper.registerModule(nettyModule);
-        jaxRsHandler = new JaxRsHandler(objectMapper);
+        jaxRsHandlers =  new GeneratedJaxRsModuleHandler(objectMapper);
     }
 
     @Override
@@ -47,8 +46,6 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
         pipeline.addLast("api-request-logger", apiRequestLogger);
 
         // JAX-RS handlers
-//        pipeline.addLast("jax-rs-handler", jaxRsHandler);
-
-        pipeline.addLast("jax-rs-handler", new GeneratedJaxRsModuleHandler(objectMapper));
+        pipeline.addLast("jax-rs-handler", jaxRsHandlers);
     }
 }

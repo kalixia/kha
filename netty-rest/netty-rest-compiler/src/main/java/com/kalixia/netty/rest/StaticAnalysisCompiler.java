@@ -91,7 +91,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
         if (!resources.isEmpty() && generatedHandlers.size() > 0) {
             String firstHandlerName = generatedHandlers.get(0);
             String packageName = firstHandlerName.substring(0, firstHandlerName.lastIndexOf('.'));
-            System.out.printf("Package name %s%n", packageName);
+//            System.out.printf("Package name %s%n", packageName);
             moduleGenerator.generateModuleClass(packageName, generatedHandlers);
         }
 

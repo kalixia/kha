@@ -1,6 +1,6 @@
 package com.kalixia.ha.gateway;
 
-import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.json.PackageVersion;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
@@ -24,7 +24,7 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
 
     public ApiServerChannelInitializer() {
         this.objectMapper = new ObjectMapper();
-        SimpleModule nettyModule = new SimpleModule("Netty", new Version(1, 0, 0, null));
+        SimpleModule nettyModule = new SimpleModule("Netty", PackageVersion.VERSION);
         nettyModule.addSerializer(new ByteBufSerializer());
         objectMapper.registerModule(nettyModule);
         jaxRsHandlers =  new GeneratedJaxRsModuleHandler(objectMapper);

@@ -33,11 +33,11 @@ public class CassandraModule {
 
     @Provides @Singleton Keyspace provideKeyspace(AstyanaxContext<Keyspace> ctx) {
         ctx.start();
-        return ctx.getEntity();
+        return ctx.getClient();
     }
 
     @Provides @Singleton AstyanaxContext<Keyspace> provideContext(ConnectionPoolConfiguration pool) {
-        AstyanaxContext<Keyspace> context = new AstyanaxContext.Builder()
+        return new AstyanaxContext.Builder()
                 .forCluster("MyCluster")
                 .forKeyspace("test")
                 .withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
@@ -50,15 +50,13 @@ public class CassandraModule {
                 )
                 .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
                 .buildKeyspace(ThriftFamilyFactory.getInstance());
-        return context;
     }
 
     @Provides @Singleton ConnectionPoolConfiguration provideConnectionPool() {
-        ConnectionPoolConfigurationImpl pool = new ConnectionPoolConfigurationImpl("MyConnectionPool")
+        return new ConnectionPoolConfigurationImpl("MyConnectionPool")
                 .setPort(9160)
                 .setMaxConnsPerHost(3)
                 .setSeeds("127.0.0.1:9160");
-        return pool;
     }
 
 }

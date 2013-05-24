@@ -8,6 +8,8 @@ import io.netty.channel.socket.oio.OioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 public class ApiServer {
     private ServerBootstrap apiBootstrap;
     private final int port;
@@ -19,9 +21,11 @@ public class ApiServer {
 
     public void start() throws InterruptedException {
         apiBootstrap = new ServerBootstrap();
+        OioEventLoopGroup parentGroup = new OioEventLoopGroup();
+        OioEventLoopGroup childGroup = new OioEventLoopGroup();
         try {
             // the gateway will only have a few connections, so OIO is likely to be faster than NIO in this case!
-            apiBootstrap.group(new OioEventLoopGroup(), new OioEventLoopGroup())
+            apiBootstrap.group(parentGroup, childGroup)
                     .channel(OioServerSocketChannel.class)
                     .localAddress(port)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
@@ -33,7 +37,10 @@ public class ApiServer {
         } catch (Exception e) {
             LOGGER.error("Can't start API server", e);
         } finally {
-            apiBootstrap.shutdown();
+            parentGroup.shutdownGracefully();
+            childGroup.shutdownGracefully();
+            parentGroup.awaitTermination(1, TimeUnit.MINUTES);
+            childGroup.awaitTermination(1, TimeUnit.MINUTES);
         }
     }
 

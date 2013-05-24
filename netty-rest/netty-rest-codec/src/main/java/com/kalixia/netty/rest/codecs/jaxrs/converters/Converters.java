@@ -15,6 +15,7 @@ public class Converters {
 
         convertersMap = new HashMap<>();
         for (Converter converter : converters) {
+            @SuppressWarnings("unchecked")
             List<Class> acceptedClasses = converter.acceptClasses();
             for (Class clazz : acceptedClasses) {
                 convertersMap.put(clazz, converter);
@@ -22,6 +23,7 @@ public class Converters {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T fromString(Class<T> clazz, String value) throws ConverterNotFoundException {
         Converter<T> converter = convertersMap.get(clazz);
         if (converter == null) {
@@ -30,6 +32,7 @@ public class Converters {
         return converter.fromString(value);
     }
 
+    @SuppressWarnings("unchecked")
     public static String toString(Object value) throws ConverterNotFoundException {
         Converter converter = convertersMap.get(value.getClass());
         if (converter == null) {

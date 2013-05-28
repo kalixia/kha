@@ -1,5 +1,7 @@
 package com.kalixia.netty.rest;
 
+import io.netty.util.internal.StringUtil;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -63,7 +65,12 @@ class JaxRsAnalyzer {
         if (resourcePath == null) {
             return elementPath == null ? "" : elementPath.value();
         } else {
-            return elementPath == null ? resourcePath.value() : resourcePath.value() + '/' + elementPath.value();
+            if (elementPath == null) {
+                return resourcePath.value();
+            } else {
+                String uriTemplate = resourcePath.value() + '/' + elementPath.value();
+                return uriTemplate.replace("//", "/");
+            }
         }
     }
 

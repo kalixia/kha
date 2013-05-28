@@ -21,13 +21,16 @@ import javax.inject.Inject;
 
 public class ApiServerChannelInitializer extends ChannelInitializer<SocketChannel> {
     private final ObjectMapper objectMapper;
+    private final ObservableEncoder rxjavaHandler;
     private final GeneratedJaxRsModuleHandler jaxRsHandlers;
     private static final ChannelHandler debugger = new MessageLoggingHandler(LogLevel.TRACE);
     private static final ChannelHandler apiRequestLogger = new MessageLoggingHandler(RESTCodec.class, LogLevel.DEBUG);
 
     @Inject
-    public ApiServerChannelInitializer(ObjectMapper objectMapper, GeneratedJaxRsModuleHandler jaxRsModuleHandler) {
+    public ApiServerChannelInitializer(ObjectMapper objectMapper, ObservableEncoder rxjavaHandler,
+                                       GeneratedJaxRsModuleHandler jaxRsModuleHandler) {
         this.objectMapper = objectMapper;
+        this.rxjavaHandler = rxjavaHandler;
         this.jaxRsHandlers =  jaxRsModuleHandler;
         SimpleModule nettyModule = new SimpleModule("Netty", PackageVersion.VERSION);
         nettyModule.addSerializer(new ByteBufSerializer());
@@ -49,7 +52,7 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
         // Logging handlers for API requests
         pipeline.addLast("api-request-logger", apiRequestLogger);
 
-        pipeline.addLast("rxjava-handler", new ObservableEncoder());
+        pipeline.addLast("rxjava-handler", rxjavaHandler);
 
         // JAX-RS handlers
         pipeline.addLast("jax-rs-handler", jaxRsHandlers);

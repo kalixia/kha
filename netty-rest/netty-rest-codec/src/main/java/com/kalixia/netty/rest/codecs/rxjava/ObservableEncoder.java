@@ -1,6 +1,9 @@
 package com.kalixia.netty.rest.codecs.rxjava;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kalixia.netty.rest.ObservableApiResponse;
+import io.netty.buffer.BufUtil;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.MessageBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
@@ -11,9 +14,12 @@ import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.DefaultLastHttpContent;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpVersion;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+
+import javax.inject.Inject;
 
 /**
  * Encoder transforming RxJava's {@link Observable} into many HTTP objects.
@@ -23,6 +29,13 @@ import rx.Subscription;
  */
 @ChannelHandler.Sharable
 public class ObservableEncoder extends MessageToMessageEncoder<ObservableApiResponse<?>> {
+
+    @Inject
+    ObjectMapper objectMapper;
+
+    private static final ByteBuf LIST_BEGIN = Unpooled.wrappedBuffer("[".getBytes());
+    private static final ByteBuf LIST_END   = Unpooled.wrappedBuffer("]".getBytes());
+    private static final ByteBuf LIST_ITEM_SEPARATOR = Unpooled.wrappedBuffer(",".getBytes());
 
     @Override
     @SuppressWarnings("unchecked")
@@ -39,24 +52,39 @@ public class ObservableEncoder extends MessageToMessageEncoder<ObservableApiResp
         }
         out.add(response);
 
+        out.add(new DefaultHttpContent(LIST_BEGIN));
+
         Subscription subscription = apiResponse.observable().subscribe(new Observer() {
+            private boolean first = true;
 
             @Override
             public void onNext(Object args) {
                 // TODO: figure out how to process the result as content
-                DefaultHttpContent chunk = new DefaultHttpContent(Unpooled.wrappedBuffer("test".getBytes()));
-                out.add(chunk);
+                try {
+                    byte[] content = objectMapper.writeValueAsBytes(args);
+                    ByteBuf buffer = null;
+                    if (first) {
+                        buffer = Unpooled.wrappedBuffer(content);
+                        first = false;
+                    } else {
+                        buffer = Unpooled.wrappedBuffer(LIST_ITEM_SEPARATOR, Unpooled.wrappedBuffer(content));
+                    }
+                    DefaultHttpContent chunk = new DefaultHttpContent(buffer);
+                    out.add(chunk);
+                } catch (JsonProcessingException e) {
+                    ctx.fireExceptionCaught(e);
+                }
             }
 
             @Override
             public void onCompleted() {
-                DefaultLastHttpContent lastChunk = new DefaultLastHttpContent();
+                DefaultLastHttpContent lastChunk = new DefaultLastHttpContent(LIST_END);
                 out.add(lastChunk);
             }
 
             @Override
             public void onError(Exception e) {
-                e.printStackTrace();
+                ctx.fireExceptionCaught(e);
             }
 
         });

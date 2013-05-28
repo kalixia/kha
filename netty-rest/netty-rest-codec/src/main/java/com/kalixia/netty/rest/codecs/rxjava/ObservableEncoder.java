@@ -22,7 +22,7 @@ import rx.Subscription;
 import javax.inject.Inject;
 
 /**
- * Encoder transforming RxJava's {@link Observable} into many HTTP objects.
+ * Encoder transforming RxJava's {@link Observable} into many HTTP objects, through HTTP chunks.
  * <p>
  * This encoder transforms {@link Observable}s into many {@link io.netty.handler.codec.http.HttpMessage}s,
  * hence sends chunked HTTP responses.
@@ -59,10 +59,9 @@ public class ObservableEncoder extends MessageToMessageEncoder<ObservableApiResp
 
             @Override
             public void onNext(Object args) {
-                // TODO: figure out how to process the result as content
                 try {
                     byte[] content = objectMapper.writeValueAsBytes(args);
-                    ByteBuf buffer = null;
+                    ByteBuf buffer;
                     if (first) {
                         buffer = Unpooled.wrappedBuffer(content);
                         first = false;
@@ -90,7 +89,6 @@ public class ObservableEncoder extends MessageToMessageEncoder<ObservableApiResp
         });
 
         subscription.unsubscribe();
-
     }
 
 }

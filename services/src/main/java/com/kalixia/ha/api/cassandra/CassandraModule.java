@@ -1,5 +1,6 @@
 package com.kalixia.ha.api.cassandra;
 
+import com.kalixia.ha.api.DevicesDao;
 import com.kalixia.ha.api.SensorsDao;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.Keyspace;
@@ -21,6 +22,15 @@ import javax.inject.Singleton;
 @Module(library = true)
 public class CassandraModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(CassandraModule.class);
+
+    @Provides @Singleton DevicesDao provideDevicesDao(Keyspace keyspace) {
+        try {
+            return new CassandraDevicesDao<>(keyspace);
+        } catch (ConnectionException e) {
+            LOGGER.error("Can't initialize Devices DAO", e);
+            return null;
+        }
+    }
 
     @Provides @Singleton SensorsDao provideSensorsDao(Keyspace keyspace) {
         try {

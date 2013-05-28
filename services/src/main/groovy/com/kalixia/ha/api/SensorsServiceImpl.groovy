@@ -6,7 +6,11 @@ import rx.Observable
 import javax.inject.Inject
 
 class SensorsServiceImpl implements SensorsService {
-    @Inject SensorsDao dao
+    final SensorsDao dao
+
+    SensorsServiceImpl(SensorsDao dao) {
+        this.dao = dao
+    }
 
     @Override
     def Observable<DataPoint> getLastValue(UUID sensorID) {

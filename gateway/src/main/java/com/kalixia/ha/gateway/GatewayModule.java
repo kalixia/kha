@@ -1,6 +1,6 @@
 package com.kalixia.ha.gateway;
 
-import com.kalixia.ha.api.cassandra.CassandraModule;
+import com.kalixia.ha.api.ServicesModule;
 import com.kalixia.ha.api.rest.GeneratedJaxRsDaggerModule;
 import dagger.Module;
 import dagger.Provides;
@@ -11,7 +11,7 @@ import javax.inject.Singleton;
         injects = Main.class,
         includes = {
                 GeneratedJaxRsDaggerModule.class,
-                CassandraModule.class
+                ServicesModule.class
         }
 )
 public class GatewayModule {

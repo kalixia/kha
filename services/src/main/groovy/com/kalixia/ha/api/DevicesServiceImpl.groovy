@@ -9,12 +9,16 @@ import rx.Observer
 import javax.inject.Inject
 
 class DevicesServiceImpl implements DevicesService {
-    @Inject DevicesDao dao
+    final DevicesDao dao
 
     def List<? extends Device> devices = [
         new RGBLamp(UUID.randomUUID(), "device1"),
         new RGBLamp(UUID.randomUUID(), "device2")
     ]
+
+    DevicesServiceImpl(DevicesDao dao) {
+        this.dao = dao;
+    }
 
     @Override
     def Observable<Device> findAllDevices() {

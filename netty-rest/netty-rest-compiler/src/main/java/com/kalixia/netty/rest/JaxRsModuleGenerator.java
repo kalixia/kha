@@ -5,11 +5,14 @@ import com.squareup.java.JavaWriter;
 import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
+import javax.inject.Inject;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.squareup.java.JavaWriter.stringLiteral;
 import static java.lang.reflect.Modifier.PRIVATE;
@@ -21,11 +24,13 @@ import static java.lang.reflect.Modifier.STATIC;
 public class JaxRsModuleGenerator {
     private final Filer filer;
     private final Messager messager;
-    private static final String MODULE_HANDLER = "GeneratedJaxRsModuleHandler";
+    private final boolean useDagger;
+    public static final String MODULE_HANDLER = "GeneratedJaxRsModuleHandler";
 
-    public JaxRsModuleGenerator(Filer filer, Messager messager) {
+    public JaxRsModuleGenerator(Filer filer, Messager messager, Map<String, String> options) {
         this.filer = filer;
         this.messager = messager;
+        this.useDagger = options.containsKey("dagger") && "true".equals(options.get("dagger"));
     }
 
     public void generateModuleClass(String destPackage, List<String> generatedHandlers) {
@@ -41,6 +46,7 @@ public class JaxRsModuleGenerator {
                             // add imports
                     .emitImports("com.kalixia.netty.rest.ApiRequest")
                     .emitImports("com.kalixia.netty.rest.ApiResponse")
+                    .emitImports("com.kalixia.netty.rest.codecs.jaxrs.JaxRsPipeline")
                     .emitImports("com.kalixia.netty.rest.codecs.jaxrs.GeneratedJaxRsMethodHandler")
                     .emitImports("io.netty.buffer.ByteBuf")
                     .emitImports("io.netty.buffer.MessageBuf")
@@ -63,9 +69,9 @@ public class JaxRsModuleGenerator {
                     .emitJavadoc("Netty handler collections all JAX-RS resources.")
                     .emitAnnotation(Generated.class.getSimpleName(), stringLiteral(StaticAnalysisCompiler.GENERATOR_NAME))
                     .emitAnnotation("Sharable")
-                    .beginType(handlerClassName, "class", PUBLIC | FINAL, "MessageToMessageDecoder<ApiRequest>")
+                    .beginType(handlerClassName, "class", PUBLIC | FINAL, "MessageToMessageDecoder<ApiRequest>", "JaxRsPipeline")
             // add set of handlers
-                    .emitField("Set<? extends GeneratedJaxRsMethodHandler>", "handlers", PRIVATE | FINAL )
+                    .emitField("Set<? extends GeneratedJaxRsMethodHandler>", "handlers", PRIVATE | FINAL)
                     .emitField("ByteBuf", "ERROR_WRONG_URL", PRIVATE | STATIC | FINAL, "Unpooled.copiedBuffer(\"Wrong URL\", Charset.forName(\"UTF-8\"))")
                     .emitField("ByteBuf", "ERROR_INTERNAL_ERROR", PRIVATE | STATIC | FINAL, "Unpooled.copiedBuffer(\"Unexpected error\", Charset.forName(\"UTF-8\"))")
                     .emitField("Logger", "LOGGER", PRIVATE | STATIC | FINAL, "LoggerFactory.getLogger(" + handlerClassName + ".class)")
@@ -89,13 +95,28 @@ public class JaxRsModuleGenerator {
 
     private JavaWriter generateConstructor(JavaWriter writer, String handlerClassName, List<String> generatedHandlers)
             throws IOException {
-        writer
-                .emitEmptyLine()
-                .beginMethod(null, handlerClassName, PUBLIC, "ObjectMapper", "objectMapper");
+        writer.emitEmptyLine();
+
+        if (!useDagger) {
+            writer.beginMethod(null, handlerClassName, PUBLIC, "ObjectMapper", "objectMapper");
+        } else {
+            writer.emitAnnotation(Inject.class.getName());
+            List<String> args = new ArrayList<>();
+            args.add("ObjectMapper");
+            args.add("objectMapper");
+            for (int i = 1; i <= generatedHandlers.size(); i++) {
+                args.add(generatedHandlers.get(i - 1));
+                args.add(String.format("handler%d", i));
+            }
+            writer.beginMethod(null, handlerClassName, PUBLIC, args.toArray(new String[args.size()]));
+        }
 
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < generatedHandlers.size(); i++) {
-            builder.append(String.format("new %s(objectMapper)", generatedHandlers.get(i)));
+            if (useDagger)
+                builder.append(String.format("handler%d", i + 1));
+            else
+                builder.append(String.format("new %s(objectMapper)", generatedHandlers.get(i)));
             if (i + 1 < generatedHandlers.size())
                 builder.append(",\n");
         }

@@ -19,6 +19,17 @@
         <module>android</module>
     </modules>
 
+    <properties>
+        <hystrix.version>1.2.16</hystrix.version>
+        <rxjava.version>0.9.0</rxjava.version>
+        <astyanax.version>1.56.37</astyanax.version>
+        <metrics.version>2.2.0</metrics.version>
+        <jackson.version>2.2.1</jackson.version>
+        <spock.version>0.7-groovy-2.0</spock.version>
+        <dagger.version>1.0.0</dagger.version>
+        <groovy.version>2.1.3</groovy.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <!-- Netty dependencies -->
@@ -191,17 +202,6 @@
 
         </dependencies>
     </dependencyManagement>
-
-    <properties>
-        <hystrix.version>1.2.16</hystrix.version>
-        <rxjava.version>0.8.2</rxjava.version>
-        <astyanax.version>1.56.37</astyanax.version>
-        <metrics.version>2.2.0</metrics.version>
-        <jackson.version>2.2.1</jackson.version>
-        <spock.version>0.7-groovy-2.0</spock.version>
-        <dagger.version>1.0.0</dagger.version>
-        <groovy.version>2.1.3</groovy.version>
-    </properties>
 
     <build>
         <pluginManagement>

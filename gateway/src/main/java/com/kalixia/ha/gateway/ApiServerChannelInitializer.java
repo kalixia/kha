@@ -16,18 +16,21 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.MessageLoggingHandler;
 
+import javax.inject.Inject;
+
 public class ApiServerChannelInitializer extends ChannelInitializer<SocketChannel> {
     private final ObjectMapper objectMapper;
     private final GeneratedJaxRsModuleHandler jaxRsHandlers;
     private static final ChannelHandler debugger = new MessageLoggingHandler(LogLevel.TRACE);
     private static final ChannelHandler apiRequestLogger = new MessageLoggingHandler(RESTCodec.class, LogLevel.DEBUG);
 
-    public ApiServerChannelInitializer() {
-        this.objectMapper = new ObjectMapper();
+    @Inject
+    public ApiServerChannelInitializer(ObjectMapper objectMapper, GeneratedJaxRsModuleHandler jaxRsModuleHandler) {
+        this.objectMapper = objectMapper;
+        this.jaxRsHandlers =  jaxRsModuleHandler;
         SimpleModule nettyModule = new SimpleModule("Netty", PackageVersion.VERSION);
         nettyModule.addSerializer(new ByteBufSerializer());
         objectMapper.registerModule(nettyModule);
-        jaxRsHandlers =  new GeneratedJaxRsModuleHandler(objectMapper);
     }
 
     @Override

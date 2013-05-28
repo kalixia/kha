@@ -1,6 +1,7 @@
 TODO:
 -----
 
+* add support for Dagger injections
 * add support for @Consumes
 * add support for @QueryParam
 * add support for @HeaderParam

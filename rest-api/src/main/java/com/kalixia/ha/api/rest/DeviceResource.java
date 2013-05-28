@@ -9,7 +9,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,18 +20,12 @@ public class DeviceResource {
 
     @GET
     public List<? extends Device> findAllDevices() {
-//        def devices = []
-//        service.findAllDevices().subscribe({ Device device ->
-//            println device
-//            devices << device
-//        })
-        return Collections.emptyList();
+        return service.findAllDevices().toList().toBlockingObservable().single();
     }
 
     @GET
     @Path("{id}")
     public Device findDeviceById(@PathParam("id") UUID id) {
-        return null;
-//        return service.findDeviceById(id).single()
+        return service.findDeviceById(id).toBlockingObservable().single();
     }
 }

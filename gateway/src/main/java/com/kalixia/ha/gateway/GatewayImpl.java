@@ -3,6 +3,8 @@ package com.kalixia.ha.gateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+
 /**
  * {@inheritDoc}
  *
@@ -14,23 +16,24 @@ public class GatewayImpl implements Gateway {
     private final ApiServer apiServer;
     private static final Logger LOGGER = LoggerFactory.getLogger(Gateway.class);
 
-    public GatewayImpl() {
-        this.apiServer = new ApiServer(8082);
+    @Inject
+    public GatewayImpl(ApiServer apiServer) {
+        this.apiServer = apiServer;
     }
 
     @Override
-    public void start() throws InterruptedException {
+    public void start() {
         startApi();
         startCloudRelay();
     }
 
     @Override
-    public void stop() {
+    public void stop() throws InterruptedException {
         stopCloudRelay();
         stopApi();
     }
 
-    private void startApi() throws InterruptedException {
+    private void startApi() {
         LOGGER.info("Starting API Server...");
         apiServer.start();
     }
@@ -40,7 +43,7 @@ public class GatewayImpl implements Gateway {
         // TODO: write code!
     }
 
-    private void stopApi() {
+    private void stopApi() throws InterruptedException {
         LOGGER.info("Stopping API Server...");
         apiServer.stop();
     }

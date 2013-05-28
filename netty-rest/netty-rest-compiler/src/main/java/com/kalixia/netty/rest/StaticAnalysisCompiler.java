@@ -1,15 +1,14 @@
 package com.kalixia.netty.rest;
 
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Completion;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -20,29 +19,33 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @SupportedAnnotationTypes({ "javax.ws.rs.*" })
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedOptions({
+    "dagger"
+})
 public class StaticAnalysisCompiler extends AbstractProcessor {
-    private Filer filer;
     private Elements elementUtils;
-    private Messager messager;
     private final JaxRsAnalyzer analyzer = new JaxRsAnalyzer();
     private JaxRsMethodGenerator methodGenerator;
     private JaxRsModuleGenerator moduleGenerator;
+    private JaxRsDaggerModuleGenerator daggerGenerator;
     public static final String GENERATOR_NAME = "netty-rest";
 
     @Override
     public void init(ProcessingEnvironment environment) {
         super.init(environment);
-        this.filer = environment.getFiler();
+        Filer filer = environment.getFiler();
+        Messager messager = environment.getMessager();
+        Map<String,String> options = environment.getOptions();
         this.elementUtils = environment.getElementUtils();
-        this.messager = environment.getMessager();
-        methodGenerator = new JaxRsMethodGenerator(filer, messager);
-        moduleGenerator = new JaxRsModuleGenerator(filer, messager);
+        methodGenerator = new JaxRsMethodGenerator(filer, messager, options);
+        moduleGenerator = new JaxRsModuleGenerator(filer, messager, options);
+        daggerGenerator = new JaxRsDaggerModuleGenerator(filer, messager, options);
     }
 
     @Override
@@ -77,7 +80,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                 Produces producesAnnotation = resource.getAnnotation(Produces.class);
                 if (producesAnnotation == null)
                     producesAnnotation = methodElement.getAnnotation(Produces.class);
-                String[] produces = null;
+                String[] produces;
                 if (producesAnnotation != null)
                     produces = producesAnnotation.value();
                 else
@@ -93,14 +96,11 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
             String packageName = firstHandlerName.substring(0, firstHandlerName.lastIndexOf('.'));
 //            System.out.printf("Package name %s%n", packageName);
             moduleGenerator.generateModuleClass(packageName, generatedHandlers);
+
+            daggerGenerator.generateDaggerModule(packageName, generatedHandlers);
         }
 
         return false;
-    }
-
-    @Override
-    public Iterable<? extends Completion> getCompletions(Element element, AnnotationMirror annotation, ExecutableElement member, String userText) {
-        return Collections.emptyList();
     }
 
 }

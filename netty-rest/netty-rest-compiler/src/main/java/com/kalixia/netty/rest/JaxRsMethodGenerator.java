@@ -6,6 +6,7 @@ import com.squareup.java.JavaWriter;
 import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
+import javax.inject.Inject;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
@@ -23,11 +24,13 @@ import static java.lang.reflect.Modifier.STATIC;
 public class JaxRsMethodGenerator {
     private final Filer filer;
     private final Messager messager;
+    private final boolean useDagger;
     private final JaxRsAnalyzer analyzer = new JaxRsAnalyzer();
 
-    public JaxRsMethodGenerator(Filer filer, Messager messager) {
+    public JaxRsMethodGenerator(Filer filer, Messager messager, Map<String, String> options) {
         this.filer = filer;
         this.messager = messager;
+        this.useDagger = options.containsKey("dagger") && "true".equals(options.get("dagger"));
     }
 
     public String generateHandlerClass(String resourceClassName, PackageElement resourcePackage,
@@ -65,9 +68,17 @@ public class JaxRsMethodGenerator {
 //                        .emitAnnotation("Sharable")
                     .beginType(handlerClassName, "class", PUBLIC | FINAL, null, "GeneratedJaxRsMethodHandler")
                             // add delegate to underlying JAX-RS resource
-                    .emitJavadoc("Delegate for the JAX-RS resource")
-                    .emitField(resourceClassName, "delegate", PRIVATE,
-                            String.format("new %s()", resourceClassName))
+                    .emitJavadoc("Delegate for the JAX-RS resource");
+
+            if (useDagger) {
+                writer.emitAnnotation(Inject.class.getName()).emitField(resourceClassName, "delegate", 0);
+            } else {
+                writer.emitField(resourceClassName, "delegate", PRIVATE,
+                        String.format("new %s()", resourceClassName));
+            }
+            writer.emitEmptyLine();
+
+            writer
                     .emitField("ObjectMapper", "objectMapper", PRIVATE | FINAL)
                     .emitField("String", "URI_TEMPLATE", PRIVATE | STATIC | FINAL, stringLiteral(uriTemplate))
             ;
@@ -92,8 +103,12 @@ public class JaxRsMethodGenerator {
     }
 
     private JavaWriter generateConstructor(JavaWriter writer, String handlerClassName) throws IOException {
+        writer.emitEmptyLine();
+
+        if (useDagger)
+            writer.emitAnnotation(Inject.class.getName());
+
         return writer
-                .emitEmptyLine()
                 .beginMethod(null, handlerClassName, PUBLIC, "ObjectMapper", "objectMapper")
                 .emitStatement("this.objectMapper = objectMapper")
                 .endMethod();
@@ -198,13 +213,18 @@ public class JaxRsMethodGenerator {
 
         writer
                 .nextControlFlow("catch (IllegalArgumentException e)")
-                .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.BAD_REQUEST, " +
-                        "Unpooled.copiedBuffer(e.getMessage().getBytes()), MediaType.TEXT_PLAIN)")
+                    .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.BAD_REQUEST, " +
+                            "Unpooled.copiedBuffer(e.getMessage().getBytes()), MediaType.TEXT_PLAIN)")
                 .nextControlFlow("catch (Exception e)")
-                .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.INTERNAL_SERVER_ERROR, " +
-                        "Unpooled.copiedBuffer(e.getMessage().getBytes()), MediaType.TEXT_PLAIN)")
+                    .emitStatement("e.printStackTrace()")
+                    .beginControlFlow("if (e.getMessage() != null)")
+                        .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.INTERNAL_SERVER_ERROR, " +
+                                "Unpooled.copiedBuffer(e.getMessage().getBytes()), MediaType.TEXT_PLAIN)")
+                    .nextControlFlow("else")
+                        .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.INTERNAL_SERVER_ERROR, " +
+                                "Unpooled.copiedBuffer(e.toString().getBytes()), MediaType.TEXT_PLAIN)")
+                    .endControlFlow()
                 .endControlFlow();
-
 
         return writer.endMethod();
     }

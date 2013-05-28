@@ -9,6 +9,6 @@ package com.kalixia.ha.gateway;
  * </ul>
  */
 public interface Gateway {
-    void start() throws InterruptedException;
-    void stop();
+    void start();
+    void stop() throws InterruptedException;
 }

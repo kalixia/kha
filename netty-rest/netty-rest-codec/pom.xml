@@ -55,6 +55,12 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
+        <!-- RxJava dependencies -->
+        <dependency>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-core</artifactId>
+        </dependency>
+
         <!-- Yammer Metrics -->
         <dependency>
             <groupId>com.yammer.metrics</groupId>

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
 import com.kalixia.netty.rest.codecs.json.ByteBufSerializer;
 import com.kalixia.netty.rest.codecs.rest.RESTCodec;
+import com.kalixia.netty.rest.codecs.rxjava.ObservableEncoder;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -47,6 +48,8 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
 
         // Logging handlers for API requests
         pipeline.addLast("api-request-logger", apiRequestLogger);
+
+        pipeline.addLast("rxjava-handler", new ObservableEncoder());
 
         // JAX-RS handlers
         pipeline.addLast("jax-rs-handler", jaxRsHandlers);

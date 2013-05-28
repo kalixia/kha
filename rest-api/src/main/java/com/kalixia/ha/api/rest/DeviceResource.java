@@ -2,6 +2,7 @@ package com.kalixia.ha.api.rest;
 
 import com.kalixia.ha.api.DevicesService;
 import com.kalixia.ha.model.Device;
+import rx.Observable;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -24,8 +25,14 @@ public class DeviceResource {
     }
 
     @GET
-    @Path("{id}")
-    public Device findDeviceById(@PathParam("id") UUID id) {
-        return service.findDeviceById(id).toBlockingObservable().single();
+    @Path("/new")
+    public Observable<? extends Device> findAllDevicesThroughObservable() {
+        return service.findAllDevices();
     }
+
+//    @GET
+//    @Path("{id}")
+//    public Device findDeviceById(@PathParam("id") UUID id) {
+//        return service.findDeviceById(id).toBlockingObservable().single();
+//    }
 }

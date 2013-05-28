@@ -25,12 +25,14 @@ public class JaxRsMethodGenerator {
     private final Filer filer;
     private final Messager messager;
     private final boolean useDagger;
+    private final boolean useRxJava;
     private final JaxRsAnalyzer analyzer = new JaxRsAnalyzer();
 
     public JaxRsMethodGenerator(Filer filer, Messager messager, Map<String, String> options) {
         this.filer = filer;
         this.messager = messager;
         this.useDagger = options.containsKey("dagger") && "true".equals(options.get("dagger"));
+        this.useRxJava = options.containsKey("rxjava") && "true".equals(options.get("rxjava"));
     }
 
     public String generateHandlerClass(String resourceClassName, PackageElement resourcePackage,
@@ -48,7 +50,10 @@ public class JaxRsMethodGenerator {
                     .emitPackage(resourcePackage.toString())
                             // add imports
                     .emitImports("com.kalixia.netty.rest.ApiRequest")
-                    .emitImports("com.kalixia.netty.rest.ApiResponse")
+                    .emitImports("com.kalixia.netty.rest.ApiResponse");
+            if (useRxJava)
+                writer.emitImports("com.kalixia.netty.rest.ObservableApiResponse");
+            writer
                     .emitImports("com.kalixia.netty.rest.codecs.jaxrs.GeneratedJaxRsMethodHandler")
                     .emitImports("com.kalixia.netty.rest.codecs.jaxrs.UriTemplateUtils")
                     .emitImports("com.kalixia.netty.rest.codecs.jaxrs.converters.Converters")
@@ -189,21 +194,24 @@ public class JaxRsMethodGenerator {
                 if (i + 1 < methodInfo.getParameters().size())
                     builder.append(", ");
             }
-            if (methodInfo.hasReturnType())
-                writer.emitStatement("Object result = delegate.%s(%s)", methodInfo.getMethodName(), builder.toString());
-            else
+            if (methodInfo.hasReturnType()) {
+                writer.emitStatement("%s result = delegate.%s(%s)",
+                        methodInfo.getReturnType(), methodInfo.getMethodName(), builder.toString());
+            } else {
                 writer.emitStatement("delegate.%s(%s)", methodInfo.getMethodName(), builder.toString());
+            }
         } else if (methodInfo.hasReturnType()) {
-            writer.emitStatement("Object result = delegate.%s()", methodInfo.getMethodName());
+            writer.emitStatement("%s result = delegate.%s()", methodInfo.getReturnType(), methodInfo.getMethodName());
         } else {
             writer.emitStatement("delegate.%s()", methodInfo.getMethodName());
         }
 
-        // convert result only if there is one
         String produces = methodInfo.getProduces()[0];
-        if (methodInfo.hasReturnType()) {
+        if (useRxJava && methodInfo.hasReturnType() && methodInfo.getReturnType().startsWith("rx.Observable")) {
+            writer.emitStatement("return new ObservableApiResponse(request.id(), HttpResponseStatus.OK, result, %s)",
+                    stringLiteral(produces));
+        } else if (methodInfo.hasReturnType()) {            // convert result only if there is one
             writer.emitStatement("byte[] content = objectMapper.writeValueAsBytes(result)")
-                    // return ApiResponse object
                     .emitStatement("return new ApiResponse(request.id(), HttpResponseStatus.OK, " +
                             "Unpooled.wrappedBuffer(content), %s)", stringLiteral(produces));
         } else {

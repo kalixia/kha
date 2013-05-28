@@ -1,7 +1,9 @@
 package com.kalixia.netty.rest;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import rx.Observable;
 
 import java.util.UUID;
 

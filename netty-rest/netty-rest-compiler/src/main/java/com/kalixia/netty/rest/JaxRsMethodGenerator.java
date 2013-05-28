@@ -133,7 +133,8 @@ public class JaxRsMethodGenerator {
         if (UriTemplateUtils.hasParameters(methodInfo.getUriTemplate()))
             writer.emitStatement("boolean uriMatches = UriTemplateUtils.extractParameters(URI_TEMPLATE, request.uri()).size() > 0");
         else
-            writer.emitStatement("boolean uriMatches = %s.equals(request.uri())", stringLiteral(methodInfo.getUriTemplate()));
+            writer.emitStatement("boolean uriMatches = %s.equals(request.uri()) || %s.equals(request.uri())",
+                    stringLiteral(methodInfo.getUriTemplate()), stringLiteral(methodInfo.getUriTemplate() + "/"));
 
         // return result
         writer.emitStatement("return verbMatches && uriMatches");

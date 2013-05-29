@@ -1,5 +1,7 @@
 package com.kalixia.netty.rest;
 
+import com.kalixia.netty.rest.codecs.jaxrs.GeneratedJaxRsMethodHandler;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -15,13 +17,18 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.tools.Diagnostic;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @SupportedAnnotationTypes({ "javax.ws.rs.*" })
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
@@ -30,6 +37,7 @@ import java.util.Set;
 })
 public class StaticAnalysisCompiler extends AbstractProcessor {
     private Elements elementUtils;
+    private Messager messager;
     private final JaxRsAnalyzer analyzer = new JaxRsAnalyzer();
     private JaxRsMethodGenerator methodGenerator;
     private JaxRsModuleGenerator moduleGenerator;
@@ -40,7 +48,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
     public void init(ProcessingEnvironment environment) {
         super.init(environment);
         Filer filer = environment.getFiler();
-        Messager messager = environment.getMessager();
+        this.messager = environment.getMessager();
         Map<String,String> options = environment.getOptions();
         this.elementUtils = environment.getElementUtils();
         methodGenerator = new JaxRsMethodGenerator(filer, messager, options);
@@ -51,7 +59,7 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         Set<? extends Element> resources = roundEnv.getElementsAnnotatedWith(Path.class);
-        List<String> generatedHandlers = new ArrayList<>();
+        SortedMap<String,String> uriTemplateToHandlerName = new TreeMap<>(new UriTemplatePrecedenceComparator());
 
         for (Element resource : resources) {
             // only keep classes
@@ -86,9 +94,12 @@ public class StaticAnalysisCompiler extends AbstractProcessor {
                 else
                     produces = new String[] { MediaType.TEXT_PLAIN };
                 JaxRsMethodInfo methodInfo = new JaxRsMethodInfo(elem, verb, uriTemplate, methodName, returnType, parameters, produces);
-                generatedHandlers.add(methodGenerator.generateHandlerClass(resourceClassName, resourcePackage, uriTemplate, methodInfo));
+                String generatedHandler = methodGenerator.generateHandlerClass(resourceClassName, resourcePackage, uriTemplate, methodInfo);
+                uriTemplateToHandlerName.put(uriTemplate, generatedHandler);
             }
         }
+
+        List<String> generatedHandlers = new ArrayList<>(uriTemplateToHandlerName.values());
 
         // TODO: use package from APT processor options
         if (!resources.isEmpty() && generatedHandlers.size() > 0) {

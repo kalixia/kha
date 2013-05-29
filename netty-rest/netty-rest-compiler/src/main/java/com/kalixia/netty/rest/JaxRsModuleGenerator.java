@@ -59,8 +59,7 @@ public class JaxRsModuleGenerator {
                     .emitImports("org.slf4j.Logger")
                     .emitImports("org.slf4j.LoggerFactory")
                     .emitImports("java.nio.charset.Charset")
-                    .emitImports("java.util.Set")
-                    .emitImports("java.util.HashSet")
+                    .emitImports("java.util.List")
                     .emitImports("java.util.Arrays")
                     .emitImports("javax.ws.rs.core.MediaType")
                     .emitImports(Generated.class.getName())
@@ -71,7 +70,7 @@ public class JaxRsModuleGenerator {
                     .emitAnnotation("Sharable")
                     .beginType(handlerClassName, "class", PUBLIC | FINAL, "MessageToMessageDecoder<ApiRequest>", "JaxRsPipeline")
             // add set of handlers
-                    .emitField("Set<? extends GeneratedJaxRsMethodHandler>", "handlers", PRIVATE | FINAL)
+                    .emitField("List<? extends GeneratedJaxRsMethodHandler>", "handlers", PRIVATE | FINAL)
                     .emitField("ByteBuf", "ERROR_WRONG_URL", PRIVATE | STATIC | FINAL, "Unpooled.copiedBuffer(\"Wrong URL\", Charset.forName(\"UTF-8\"))")
                     .emitField("ByteBuf", "ERROR_INTERNAL_ERROR", PRIVATE | STATIC | FINAL, "Unpooled.copiedBuffer(\"Unexpected error\", Charset.forName(\"UTF-8\"))")
                     .emitField("Logger", "LOGGER", PRIVATE | STATIC | FINAL, "LoggerFactory.getLogger(" + handlerClassName + ".class)")
@@ -122,7 +121,7 @@ public class JaxRsModuleGenerator {
         }
 
         return writer.
-                emitStatement("this.handlers = new HashSet<>(Arrays.asList(\n" + builder.toString() + "\n))")
+                emitStatement("this.handlers = Arrays.asList(\n" + builder.toString() + "\n)")
                 .endMethod();
     }
 

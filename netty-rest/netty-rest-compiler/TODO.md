@@ -1,8 +1,7 @@
 TODO:
 -----
 
-* prefer non templated URI over templates ones (prefer '/devices/something' over '/devices/{id}')
-* add support for RxJava
+* add support for Response JAX-RS instances
 * add support for @Consumes
 * add support for @QueryParam
 * add support for @HeaderParam

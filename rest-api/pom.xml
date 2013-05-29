@@ -20,16 +20,13 @@
         </dependency>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>netty-rest-codec</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.kalixia.rawsag</groupId>
+            <artifactId>netty-codecs</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>netty-rest-compiler</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
+            <groupId>com.kalixia.rawsag</groupId>
+            <artifactId>netty-compiler</artifactId>
         </dependency>
 
         <!-- JAX-RS dependencies -->

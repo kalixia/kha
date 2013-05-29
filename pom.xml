@@ -12,7 +12,6 @@
     <modules>
         <module>model</module>
         <module>services</module>
-        <module>netty-rest</module>
         <module>rest-api</module>
         <module>gateway</module>
         <module>cloud-platform</module>
@@ -28,10 +27,24 @@
         <spock.version>0.7-groovy-2.0</spock.version>
         <dagger.version>1.0.0</dagger.version>
         <groovy.version>2.1.3</groovy.version>
+        <rawsag.version>0.1-SNAPSHOT</rawsag.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- RaWSAG dependencies -->
+            <dependency>
+                <groupId>com.kalixia.rawsag</groupId>
+                <artifactId>netty-codecs</artifactId>
+                <version>${rawsag.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kalixia.rawsag</groupId>
+                <artifactId>netty-compiler</artifactId>
+                <version>${rawsag.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
             <!-- Netty dependencies -->
             <dependency>
                 <groupId>io.netty</groupId>

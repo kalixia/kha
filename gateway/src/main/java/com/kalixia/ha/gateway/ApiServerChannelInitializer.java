@@ -1,12 +1,12 @@
 package com.kalixia.ha.gateway;
 
+import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
+import com.kalixia.rawsag.codecs.json.ByteBufSerializer;
+import com.kalixia.rawsag.codecs.rest.RESTCodec;
+import com.kalixia.rawsag.codecs.rxjava.ObservableEncoder;
 import com.fasterxml.jackson.core.json.PackageVersion;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
-import com.kalixia.netty.rest.codecs.json.ByteBufSerializer;
-import com.kalixia.netty.rest.codecs.rest.RESTCodec;
-import com.kalixia.netty.rest.codecs.rxjava.ObservableEncoder;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

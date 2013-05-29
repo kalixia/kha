@@ -26,8 +26,9 @@ class UriTemplatePrecedenceComparator implements Comparator<String> {
             return 1;
         }
 
-        // TODO: sort by the number of regular expressions contained within the expression
-
-        return -1;
+        // sort by the number of regular expressions contained within the expression
+        return Integer.compare(
+                UriTemplateUtils.getNumberOfExplicitRegexes(uriTemplate1),
+                UriTemplateUtils.getNumberOfExplicitRegexes(uriTemplate2));
     }
 }

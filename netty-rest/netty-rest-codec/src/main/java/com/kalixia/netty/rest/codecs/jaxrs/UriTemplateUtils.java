@@ -54,6 +54,11 @@ public class UriTemplateUtils {
         return template.getTemplateVariables();
     }
 
+    public static int getNumberOfExplicitRegexes(String uriTemplate) {
+        UriTemplate template = createUriTemplateOrGetFromCache(uriTemplate);
+        return template.getNumberOfExplicitRegexes();
+    }
+
     private static UriTemplate createUriTemplateOrGetFromCache(String uriTemplate) {
         UriTemplate template = uriTemplatesCache.get(uriTemplate);
         if (template == null) {

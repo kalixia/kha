@@ -41,7 +41,7 @@ public class WebSocketsApiRequestDecoder extends MessageToMessageDecoder<TextWeb
         if (wsRequest.getEntity() != null)
             content = Unpooled.copiedBuffer(wsRequest.getEntity().getBytes(CharsetUtil.UTF_8));
         else
-            content = Unpooled.buffer();
+            content = Unpooled.EMPTY_BUFFER;
 
         UUID requestID = wsRequest.getId() != null ? wsRequest.getId() : UUID.randomUUID();
         MDC.put(MDCLogging.MDC_REQUEST_ID, requestID.toString());

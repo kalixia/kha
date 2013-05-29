@@ -10,7 +10,7 @@ public class ObservableApiResponse<T> extends ApiResponse {
     private final Observable<T> observable;
 
     public ObservableApiResponse(UUID id, HttpResponseStatus status, Observable<T> observable, String contentType) {
-        super(id, status, Unpooled.buffer(0), contentType);
+        super(id, status, Unpooled.EMPTY_BUFFER, contentType);
         this.observable = observable;
     }
 

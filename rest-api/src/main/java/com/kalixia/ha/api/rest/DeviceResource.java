@@ -30,9 +30,11 @@ public class DeviceResource {
         return service.findAllDevices();
     }
 
-//    @GET
-//    @Path("{id}")
-//    public Device findDeviceById(@PathParam("id") UUID id) {
-//        return service.findDeviceById(id).toBlockingObservable().single();
-//    }
+    @GET
+    @Path("{id}")
+    public Observable<? extends Device> findDeviceById(@PathParam("id") UUID id) {
+        return service.findDeviceById(id);
+        //return service.findDeviceById(id).toBlockingObservable().single();
+    }
+
 }

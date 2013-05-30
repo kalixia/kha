@@ -1,0 +1,10 @@
+<div>Name: {{ device.name }}</div>
+
+<table>
+    <tr>
+        <td><strong>Sensor Value</strong></td>
+    </tr>
+    <tr ng-repeat="sensor in sensors">
+        <td>{{ sensor.value }}</td>
+    </tr>
+</table>

@@ -37,9 +37,10 @@ public class ApiServer {
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .childHandler(channelInitializer);
 
-            ChannelFuture f = apiBootstrap.bind().sync();
+            apiBootstrap.bind();
+//            ChannelFuture f = apiBootstrap.bind().sync();
             LOGGER.info("WebSockets API available on port {}.", port);
-            f.channel().closeFuture().sync();
+//            f.channel().closeFuture().sync();
         } catch (Exception e) {
             LOGGER.error("Can't start API server", e);
         }

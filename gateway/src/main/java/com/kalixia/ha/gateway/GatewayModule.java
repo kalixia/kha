@@ -16,12 +16,16 @@ import javax.inject.Singleton;
 )
 public class GatewayModule {
 
-    @Provides @Singleton Gateway provideGateway(ApiServer apiServer) {
-        return new GatewayImpl(apiServer);
+    @Provides @Singleton Gateway provideGateway(ApiServer apiServer, WebAppServer webAppServer) {
+        return new GatewayImpl(apiServer, webAppServer);
     }
 
     @Provides @Singleton ApiServer provideApiServer(ApiServerChannelInitializer channelInitializer) {
         return new ApiServer(8082, channelInitializer);
+    }
+
+    @Provides @Singleton WebAppServer provideWebAppServer() {
+        return new WebAppServer(8080);
     }
 
 }

@@ -14,23 +14,27 @@ import javax.inject.Inject;
  */
 public class GatewayImpl implements Gateway {
     private final ApiServer apiServer;
+    private final WebAppServer webAppServer;
     private static final Logger LOGGER = LoggerFactory.getLogger(Gateway.class);
 
     @Inject
-    public GatewayImpl(ApiServer apiServer) {
+    public GatewayImpl(ApiServer apiServer, WebAppServer webAppServer) {
         this.apiServer = apiServer;
+        this.webAppServer = webAppServer;
     }
 
     @Override
     public void start() {
         startApi();
         startCloudRelay();
+        startWebApp();
     }
 
     @Override
     public void stop() throws InterruptedException {
         stopCloudRelay();
         stopApi();
+        stopWebApp();
     }
 
     private void startApi() {
@@ -43,6 +47,11 @@ public class GatewayImpl implements Gateway {
         // TODO: write code!
     }
 
+    private void startWebApp() {
+        LOGGER.info("Starting WebApp...");
+        webAppServer.start();
+    }
+
     private void stopApi() throws InterruptedException {
         LOGGER.info("Stopping API Server...");
         apiServer.stop();
@@ -51,6 +60,11 @@ public class GatewayImpl implements Gateway {
     private void stopCloudRelay() {
         LOGGER.info("Stopping Cloud Relay...");
         // TODO: write code!
+    }
+
+    private void stopWebApp() throws InterruptedException {
+        LOGGER.info("Stopping WebApp...");
+        webAppServer.stop();
     }
 
 }

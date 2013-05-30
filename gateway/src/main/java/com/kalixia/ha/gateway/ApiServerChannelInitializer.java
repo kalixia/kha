@@ -1,6 +1,7 @@
 package com.kalixia.ha.gateway;
 
 import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
+import com.kalixia.rawsag.ApiProtocolSwitcher;
 import com.kalixia.rawsag.codecs.json.ByteBufSerializer;
 import com.kalixia.rawsag.codecs.rest.RESTCodec;
 import com.kalixia.rawsag.codecs.rxjava.ObservableEncoder;

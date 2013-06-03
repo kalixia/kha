@@ -10,7 +10,8 @@
 
     <!--<appender name="metrics" class="com.yammer.metrics.logback.InstrumentedAppender"/>-->
 
-    <logger name="com.kalixia" level="INFO"/>
+    <logger name="com.kalixia.ha" level="INFO"/>
+    <logger name="com.kalixia.rawsag" level="INFO"/>
     <!--<logger name="io.netty.handler.logging.MessageLoggingHandler" level="DEBUG"/>-->
     <logger name="io.netty" level="INFO"/>
 

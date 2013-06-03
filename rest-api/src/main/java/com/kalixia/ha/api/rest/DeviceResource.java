@@ -25,16 +25,9 @@ public class DeviceResource {
     }
 
     @GET
-    @Path("/new")
-    public Observable<? extends Device> findAllDevicesThroughObservable() {
-        return service.findAllDevices();
-    }
-
-    @GET
     @Path("{id}")
-    public Observable<? extends Device> findDeviceById(@PathParam("id") UUID id) {
-        return service.findDeviceById(id);
-        //return service.findDeviceById(id).toBlockingObservable().single();
+    public Device findDeviceById(@PathParam("id") UUID id) {
+        return service.findDeviceById(id).toBlockingObservable().single();
     }
 
 }

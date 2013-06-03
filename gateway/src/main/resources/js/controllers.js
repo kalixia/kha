@@ -27,10 +27,22 @@ devices = [
     { id: 0, name: 'Device 2', sensors: [ { value: 17 } ] }
 ];
 
-function DeviceListController($scope) {
-    $scope.devices = devices;
+function DeviceListController($scope, $http) {
+    $http.get('http://localhost:8082/devices')
+        .success(function (data, status, headers, config) {
+            $scope.devices = data;
+        })
+        .error(function (data, status, headers, config) {
+            console.log("Error while fetching device. Status: " + status);
+        });
 }
 
-function DeviceDetailController($scope, $routeParams) {
-    $scope.device = devices[$routeParams.id];
+function DeviceDetailController($scope, $http, $routeParams) {
+    $http.get('http://localhost:8082/devices/' + $routeParams.id)
+        .success(function (data, status, headers, config) {
+            $scope.device = data;
+        })
+        .error(function (data, status, headers, config) {
+            console.log("Error while fetching device. Status: " + status);
+        });
 }

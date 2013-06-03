@@ -6,6 +6,18 @@ import org.joda.time.Instant
 class DevicesServiceTest extends spock.lang.Specification {
     def DevicesService service = new DevicesServiceImpl()
 
+    def "test findAllDevices()"() {
+        when:
+        def devices = service.findAllDevices()
+        def subscription = devices.subscribe([
+                onNext: { println 'onNext' },
+                onCompleted: { println 'onCompleted' },
+                onError: { println 'onError' }
+        ])
+        then:
+        subscription != null
+    }
+
     /*
     def "find all devices"() {
         given: "fetching all devices"

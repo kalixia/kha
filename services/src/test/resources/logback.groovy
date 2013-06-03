@@ -1,6 +1,7 @@
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.core.ConsoleAppender
 
+import static ch.qos.logback.classic.Level.DEBUG
 import static ch.qos.logback.classic.Level.INFO
 import static ch.qos.logback.classic.Level.WARN
 
@@ -11,6 +12,7 @@ appender("STDOUT", ConsoleAppender) {
     withJansi = true
 }
 
-logger "com.kalixia", INFO
+logger "com.kalixia.ha", INFO
+logger "com.kalixia.ha.api.rest", DEBUG
 
 root(WARN, ["STDOUT"])

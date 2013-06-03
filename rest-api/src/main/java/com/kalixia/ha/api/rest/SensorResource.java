@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Path("/devices/{deviceID}/sensors")
 @Produces(MediaType.APPLICATION_JSON)
-public class SensorsResource {
+public class SensorResource {
     @Inject
     SensorsService service;
 

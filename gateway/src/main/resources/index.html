@@ -3,19 +3,20 @@
 <head>
     <title>Kalixia HA Gateway</title>
     <meta charset="utf-8"/>
-    <!--<link rel="stylesheet" type="text/css" href="styles/bootstrap.min.css">-->
-    <!--<link rel="stylesheet" type="text/css" href="styles/bootstrap-responsive.min.css">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <!--<link rel="stylesheet" type="text/css" href="styles/app.css">-->
 </head>
 
-<body class="home-page">
+<body>
 
-<h1>Devices?</h1>
+<div class="container-fluid">
+    <div ng-view></div>
+</div>
 
-<div ng-view></div>
-
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>
 <script src="js/controllers.js"></script>
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 
 </body>
 

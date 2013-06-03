@@ -90,4 +90,9 @@ public class CassandraDevicesDao<T> implements DevicesDao {
     public Observable<? extends Device> findAllDevices() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public Device findById(UUID id) {
+        return null;
+    }
 }

@@ -19,19 +19,20 @@
             <artifactId>joda-time</artifactId>
         </dependency>
 
-        <!-- Groovy dependencies -->
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Compile this module for Java 6 so that it can be used in Android applications -->
             <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </configuration>
             </plugin>
         </plugins>
     </build>

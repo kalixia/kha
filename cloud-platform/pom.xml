@@ -10,120 +10,59 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>cloud-platform</artifactId>
-    <packaging>war</packaging>
 
     <dependencies>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>model</artifactId>
+            <artifactId>rest-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!-- Hystrix dependencies -->
-        <dependency>
-            <groupId>com.netflix.hystrix</groupId>
-            <artifactId>hystrix-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.netflix.hystrix</groupId>
-            <artifactId>hystrix-yammer-metrics-publisher</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.netflix.hystrix</groupId>
-            <artifactId>hystrix-metrics-event-stream</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.netflix.hystrix</groupId>-->
+            <!--<artifactId>hystrix-core</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.netflix.hystrix</groupId>-->
+            <!--<artifactId>hystrix-yammer-metrics-publisher</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.netflix.hystrix</groupId>-->
+            <!--<artifactId>hystrix-metrics-event-stream</artifactId>-->
+        <!--</dependency>-->
         <!--<dependency>-->
             <!--<groupId>com.netflix.turbine</groupId>-->
             <!--<artifactId>turbine-core</artifactId>-->
         <!--</dependency>-->
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-            <scope>provided</scope>
-        </dependency>
 
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.0.RC5</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
                 <configuration>
-                    <stopPort>9967</stopPort>
-                    <stopKey>foo</stopKey>
-                    <!--<scanIntervalSeconds>10</scanIntervalSeconds>-->
-                    <!--<jettyConfig>src/test/conf/jetty-jmx.xml</jettyConfig>-->
-                    <!--<contextXml>src/test/conf/jetty.xml</contextXml>-->
-                    <!--<useTestScope>true</useTestScope>-->
-                    <webApp>
-                        <contextPath>/</contextPath>
-                    </webApp>
-                    <connectors>
-                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>9091</port>
-                            <maxIdleTime>60000</maxIdleTime>
-                        </connector>
-                        <!--<connector implementation="org.mortbay.jetty.ssl.SslSelectChannelConnector">-->
-                        <!--<port>8443</port>-->
-                        <!--<keystore>src/test/resources/server.keystore</keystore>-->
-                        <!--<keyPassword>123456</keyPassword>-->
-                        <!--<password>123456</password>-->
-                        <!--</connector>-->
-                    </connectors>
-                    <systemProperties>
-                        <systemProperty>
-                            <name>file.encoding</name>
-                            <value>UTF-8</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>java.util.Locale</name>
-                            <value>fr_FR</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>user.language</name>
-                            <value>fr_FR</value>
-                        </systemProperty>
-                    </systemProperties>
+                    <programs>
+                        <program>
+                            <mainClass>com.kalixia.ha.cloud.Main</mainClass>
+                            <name>cloud-platform</name>
+                        </program>
+                    </programs>
+                    <repositoryLayout>flat</repositoryLayout>
+                    <repositoryName>lib</repositoryName>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>jetty-before-integration-tests</id>
-                        <phase>pre-integration-test</phase>
+                        <phase>package</phase>
                         <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <daemon>true</daemon>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>jetty-after-integration-tests</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
+                            <goal>assemble</goal>
                         </goals>
                     </execution>
                 </executions>
-                <extensions>true</extensions>
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>5.1.14</version>
-                    </dependency>
-                </dependencies>
             </plugin>
-
         </plugins>
     </build>
 

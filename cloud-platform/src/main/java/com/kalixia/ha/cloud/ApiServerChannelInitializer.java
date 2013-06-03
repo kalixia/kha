@@ -1,13 +1,13 @@
-package com.kalixia.ha.gateway;
+package com.kalixia.ha.cloud;
 
+import com.fasterxml.jackson.core.json.PackageVersion;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
 import com.kalixia.rawsag.ApiProtocolSwitcher;
 import com.kalixia.rawsag.codecs.json.ByteBufSerializer;
 import com.kalixia.rawsag.codecs.rest.RESTCodec;
 import com.kalixia.rawsag.codecs.rxjava.ObservableEncoder;
-import com.fasterxml.jackson.core.json.PackageVersion;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -19,9 +19,6 @@ import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.MessageLoggingHandler;
-import io.netty.util.concurrent.DefaultEventExecutorGroup;
-import io.netty.util.concurrent.DefaultThreadFactory;
-import io.netty.util.concurrent.EventExecutorGroup;
 
 import javax.inject.Inject;
 

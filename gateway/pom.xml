@@ -66,12 +66,12 @@
             <artifactId>hystrix-metrics-event-stream</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>javax.servlet</groupId>-->
+            <!--<artifactId>javax.servlet-api</artifactId>-->
+            <!--<version>3.0.1</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
         <!-- Tests dependencies -->
         <dependency>
@@ -109,7 +109,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 

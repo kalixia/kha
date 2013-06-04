@@ -1,13 +1,10 @@
-// Some fake devices
-var devices;
+var gatewayControllers = angular.module('gatewayControllers', ['gatewayServices']);
 
-function DeviceListController($scope, Device) {
+gatewayControllers.controller('DeviceListController', function ($scope, Device, DeviceWS) {
     $scope.devices = Device.query();
-}
+//    $scope.devices = DeviceWS.getDevices();
+});
 
-function DeviceDetailController($scope, $routeParams, Device) {
+gatewayControllers.controller('DeviceDetailController', function ($scope, $routeParams, Device) {
     $scope.device = Device.get({ id: $routeParams.id })
-}
-
-gatewayServices.controller(DeviceListController);
-gatewayServices.controller(DeviceDetailController);
+});

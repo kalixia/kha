@@ -4,9 +4,8 @@ gatewayServices.factory('Device', function($resource) {
     return $resource('http://localhost\\:8082/devices/:id', {id: '@id'});
 });
 
-
 /*
-angular.module('gateway', []).factory('MyService', ['$q', function ($q) {
+gatewayServices.factory('DeviceWS', ['$q', function ($q) {
     // We return this object to anything injecting our service
     var Service = {};
     // Keep all pending requests here until they get responses
@@ -15,7 +14,7 @@ angular.module('gateway', []).factory('MyService', ['$q', function ($q) {
     var currentCallbackId = 0;
 
     // Create our websocket object with the address to the websocket
-    var ws = new WebSocket("ws://localhost:8082/");
+    var ws = new WebSocket("ws://localhost:8082/websocket");
     ws.onopen = function () {
         console.log("Socket has been opened!");
     };
@@ -27,8 +26,9 @@ angular.module('gateway', []).factory('MyService', ['$q', function ($q) {
         var defer = $q.defer();
         var callbackId = getCallbackId();
         callbacks[callbackId] = {
-            time: newDate(),
-            cb: defer      };
+            time: new Date(),
+            cb: defer
+        };
         request.callback_id = callbackId;
         console.log('Sending request', request);
         ws.send(JSON.stringify(request));
@@ -56,9 +56,9 @@ angular.module('gateway', []).factory('MyService', ['$q', function ($q) {
     }
 
     // Define a "getter" for getting customer
-    dataService.getCustomers = function () {
+    Service.getDevices = function () {
         var request = {
-            type: "get_customers"
+            path: '/devices'
         }
         // Storing in a variable for clarity on what sendRequest returns
         var promise = sendRequest(request);

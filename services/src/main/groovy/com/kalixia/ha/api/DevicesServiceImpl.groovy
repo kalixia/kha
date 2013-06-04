@@ -27,7 +27,7 @@ class DevicesServiceImpl implements DevicesService {
 
     @Override
     def Observable<? extends Device> findAllDevices() {
-        LOGGER.info("Searching for all devices...");
+        LOGGER.info("Searching for all devices...")
         return Observable.create({ observer ->
             try {
                 observer.onNext(devices[0])
@@ -47,6 +47,7 @@ class DevicesServiceImpl implements DevicesService {
 
     @Override
     def Observable<Device> findDeviceById(UUID id) {
+        LOGGER.info("Searching for device {}", id)
 //        return Observable.just(dao.findById(id))
         return Observable.just(devices[0])
     }

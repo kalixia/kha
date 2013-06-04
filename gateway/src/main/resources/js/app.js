@@ -1,4 +1,4 @@
-var gatewayServices = angular.module('gateway', ['gatewayServices']);
+var app = angular.module('gateway', ['gatewayControllers','gatewayServices']);
 
 // Set up our mappings between URLs, templates, and controllers
 function gatewayRouteConfig($routeProvider) {
@@ -18,20 +18,20 @@ function gatewayRouteConfig($routeProvider) {
         });
 }
 
-function gatewayApiUsageConfig($httpProvider) {
+//function gatewayApiUsageConfig($httpProvider) {
 //    $httpProvider.default.headers.get['X-Api-Request-ID'] = guid();
-    $httpProvider.default.headers.put('X-Api-Request-ID', guid());
-    console.log("Setting API request headers...");
-}
+//    $httpProvider.default.headers.put('X-Api-Request-ID', guid());
+//    console.log("Setting API request headers...");
+//}
 
 // Generates a random UUID
-function guid() {
-    function _p8(s) {
-        var p = (Math.random().toString(16) + "000000000").substr(2, 8);
-        return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
-    }
-    return _p8() + _p8(true) + _p8(true) + _p8();
-}
+//function guid() {
+//    function _p8(s) {
+//        var p = (Math.random().toString(16) + "000000000").substr(2, 8);
+//        return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
+//    }
+//    return _p8() + _p8(true) + _p8(true) + _p8();
+//}
 
-gatewayServices.config(['$routeProvider', gatewayRouteConfig]);
-//gatewayServices.config(['$httpProvider', gatewayApiUsageConfig]);
+app.config(['$routeProvider', gatewayRouteConfig]);
+//app.config(['$httpProvider', gatewayApiUsageConfig]);

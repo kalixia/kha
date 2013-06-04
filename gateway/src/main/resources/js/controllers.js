@@ -1,8 +1,9 @@
 // Create a module for our core AMail services
-var gatewayServices = angular.module('gateway', []);
+var gatewayServices = angular.module('gateway');
 
 // Set up our mappings between URLs, templates, and controllers
 function gatewayRouteConfig($routeProvider) {
+    console.log('ici');
     $routeProvider.
         when('/', {
             controller: DeviceListController,
@@ -18,14 +19,29 @@ function gatewayRouteConfig($routeProvider) {
             redirectTo: '/'
         });
 }
+
+function gatewayApiUsageConfig($httpProvider) {
+    $httpProvider.default.headers.get['X-Api-Request-ID'] = guid();
+    console.log("Setting API request headers...");
+}
+
+// Generates a random UUID
+function guid() {
+    function _p8(s) {
+        var p = (Math.random().toString(16) + "000000000").substr(2, 8);
+        return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
+    }
+    return _p8() + _p8(true) + _p8(true) + _p8();
+}
+
 // Set up our route so the AMail service can find it
-gatewayServices.config(gatewayRouteConfig);
+gatewayServices.config(function($routeProvider, $httpProvider) {
+    gatewayRouteConfig($routeProvider);
+//    gatewayApiUsageConfig($httpProvider);
+});
 
 // Some fake devices
-devices = [
-    { id: 0, name: 'Device 1', sensors: [ { value: 12 } ] },
-    { id: 0, name: 'Device 2', sensors: [ { value: 17 } ] }
-];
+var devices;
 
 function DeviceListController($scope, $http) {
     $http.get('http://localhost:8082/devices')

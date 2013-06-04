@@ -160,8 +160,6 @@ public class HttpStaticFileServerHandler extends ChannelInboundMessageHandlerAda
             return;
         }
 
-        LOGGER.info("About to load file {}", file.getAbsolutePath());
-
         // Cache Validation
         String ifModifiedSince = request.headers().get(IF_MODIFIED_SINCE);
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
@@ -388,7 +386,6 @@ public class HttpStaticFileServerHandler extends ChannelInboundMessageHandlerAda
         else
             contentType = "application/octet-stream";
 
-        LOGGER.info("Content-Type: {}", contentType);
         response.headers().set(CONTENT_TYPE, contentType);
     }
 

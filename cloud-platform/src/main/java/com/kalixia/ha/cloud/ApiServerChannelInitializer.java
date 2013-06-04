@@ -19,6 +19,9 @@ import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.MessageLoggingHandler;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.DefaultThreadFactory;
+import io.netty.util.concurrent.EventExecutorGroup;
 
 import javax.inject.Inject;
 
@@ -28,6 +31,7 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
     private final ObservableEncoder rxjavaHandler;
     private final GeneratedJaxRsModuleHandler jaxRsHandlers;
 //    private final EventExecutorGroup rxJavaGroup;
+    private final EventExecutorGroup jaxRsGroup;
     private static final ChannelHandler debugger = new MessageLoggingHandler(LogLevel.TRACE);
     private static final ChannelHandler apiRequestLogger = new MessageLoggingHandler(RESTCodec.class, LogLevel.DEBUG);
 
@@ -45,6 +49,8 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
         objectMapper.registerModule(nettyModule);
         // TODO: allow customization of the thread pool!
 //        rxJavaGroup = new DefaultEventExecutorGroup(4, new DefaultThreadFactory("rxjava"));
+        jaxRsGroup = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors(),
+                new DefaultThreadFactory("jax-rs"));
     }
 
     @Override
@@ -67,6 +73,6 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
 //        pipeline.addLast(rxJavaGroup, "rxjava-handler", rxjavaHandler);
 
         // JAX-RS handlers
-        pipeline.addLast("jax-rs-handler", jaxRsHandlers);
+        pipeline.addLast(jaxRsGroup, "jax-rs-handler", jaxRsHandlers);
     }
 }

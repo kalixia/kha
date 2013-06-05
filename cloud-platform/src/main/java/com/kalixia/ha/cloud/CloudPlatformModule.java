@@ -40,9 +40,9 @@ public class CloudPlatformModule {
 
     @Provides @Singleton
     GraphiteReporter provideMetricRegistry(MetricRegistry registry) {
-        final Graphite graphite = new Graphite(new InetSocketAddress("graphite.example.com", 2003));
+        final Graphite graphite = new Graphite(new InetSocketAddress("localhost", 2003));
         final GraphiteReporter reporter = GraphiteReporter.forRegistry(registry)
-                                                          .prefixedWith("web1.example.com")
+                                                          .prefixedWith("cloud.kalixia.com")
                                                           .convertRatesTo(TimeUnit.SECONDS)
                                                           .convertDurationsTo(TimeUnit.MILLISECONDS)
                                                           .filter(MetricFilter.ALL)

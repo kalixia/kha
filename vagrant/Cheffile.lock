@@ -1,0 +1,70 @@
+SITE
+  remote: http://community.opscode.com/api/v1
+  specs:
+    apache2 (1.6.2)
+    apt (1.10.0)
+    build-essential (1.4.0)
+    chef_handler (1.1.4)
+    dmg (1.1.0)
+    git (2.5.2)
+      build-essential (>= 0.0.0)
+      dmg (>= 0.0.0)
+      runit (>= 1.0)
+      windows (>= 0.0.0)
+      yum (>= 0.0.0)
+    logrotate (1.2.0)
+    python (1.3.0)
+      build-essential (>= 0.0.0)
+      yum (>= 0.0.0)
+    runit (1.1.4)
+      build-essential (>= 0.0.0)
+      yum (>= 0.0.0)
+    windows (1.9.0)
+      chef_handler (>= 0.0.0)
+    yum (2.2.2)
+
+GIT
+  remote: git://github.com/opscode-cookbooks/ntp.git
+  ref: master
+  sha: 64fe6af033414c1e4f5e621b7ef71deb423d5a3c
+  specs:
+    ntp (1.3.2)
+
+GIT
+  remote: https://github.com/hectcastro/chef-graphite
+  ref: master
+  sha: ab4af54d130c764ea456ceafba107f5888d38a7b
+  specs:
+    graphite (0.1.3)
+      apache2 (>= 0.0.0)
+      build-essential (>= 0.0.0)
+      logrotate (>= 0.0.0)
+      python (>= 0.0.0)
+      yum (>= 0.0.0)
+
+GIT
+  remote: https://github.com/hectcastro/chef-nodejs
+  ref: master
+  sha: 339f8562b3b79212ada078e8cc781f366f5988c1
+  specs:
+    nodejs (0.0.8)
+      build-essential (>= 0.0.0)
+
+GIT
+  remote: https://github.com/hectcastro/chef-statsd
+  ref: master
+  sha: f9aa8718ebd2cd8b337a07e1fc13b8477e6fafa3
+  specs:
+    statsd (0.1.4)
+      git (>= 0.0.0)
+      logrotate (>= 0.0.0)
+      nodejs (>= 0.0.0)
+
+DEPENDENCIES
+  apt (>= 0)
+  build-essential (>= 0)
+  graphite (>= 0)
+  nodejs (>= 0)
+  ntp (>= 0)
+  statsd (>= 0)
+

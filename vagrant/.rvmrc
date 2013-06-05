@@ -1,0 +1,5 @@
+#this uses rvm
+rvm use 1.9.4
+alias rake="bundle exec rake"
+alias vagrant="bundle exec vagrant"
+alias veewee="bundle exec veewee"

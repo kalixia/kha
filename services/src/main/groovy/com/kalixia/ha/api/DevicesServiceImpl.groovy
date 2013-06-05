@@ -3,6 +3,7 @@ package com.kalixia.ha.api
 import com.kalixia.ha.model.Device
 import com.kalixia.ha.model.devices.DevicesFactory
 import com.kalixia.ha.model.devices.RGBLamp
+import groovy.util.logging.Slf4j
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import rx.Observable
@@ -12,9 +13,9 @@ import rx.subscriptions.Subscriptions
 
 import javax.inject.Inject
 
+@Slf4j(value = "LOGGER")
 class DevicesServiceImpl implements DevicesService {
     final DevicesDao dao
-    private static final Logger LOGGER = LoggerFactory.getLogger(DevicesServiceImpl.class)
 
     def List<? extends Device> devices = [
         new RGBLamp(UUID.randomUUID(), "device1"),

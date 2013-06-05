@@ -1,5 +1,7 @@
 package com.kalixia.ha.gateway;
 
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
 import com.kalixia.ha.api.ServicesModule;
 import com.kalixia.ha.api.rest.GeneratedJaxRsDaggerModule;
 import dagger.Module;
@@ -16,8 +18,8 @@ import javax.inject.Singleton;
 )
 public class GatewayModule {
 
-    @Provides @Singleton Gateway provideGateway(ApiServer apiServer, WebAppServer webAppServer) {
-        return new GatewayImpl(apiServer, webAppServer);
+    @Provides @Singleton Gateway provideGateway(ApiServer apiServer, WebAppServer webAppServer, JmxReporter reporter) {
+        return new GatewayImpl(apiServer, webAppServer, reporter);
     }
 
     @Provides @Singleton ApiServer provideApiServer(ApiServerChannelInitializer channelInitializer) {
@@ -26,6 +28,10 @@ public class GatewayModule {
 
     @Provides @Singleton WebAppServer provideWebAppServer() {
         return new WebAppServer(8080);
+    }
+
+    @Provides @Singleton JmxReporter provideMetricRegistry(MetricRegistry registry) {
+        return JmxReporter.forRegistry(registry).inDomain("com.kalixia.ha.api.rest").build();
     }
 
 }

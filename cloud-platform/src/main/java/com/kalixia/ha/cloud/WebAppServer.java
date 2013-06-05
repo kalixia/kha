@@ -26,7 +26,7 @@ public class WebAppServer {
 
     public WebAppServer(int port) {
         this.port = port;
-        System.setProperty("gateway.dir", "../../src/main/resources");
+        System.setProperty("cloudPlatform.dir", "../../src/main/resources");
     }
 
     public void start() {
@@ -34,7 +34,7 @@ public class WebAppServer {
         parentGroup = new OioEventLoopGroup();
         childGroup = new OioEventLoopGroup();
         try {
-            // the gateway will only have a few connections, so OIO is likely to be faster than NIO in this case!
+            // the cloudPlatform will only have a few connections, so OIO is likely to be faster than NIO in this case!
             apiBootstrap.group(parentGroup, childGroup)
                     .channel(OioServerSocketChannel.class)
                     .localAddress(port)

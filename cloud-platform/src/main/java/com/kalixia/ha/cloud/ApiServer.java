@@ -28,7 +28,7 @@ public class ApiServer {
         bossGroup = new NioEventLoopGroup();
         workersGroup = new NioEventLoopGroup();
         try {
-            // the gateway will only have a few connections, so OIO is likely to be faster than NIO in this case!
+            // the cloudPlatform will only have a few connections, so OIO is likely to be faster than NIO in this case!
             apiBootstrap.group(bossGroup, workersGroup)
                     .channel(NioServerSocketChannel.class)
                     .localAddress(port)

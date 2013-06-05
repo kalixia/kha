@@ -1,9 +1,11 @@
 package com.kalixia.ha.cloud;
 
+import com.codahale.metrics.graphite.GraphiteReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
 
 /**
  * {@inheritDoc}
@@ -12,19 +14,22 @@ import javax.inject.Inject;
  * So basically, this implementation constructs {@link ApiRequest}s from the underlying protocols.
  *
  */
-public class GatewayImpl implements Gateway {
+public class CloudPlatformImpl implements CloudPlatform {
     private final ApiServer apiServer;
     private final WebAppServer webAppServer;
-    private static final Logger LOGGER = LoggerFactory.getLogger(Gateway.class);
+    private final GraphiteReporter graphiteReporter;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CloudPlatform.class);
 
     @Inject
-    public GatewayImpl(ApiServer apiServer, WebAppServer webAppServer) {
+    public CloudPlatformImpl(ApiServer apiServer, WebAppServer webAppServer, GraphiteReporter graphiteReporter) {
         this.apiServer = apiServer;
         this.webAppServer = webAppServer;
+        this.graphiteReporter = graphiteReporter;
     }
 
     @Override
     public void start() {
+        graphiteReporter.start(1, TimeUnit.MINUTES);
         startApi();
         startCloudRelay();
         startWebApp();
@@ -35,6 +40,7 @@ public class GatewayImpl implements Gateway {
         stopCloudRelay();
         stopApi();
         stopWebApp();
+        graphiteReporter.stop();
     }
 
     private void startApi() {

@@ -19,15 +19,15 @@
     </modules>
 
     <properties>
+        <rawsag.version>0.1-SNAPSHOT</rawsag.version>
         <hystrix.version>1.2.16</hystrix.version>
         <rxjava.version>0.9.0</rxjava.version>
         <astyanax.version>1.56.37</astyanax.version>
-        <metrics.version>2.2.0</metrics.version>
+        <metrics.version>3.0.0-RC1</metrics.version>
         <jackson.version>2.2.1</jackson.version>
         <spock.version>0.7-groovy-2.0</spock.version>
         <dagger.version>1.0.0</dagger.version>
         <groovy.version>2.1.4</groovy.version>
-        <rawsag.version>0.1-SNAPSHOT</rawsag.version>
     </properties>
 
     <dependencyManagement>
@@ -136,12 +136,17 @@
 
             <!-- Yammer Metrics -->
             <dependency>
-                <groupId>com.yammer.metrics</groupId>
+                <groupId>com.codahale.metrics</groupId>
                 <artifactId>metrics-core</artifactId>
                 <version>${metrics.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.yammer.metrics</groupId>
+                <groupId>com.codahale.metrics</groupId>
+                <artifactId>metrics-annotation</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.codahale.metrics</groupId>
                 <artifactId>metrics-logback</artifactId>
                 <version>${metrics.version}</version>
                 <exclusions>
@@ -150,6 +155,11 @@
                         <artifactId>logback-core</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.codahale.metrics</groupId>
+                <artifactId>metrics-graphite</artifactId>
+                <version>${metrics.version}</version>
             </dependency>
 
             <!-- Joda Time dependencies -->

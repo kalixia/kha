@@ -18,6 +18,12 @@
             <artifactId>rest-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <!-- Metrics dependencies -->
+        <dependency>
+            <groupId>com.codahale.metrics</groupId>
+            <artifactId>metrics-graphite</artifactId>
+        </dependency>
 
         <!-- Hystrix dependencies -->
         <!--<dependency>-->

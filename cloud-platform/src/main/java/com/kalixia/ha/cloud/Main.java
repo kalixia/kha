@@ -5,14 +5,15 @@ import dagger.ObjectGraph;
 import javax.inject.Inject;
 
 public class Main {
-    @Inject Gateway gateway;
+    @Inject
+    CloudPlatform cloudPlatform;
 
     public void start() throws InterruptedException {
-        gateway.start();
+        cloudPlatform.start();
     }
 
     public static void main(String[] args) throws InterruptedException {
-        ObjectGraph objectGraph = ObjectGraph.create(new GatewayModule());
+        ObjectGraph objectGraph = ObjectGraph.create(new CloudPlatformModule());
         Main main = objectGraph.get(Main.class);
         main.start();
     }

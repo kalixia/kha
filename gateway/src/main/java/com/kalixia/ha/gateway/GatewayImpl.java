@@ -1,5 +1,6 @@
 package com.kalixia.ha.gateway;
 
+import com.codahale.metrics.JmxReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,16 +16,19 @@ import javax.inject.Inject;
 public class GatewayImpl implements Gateway {
     private final ApiServer apiServer;
     private final WebAppServer webAppServer;
+    private final JmxReporter jmxReporter;
     private static final Logger LOGGER = LoggerFactory.getLogger(Gateway.class);
 
     @Inject
-    public GatewayImpl(ApiServer apiServer, WebAppServer webAppServer) {
+    public GatewayImpl(ApiServer apiServer, WebAppServer webAppServer, JmxReporter jmxReporter) {
         this.apiServer = apiServer;
         this.webAppServer = webAppServer;
+        this.jmxReporter = jmxReporter;
     }
 
     @Override
     public void start() {
+        jmxReporter.start();
         startApi();
         startCloudRelay();
         startWebApp();
@@ -35,6 +39,7 @@ public class GatewayImpl implements Gateway {
         stopCloudRelay();
         stopApi();
         stopWebApp();
+        jmxReporter.stop();
     }
 
     private void startApi() {

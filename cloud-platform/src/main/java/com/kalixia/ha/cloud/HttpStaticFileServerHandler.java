@@ -244,7 +244,7 @@ public class HttpStaticFileServerHandler extends ChannelInboundMessageHandlerAda
         }
 
         // Convert to absolute path.
-        return System.getProperty("gateway.dir") + File.separator + uri;
+        return System.getProperty("cloudPlatform.dir") + File.separator + uri;
     }
 
     private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[A-Za-z0-9][-_A-Za-z0-9\\.]*");

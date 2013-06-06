@@ -5,6 +5,7 @@ import com.kalixia.ha.model.Device;
 import rx.Observable;
 
 import javax.inject.Inject;
+import javax.validation.constraints.Min;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -18,6 +19,12 @@ import java.util.UUID;
 public class DeviceResource {
     @Inject
     DevicesService service;
+
+    @GET
+    @Path("echo/{message}")
+    public String echo(@PathParam("message") @Min(3) String message) {
+        return message;
+    }
 
     @GET
     public List<? extends Device> findAllDevices() {

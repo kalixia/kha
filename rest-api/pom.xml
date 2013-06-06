@@ -29,6 +29,20 @@
             <artifactId>netty-compiler</artifactId>
         </dependency>
 
+        <!-- Validation API dependencies -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator-annotation-processor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+        </dependency>
+
         <!-- Metrics dependencies -->
         <dependency>
             <groupId>com.codahale.metrics</groupId>
@@ -51,6 +65,7 @@
                     <target>1.7</target>
                     <encoding>UTF-8</encoding>
                     <!--<verbose>true</verbose>-->
+                    <detail>true</detail>
                     <compilerArgs>
                         <compilerArg>-Adagger=true</compilerArg>
                         <compilerArg>-Ametrics=true</compilerArg>

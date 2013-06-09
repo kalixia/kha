@@ -1,7 +1,7 @@
-package com.kalixia.ha.api.cassandra;
+package com.kalixia.ha.dao.cassandra;
 
 import com.google.common.collect.ImmutableMap;
-import com.kalixia.ha.api.SensorsDao;
+import com.kalixia.ha.dao.SensorsDao;
 import com.kalixia.ha.model.sensors.DataPoint;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -12,11 +12,8 @@ import com.netflix.astyanax.serializers.DateSerializer;
 import com.netflix.astyanax.serializers.IntegerSerializer;
 import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.serializers.TimeUUIDSerializer;
-import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.Date;
 import java.util.UUID;
 

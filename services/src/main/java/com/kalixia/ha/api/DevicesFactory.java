@@ -1,10 +1,9 @@
 package com.kalixia.ha.api;
 
-import com.kalixia.ha.api.cassandra.DeviceRK;
+import com.kalixia.ha.dao.cassandra.DeviceRK;
 import com.kalixia.ha.model.Device;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.RGBLamp;
-import com.netflix.astyanax.util.TimeUUIDUtils;
 
 public class DevicesFactory {
     private static DevicesFactory ourInstance = new DevicesFactory();

@@ -1,10 +1,9 @@
 package com.kalixia.ha.api
 
+import com.kalixia.ha.dao.SensorsDao
 import com.kalixia.ha.model.sensors.DataPoint
 import groovy.util.logging.Slf4j
 import rx.Observable
-
-import javax.inject.Inject
 
 @Slf4j("LOGGER")
 class SensorsServiceImpl implements SensorsService {

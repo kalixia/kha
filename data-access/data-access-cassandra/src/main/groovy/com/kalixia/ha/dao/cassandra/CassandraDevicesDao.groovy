@@ -1,39 +1,30 @@
-package com.kalixia.ha.api.cassandra;
+package com.kalixia.ha.dao.cassandra
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.kalixia.ha.api.DevicesDao;
-import com.kalixia.ha.api.UsersDao;
-import com.kalixia.ha.model.Device;
-import com.kalixia.ha.model.User;
-import com.kalixia.ha.model.devices.RGBLamp;
-import com.netflix.astyanax.Keyspace;
-import com.netflix.astyanax.MutationBatch;
-import com.netflix.astyanax.connectionpool.OperationResult;
-import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
-import com.netflix.astyanax.ddl.KeyspaceDefinition;
-import com.netflix.astyanax.model.ColumnFamily;
-import com.netflix.astyanax.model.ColumnList;
-import com.netflix.astyanax.model.Row;
-import com.netflix.astyanax.model.Rows;
-import com.netflix.astyanax.serializers.ComparatorType;
-import com.netflix.astyanax.serializers.StringSerializer;
-import com.netflix.astyanax.serializers.TimeUUIDSerializer;
-import com.netflix.astyanax.util.TimeUUIDUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import rx.Observable;
-import rx.util.functions.Func1;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.UUID;
+import com.google.common.collect.ImmutableMap
+import com.kalixia.ha.dao.DevicesDao
+import com.kalixia.ha.dao.UsersDao
+import com.kalixia.ha.model.Device
+import com.kalixia.ha.model.User
+import com.kalixia.ha.model.devices.RGBLamp
+import com.netflix.astyanax.Keyspace
+import com.netflix.astyanax.MutationBatch
+import com.netflix.astyanax.connectionpool.exceptions.ConnectionException
+import com.netflix.astyanax.ddl.KeyspaceDefinition
+import com.netflix.astyanax.model.ColumnFamily
+import com.netflix.astyanax.model.ColumnList
+import com.netflix.astyanax.model.Row
+import com.netflix.astyanax.model.Rows
+import com.netflix.astyanax.serializers.ComparatorType
+import com.netflix.astyanax.serializers.StringSerializer
+import rx.Observable
+import groovy.util.logging.Slf4j
+import rx.Subscription
 
+@Slf4j("LOGGER")
 public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
     private final Keyspace keyspace;
     private final ColumnFamily<String, String> cfDevices;
     private final UsersDao usersDao;
-    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraDevicesDao.class);
 
     public CassandraDevicesDao(Keyspace keyspace, UsersDao usersDao) throws ConnectionException {
         this.keyspace = keyspace;
@@ -93,18 +84,15 @@ public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
     }
 
     @Override
-    public Set<? extends Device<DeviceRK>> findAllDevicesOfUser(String username) throws ConnectionException {
-        Rows<String, String> deviceRows = keyspace.prepareQuery(cfDevices)
+    public Observable<? extends Device<DeviceRK>> findAllDevicesOfUser(String username) throws ConnectionException {
+        Rows<String, String> rows = keyspace.prepareQuery(cfDevices)
                 .searchWithIndex()
                 .addExpression().whereColumn("owner").equals().value(username)
-                .execute().getResult();
-        HashSet<Device<DeviceRK>> devices = new HashSet<>(deviceRows.size(), 1f);
-        Iterator<Row<String, String>> devicesIterator = deviceRows.iterator();
-        if (devicesIterator.hasNext()) {
-            ColumnList<String> columns = devicesIterator.next().getColumns();
-            devices.add(buildDeviceFromColumnList(columns));
-        }
-        return devices;
+                .execute().getResult()
+
+        return Observable.from(rows).map({ Row<String, String> row ->
+            buildDeviceFromColumnList(row.getColumns())
+        })
     }
 
     @Override
@@ -132,3 +120,4 @@ public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
     }
 
 }
+

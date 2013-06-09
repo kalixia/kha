@@ -1,7 +1,7 @@
-package com.kalixia.ha.api.cassandra;
+package com.kalixia.ha.dao.cassandra;
 
 import com.google.common.collect.ImmutableMap;
-import com.kalixia.ha.api.UsersDao;
+import com.kalixia.ha.dao.UsersDao;
 import com.kalixia.ha.model.User;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.MutationBatch;
@@ -9,15 +9,10 @@ import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.netflix.astyanax.ddl.KeyspaceDefinition;
 import com.netflix.astyanax.model.ColumnFamily;
 import com.netflix.astyanax.model.ColumnList;
-import com.netflix.astyanax.model.Row;
-import com.netflix.astyanax.model.Rows;
 import com.netflix.astyanax.serializers.ComparatorType;
 import com.netflix.astyanax.serializers.StringSerializer;
-import com.netflix.astyanax.serializers.TimeUUIDSerializer;
-import com.netflix.astyanax.util.TimeUUIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.UUID;
 
 public class CassandraUsersDao implements UsersDao {
     private final Keyspace keyspace;

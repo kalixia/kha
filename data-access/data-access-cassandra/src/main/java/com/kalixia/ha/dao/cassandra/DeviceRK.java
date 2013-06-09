@@ -1,4 +1,4 @@
-package com.kalixia.ha.api.cassandra;
+package com.kalixia.ha.dao.cassandra;
 
 public class DeviceRK {
     private final String owner;

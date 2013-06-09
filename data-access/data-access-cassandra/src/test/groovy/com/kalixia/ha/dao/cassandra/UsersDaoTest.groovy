@@ -1,4 +1,4 @@
-package com.kalixia.ha.api.cassandra
+package com.kalixia.ha.dao.cassandra
 
 import com.kalixia.ha.model.User
 

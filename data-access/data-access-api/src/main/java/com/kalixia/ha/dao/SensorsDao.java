@@ -1,4 +1,4 @@
-package com.kalixia.ha.api;
+package com.kalixia.ha.dao;
 
 import com.kalixia.ha.model.sensors.DataPoint;
 

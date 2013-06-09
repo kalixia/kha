@@ -3,6 +3,7 @@ package com.kalixia.ha.api.rest;
 import com.kalixia.ha.api.DevicesFactory;
 import com.kalixia.ha.api.DevicesService;
 import com.kalixia.ha.api.UsersService;
+import com.kalixia.ha.dao.cassandra.DeviceRK;
 import com.kalixia.ha.model.Device;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.RGBLamp;
@@ -21,7 +22,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 @Produces(MediaType.APPLICATION_JSON)
 public class DeviceResource {
     @Inject
-    DevicesService devicesService;
+    DevicesService<DeviceRK> devicesService;
 
     @Inject
     UsersService usersService;
@@ -45,9 +45,9 @@ public class DeviceResource {
      * <tt>curl -i -H "Accept: application/json" -X POST -d "{name: 'test', type: 'RGBLamp' }" http://localhost:8082/johndoe/devices</tt>
      */
     @GET
-    @Path("{id}")
-    public @NotNull Device findDeviceById(@PathParam("id") UUID id) {
-        return devicesService.findDeviceById(id).toBlockingObservable().single();
+    @Path("{name}")
+    public @NotNull Device findDeviceById(@PathParam("username") String username, @PathParam("id") String name) {
+        return devicesService.findDeviceById(new DeviceRK(username, name)).toBlockingObservable().single();
     }
 
     /**

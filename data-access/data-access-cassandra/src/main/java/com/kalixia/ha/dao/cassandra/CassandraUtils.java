@@ -1,4 +1,4 @@
-package com.kalixia.ha.api.cassandra;
+package com.kalixia.ha.dao.cassandra;
 
 import com.google.common.collect.ImmutableMap;
 import com.netflix.astyanax.Keyspace;

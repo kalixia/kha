@@ -1,17 +1,18 @@
-package com.kalixia.ha.api.cassandra
+package com.kalixia.ha.dao.cassandra
 
-import com.kalixia.ha.api.DevicesDao
-import com.kalixia.ha.api.UsersDao
+import com.kalixia.ha.dao.DevicesDao
+import com.kalixia.ha.dao.UsersDao
 import com.netflix.astyanax.Keyspace
 import groovy.util.logging.Slf4j
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import spock.lang.Shared
+import spock.lang.Specification
 
 /**
  * Abstract class easing tests for Cassandra DAOs.
  */
 @Slf4j("LOGGER")
-abstract class AbstractCassandraDaoTest extends spock.lang.Specification {
+abstract class AbstractCassandraDaoTest extends Specification {
     @Shared UsersDao usersDao
     @Shared DevicesDao devicesDao
     @Shared Keyspace keyspace;

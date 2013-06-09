@@ -1,9 +1,12 @@
 package com.kalixia.ha.api;
 
-import com.kalixia.ha.api.cassandra.CassandraModule;
+import com.kalixia.ha.dao.DevicesDao;
+import com.kalixia.ha.dao.SensorsDao;
+import com.kalixia.ha.dao.UsersDao;
+import com.kalixia.ha.dao.cassandra.CassandraModule;
+import com.kalixia.ha.dao.cassandra.DeviceRK;
 import dagger.Module;
 import dagger.Provides;
-
 import javax.inject.Singleton;
 
 @Module(
@@ -18,7 +21,7 @@ public class ServicesModule {
         return new UsersServiceImpl(dao);
     }
 
-    @Provides @Singleton DevicesService provideDevicesService(DevicesDao dao) {
+    @Provides @Singleton DevicesService<DeviceRK> provideDevicesService(DevicesDao dao) {
         return new DevicesServiceImpl(dao);
     }
 

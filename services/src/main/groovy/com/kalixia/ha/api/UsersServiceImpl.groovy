@@ -1,5 +1,6 @@
 package com.kalixia.ha.api
 
+import com.kalixia.ha.dao.UsersDao
 import com.kalixia.ha.model.User
 import groovy.util.logging.Slf4j
 

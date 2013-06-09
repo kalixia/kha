@@ -1,5 +1,6 @@
 package com.kalixia.ha.model.devices;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Capability;
 import com.kalixia.ha.model.Device;
@@ -29,6 +30,7 @@ abstract class AbstractDevice<K> implements Device<K> {
         this.sensors = new HashSet<>();
     }
 
+    @JsonIgnore
     public K getId() {
         return id;
     }
@@ -38,6 +40,7 @@ abstract class AbstractDevice<K> implements Device<K> {
     }
 
     @Override
+    // TODO: override serialization -- should only send owner username!
     public User getOwner() {
         return owner;
     }

@@ -39,6 +39,11 @@ public class DeviceResource {
         return devicesService.findAllDevicesOfUser(username).toList().toBlockingObservable().single();
     }
 
+    /**
+     * Create a {@link Device} for a given {@link User} identified by it's <tt>username</tt>.
+     * <p>
+     * <tt>curl -i -H "Accept: application/json" -X POST -d "{name: 'test', type: 'RGBLamp' }" http://localhost:8082/johndoe/devices</tt>
+     */
     @GET
     @Path("{id}")
     public @NotNull Device findDeviceById(@PathParam("id") UUID id) {

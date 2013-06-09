@@ -1,6 +1,7 @@
 package com.kalixia.ha.api.cassandra;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.kalixia.ha.api.DevicesDao;
 import com.kalixia.ha.api.UsersDao;
 import com.kalixia.ha.model.Device;
@@ -8,6 +9,7 @@ import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.RGBLamp;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.MutationBatch;
+import com.netflix.astyanax.connectionpool.OperationResult;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.netflix.astyanax.ddl.KeyspaceDefinition;
 import com.netflix.astyanax.model.ColumnFamily;
@@ -21,6 +23,10 @@ import com.netflix.astyanax.util.TimeUUIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
+import rx.util.functions.Func1;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 
 public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
@@ -49,6 +55,11 @@ public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
                             .put("name", ImmutableMap.<String, Object>builder()
                                     .put("validation_class", ComparatorType.UTF8TYPE.getTypeName())
                                     .put("index_name", "idx_device_name")
+                                    .put("index_type", "KEYS")
+                                    .build())
+                            .put("owner", ImmutableMap.<String, Object>builder()
+                                    .put("validation_class", ComparatorType.UTF8TYPE.getTypeName())
+                                    .put("index_name", "idx_owner_username")
                                     .put("index_type", "KEYS")
                                     .build())
                             .build())
@@ -82,9 +93,18 @@ public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
     }
 
     @Override
-    public Observable<? extends Device<DeviceRK>> findAllDevicesOfUser(User user) {
-//        keyspace.prepareQuery(cfDevices)
-        return null;
+    public Set<? extends Device<DeviceRK>> findAllDevicesOfUser(String username) throws ConnectionException {
+        Rows<String, String> deviceRows = keyspace.prepareQuery(cfDevices)
+                .searchWithIndex()
+                .addExpression().whereColumn("owner").equals().value(username)
+                .execute().getResult();
+        HashSet<Device<DeviceRK>> devices = new HashSet<>(deviceRows.size(), 1f);
+        Iterator<Row<String, String>> devicesIterator = deviceRows.iterator();
+        if (devicesIterator.hasNext()) {
+            ColumnList<String> columns = devicesIterator.next().getColumns();
+            devices.add(buildDeviceFromColumnList(columns));
+        }
+        return devices;
     }
 
     @Override

@@ -12,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -26,7 +27,10 @@ public class UserResource {
     @GET
     @Path("{username}")
     public @NotNull User findByUsername(@PathParam("username") String username) {
-        return service.findByUsername(username);
+        User user = service.findByUsername(username);
+        if (user == null)
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        return user;
     }
 
     /**

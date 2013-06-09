@@ -8,7 +8,7 @@ class DevicesServiceTest extends spock.lang.Specification {
 
     def "test findAllDevices()"() {
         when:
-        def devices = service.findAllDevices()
+        def devices = service.findAllDevicesOfUser("john")
         def subscription = devices.subscribe([
                 onNext: { println 'onNext' },
                 onCompleted: { println 'onCompleted' },
@@ -43,7 +43,7 @@ class DevicesServiceTest extends spock.lang.Specification {
 
 //    def "test searching for missing device"() {
 //        when: "searching for a device which does not exist"
-//        def device = service.findDeviceById(UUID.randomUUID())
+//        def device = service.findDeviceById(TimeUUIDUtils.getUniqueTimeUUIDinMicros())
 //        then:
 //        device.next().name == '??'
 //        device.subscribe(

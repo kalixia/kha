@@ -1,6 +1,7 @@
 package com.kalixia.ha.model.devices;
 
 import com.kalixia.ha.model.Color;
+import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Dimmer;
 import com.kalixia.ha.model.capabilities.Light;
 import com.kalixia.ha.model.capabilities.Switch;
@@ -19,8 +20,8 @@ public class RGBLamp extends AbstractDevice implements Dimmer, Switch, Temperatu
     private float celsius;
 
     @SuppressWarnings("unchecked")
-    public RGBLamp(UUID id, String name) {
-        super(id, name, Switch.class, Light.class);
+    public RGBLamp(UUID id, String name, User owner) {
+        super(id, name, owner, Switch.class, Light.class);
     }
 
     @Override

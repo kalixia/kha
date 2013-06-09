@@ -14,16 +14,21 @@ import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.serializers.TimeUUIDSerializer;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatterBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.UUID;
 
 public class CassandraSensorsDao<T> implements SensorsDao<T> {
+    private final Keyspace keyspace;
     private final ColumnFamily<UUID, String> cfSensors;
     private final ColumnFamily<UUID, Date> cfSensorsData;
     private final ColumnFamily<String, Integer> cfSensorsStats;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraSensorsDao.class);
 
     public CassandraSensorsDao(Keyspace keyspace) throws ConnectionException {
+        this.keyspace = keyspace;
         cfSensors = new ColumnFamily<>("Sensors", TimeUUIDSerializer.get(), StringSerializer.get());
         cfSensorsData = new ColumnFamily<>("SensorsData", TimeUUIDSerializer.get(), DateSerializer.get());
         cfSensorsStats = new ColumnFamily<>("SensorsStats", StringSerializer.get(), IntegerSerializer.get());
@@ -38,26 +43,13 @@ public class CassandraSensorsDao<T> implements SensorsDao<T> {
 //                .appendLiteral('h')
 //                .toFormatter();
 
-        // analyse du schéma du keyspace
-        KeyspaceDefinition keyspaceDefinition;
-        try {
-            keyspaceDefinition = keyspace.describeKeyspace();
-        } catch (ConnectionException e) {
-            // création du keyspace s'il n'existe pas
-            System.out.printf("Keyspace '%s' does not exists. Creation in progress...%n", keyspace.getKeyspaceName());
-            keyspace.createKeyspace(ImmutableMap.<String, Object>builder()
-                    .put("strategy_options", ImmutableMap.<String, Object>builder()
-                            .put("replication_factor", "2")
-                            .build())
-                    .put("strategy_class", "SimpleStrategy")
-                    .build()
-            );
-            keyspaceDefinition = keyspace.describeKeyspace();
-        }
+        // analyze keyspace schema
+        KeyspaceDefinition keyspaceDefinition = CassandraUtils.getOrCreateKeyspace(keyspace);
 
-        // création de la CF Sensors si elle n'existe pas
+        // create Sensors CF if missing
         if (keyspaceDefinition.getColumnFamily(cfSensors.getName()) == null) {
             // column family is missing -- create it!
+            LOGGER.warn("Creating missing Column Family '{}'", cfSensors.getName());
             keyspace.createColumnFamily(cfSensors, ImmutableMap.<String, Object>builder()
                     .put("default_validation_class", ComparatorType.UTF8TYPE.getTypeName())
                     .put("key_validation_class", ComparatorType.TIMEUUIDTYPE.getTypeName())

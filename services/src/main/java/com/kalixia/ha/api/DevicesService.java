@@ -10,9 +10,10 @@ public interface DevicesService {
 
     /**
      * Returns all {@link Device}s of the given {@link User}.
+     * @param username the username/login of the {@link User}
      * @return the list of devices as an {@link Observable} of {@link Device}s
      */
-    Observable<? extends Device> findAllDevices();
+    Observable<? extends Device> findAllDevicesOfUser(String username);
 
     /**
      * Return the {@link Device} having the specified <tt>id</tt>.
@@ -23,10 +24,9 @@ public interface DevicesService {
 
     /**
      * Creates a new device.
-     * @param name the name of the device to create
-     * @param deviceType the class of the type of device to create
+     * @param device the device to create
      * @return the created device as an {@link Observable}
      */
-    Observable<Device> createDevice(String name, Class<? extends Device> deviceType);
+    void saveDevice(Device device);
 
 }

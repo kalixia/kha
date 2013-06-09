@@ -1,5 +1,6 @@
 package com.kalixia.ha.model.devices;
 
+import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Capability;
 import com.kalixia.ha.model.Device;
 import com.kalixia.ha.model.sensors.Sensor;
@@ -16,12 +17,14 @@ import java.util.UUID;
 abstract class AbstractDevice implements Device {
     private final UUID id;
     private final String name;
+    private final User owner;
     private final Set<Class<? extends Capability>> capabilities;
     private final Set<? extends Sensor> sensors;
 
-    protected AbstractDevice(UUID id, String name, Class<? extends Capability>... capabilities) {
+    protected AbstractDevice(UUID id, String name, User owner, Class<? extends Capability>... capabilities) {
         this.id = id;
         this.name = name;
+        this.owner = owner;
         this.capabilities = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(capabilities)));
         this.sensors = new HashSet<>();
     }
@@ -32,6 +35,11 @@ abstract class AbstractDevice implements Device {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public User getOwner() {
+        return owner;
     }
 
     public Set<Class<? extends Capability>> getCapabilities() {
@@ -53,6 +61,7 @@ abstract class AbstractDevice implements Device {
         final StringBuilder sb = new StringBuilder("AbstractDevice{");
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
+        sb.append(", owner='").append(owner).append('\'');
         sb.append(", capabilities=").append(capabilities);
         sb.append('}');
         return sb.toString();

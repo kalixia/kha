@@ -14,12 +14,16 @@ import javax.inject.Singleton;
 )
 public class ServicesModule {
 
-    @Provides @Singleton SensorsService provideSensorsService(SensorsDao dao) {
-        return new SensorsServiceImpl(dao);
+    @Provides @Singleton UsersService provideUsersService(UsersDao dao) {
+        return new UsersServiceImpl(dao);
     }
 
     @Provides @Singleton DevicesService provideDevicesService(DevicesDao dao) {
         return new DevicesServiceImpl(dao);
+    }
+
+    @Provides @Singleton SensorsService provideSensorsService(SensorsDao dao) {
+        return new SensorsServiceImpl(dao);
     }
 
 }

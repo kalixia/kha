@@ -12,11 +12,6 @@ class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    User findById(UUID id) {
-        return dao.findById(id)
-    }
-
-    @Override
     User findByUsername(String username) {
         return dao.findByUsername(username)
     }

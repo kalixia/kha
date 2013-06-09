@@ -3,19 +3,19 @@ package com.kalixia.ha.api.rest;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
 import com.kalixia.rawsag.codecs.jaxrs.UriTemplateUtils;
-import com.netflix.astyanax.util.TimeUUIDUtils;
 import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -23,31 +23,23 @@ public class UserResource {
     @Inject
     UsersService service;
 
-//    @GET
-//    public @NotNull List<? extends Device> findAllDevicesOfUser(@PathParam("username") String username) {
-//        return devicesService.findAllDevicesOfUser(username).toList().toBlockingObservable().single();
-//    }
-
-//    @GET
-//    @Path("{id}")
-//    public @NotNull Device findDeviceById(@PathParam("id") UUID id) {
-//        return devicesService.findDeviceById(id).toBlockingObservable().single();
-//    }
+    @GET
+    @Path("{username}")
+    public @NotNull User findByUsername(@PathParam("username") String username) {
+        return service.findByUsername(username);
+    }
 
     /**
      * Create a {@link User}.
      * <p>
-     * <tt>curl -i -H "Accept: application/json" -X POST -d "{ username: 'jeje' }" http://localhost:8082</tt>
+     * <tt>curl -i -H "Accept: application/json" -X POST -d "{ username: 'johndoe', email: 'john@doe.com', firstName: 'John', lastName: 'Doe' }" http://localhost:8082</tt>
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createUser(Map json) throws URISyntaxException {
-        String username = (String) json.get("username");
-        checkArgument(username != null, "Missing username");
+    public Response createUser(@Valid User user) throws URISyntaxException {
+        service.saveUser(user);
 
-        service.saveUser(new User(TimeUUIDUtils.getUniqueTimeUUIDinMicros(), username));
-
-        URI userURI = new URI(UriTemplateUtils.createURI("/{username}", username));
+        URI userURI = new URI(UriTemplateUtils.createURI("/{username}", user.getUsername()));
         return Response.created(userURI).build();
     }
 

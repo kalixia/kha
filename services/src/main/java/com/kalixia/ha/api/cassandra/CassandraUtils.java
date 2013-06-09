@@ -16,7 +16,7 @@ public class CassandraUtils {
             keyspaceDefinition = keyspace.describeKeyspace();
         } catch (ConnectionException e) {
             // create keyspace if missing
-            LOGGER.warn("Keyspace '%s' does not exists. Creation in progress...%n", keyspace.getKeyspaceName());
+            LOGGER.warn("Keyspace '{}' does not exists. Creation in progress...", keyspace.getKeyspaceName());
             keyspace.createKeyspace(ImmutableMap.<String, Object>builder()
                     .put("strategy_options", ImmutableMap.<String, Object>builder()
                             .put("replication_factor", "2")

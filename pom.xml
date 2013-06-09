@@ -117,6 +117,12 @@
                 <groupId>com.netflix.astyanax</groupId>
                 <artifactId>astyanax-recipes</artifactId>
                 <version>${astyanax.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.cassandra</groupId>
+                        <artifactId>cassandra-all</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Dagger dependencies -->

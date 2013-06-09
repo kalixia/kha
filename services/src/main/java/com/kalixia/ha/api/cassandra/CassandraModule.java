@@ -77,7 +77,7 @@ public class CassandraModule {
         return new ConnectionPoolConfigurationImpl("MyConnectionPool")
                 .setPort(9160)
                 .setMaxConnsPerHost(3)
-                .setSeeds("127.0.0.1:9160");
+                .setSeeds("127.0.0.1:9160,127.0.0.1:9171");
     }
 
 }

@@ -14,5 +14,6 @@ appender("STDOUT", ConsoleAppender) {
 
 logger "com.kalixia.ha", INFO
 logger "com.kalixia.ha.api.rest", DEBUG
+logger "org.cassandraunit", DEBUG
 
 root(WARN, ["STDOUT"])

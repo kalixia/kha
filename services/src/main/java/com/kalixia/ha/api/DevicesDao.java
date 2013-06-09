@@ -7,9 +7,9 @@ import rx.Observable;
 
 import java.util.UUID;
 
-public interface DevicesDao {
-    Device findById(UUID id) throws ConnectionException;
-    Device findByName(String name) throws ConnectionException;
-    Observable<? extends Device> findAllDevicesOfUser(User user) throws ConnectionException;
-    void save(Device device) throws ConnectionException;
+public interface DevicesDao<K> {
+    Device<K> findById(K id) throws ConnectionException;
+    Device<K> findByName(String name) throws ConnectionException;
+    Observable<? extends Device<K>> findAllDevicesOfUser(User user) throws ConnectionException;
+    void save(Device<K> device) throws ConnectionException;
 }

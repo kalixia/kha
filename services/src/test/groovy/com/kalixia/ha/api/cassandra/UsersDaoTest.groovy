@@ -1,25 +1,18 @@
 package com.kalixia.ha.api.cassandra
 
-import com.kalixia.ha.api.UsersDao
 import com.kalixia.ha.model.User
-import com.netflix.astyanax.Keyspace
 
-class UsersDaoTest extends AbstractCassandraDaoTest<UsersDao> {
+class UsersDaoTest extends AbstractCassandraDaoTest {
 
     def "test storing and retrieving user"() {
         given:
         def user = new User(username: 'johndoe', email: 'john@doe.com', firstName: 'John', lastName: 'Doe')
 
         when:
-        dao.save(user)
+        usersDao.save(user)
 
         then:
-        user == dao.findByUsername(user.getUsername())
-    }
-
-    @Override
-    protected UsersDao createDao(Keyspace keyspace) {
-        return new CassandraUsersDao(keyspace)
+        user == usersDao.findByUsername(user.getUsername())
     }
 
 }

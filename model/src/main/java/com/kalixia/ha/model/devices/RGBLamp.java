@@ -13,14 +13,14 @@ import java.util.UUID;
  * Devices which controls a RGB lamp or RGB Led Strip.
  * Has both {@link com.kalixia.ha.model.capabilities.Switch} and {@link com.kalixia.ha.model.capabilities.Light} capabilities.
  */
-public class RGBLamp extends AbstractDevice implements Dimmer, Switch, Temperature {
+public class RGBLamp<K> extends AbstractDevice<K> implements Dimmer, Switch, Temperature {
     private boolean on;
     private Color color;
     private float intensity;
     private float celsius;
 
     @SuppressWarnings("unchecked")
-    public RGBLamp(UUID id, String name, User owner) {
+    public RGBLamp(K id, String name, User owner) {
         super(id, name, owner, Switch.class, Light.class);
     }
 

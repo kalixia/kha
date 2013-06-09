@@ -1,30 +1,37 @@
 package com.kalixia.ha.api.cassandra
 
+import com.kalixia.ha.api.DevicesDao
+import com.kalixia.ha.api.UsersDao
 import com.netflix.astyanax.Keyspace
-import com.netflix.astyanax.test.EmbeddedCassandra
+import groovy.util.logging.Slf4j
+import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import spock.lang.Shared
+
 /**
  * Abstract class easing tests for Cassandra DAOs.
  */
-abstract class AbstractCassandraDaoTest<T> extends spock.lang.Specification {
-    @Shared T dao
-    @Shared EmbeddedCassandra cassandra
+@Slf4j("LOGGER")
+abstract class AbstractCassandraDaoTest extends spock.lang.Specification {
+    @Shared UsersDao usersDao
+    @Shared DevicesDao devicesDao
+    @Shared Keyspace keyspace;
 
     def setupSpec() {
-        cassandra = new EmbeddedCassandra()
-        cassandra.start()
+        LOGGER.info("Starting Embedded Cassandra Server...")
+        EmbeddedCassandraServerHelper.startEmbeddedCassandra()
 
         CassandraModule cassandraModule = new CassandraModule()
         def cassandraPool = cassandraModule.provideConnectionPool()
         def cassandraContext = cassandraModule.provideContext(cassandraPool)
-        def keyspace = cassandraModule.provideKeyspace(cassandraContext)
+        keyspace = cassandraModule.provideKeyspace(cassandraContext)
 
-        dao = createDao(keyspace)
+        usersDao = new CassandraUsersDao(keyspace)
+        devicesDao = new CassandraDevicesDao(keyspace, usersDao)
     }
 
     def cleanupSpec() {
-        cassandra.stop()
+        LOGGER.info("Stopping Embedded Cassandra Server...")
+        EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
     }
 
-    protected abstract T createDao(Keyspace keyspace);
 }

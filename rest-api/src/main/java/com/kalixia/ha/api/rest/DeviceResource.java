@@ -48,7 +48,7 @@ public class DeviceResource {
     /**
      * Create a {@link Device} for a given {@link User} identified by it's <tt>username</tt>.
      * <p>
-     * <tt>curl -i -H "Accept: application/json" -X POST -d "{name: 'test', type: 'RGBLamp' }" http://localhost:8082/jeje/devices</tt>
+     * <tt>curl -i -H "Accept: application/json" -X POST -d "{name: 'test', type: 'RGBLamp' }" http://localhost:8082/johndoe/devices</tt>
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -71,7 +71,7 @@ public class DeviceResource {
 
         URI deviceURI = new URI(UriTemplateUtils.createURI(
                 "/{username}/devices/{device}",
-                username, device.getId().toString()));
+                username, device.getName()));
         return Response.created(deviceURI).build();
     }
 

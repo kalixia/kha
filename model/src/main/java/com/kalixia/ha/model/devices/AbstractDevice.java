@@ -14,14 +14,14 @@ import java.util.UUID;
 /**
  * Abstract device class easing code a little bit.
  */
-abstract class AbstractDevice implements Device {
-    private final UUID id;
+abstract class AbstractDevice<K> implements Device<K> {
+    private final K id;
     private final String name;
     private final User owner;
     private final Set<Class<? extends Capability>> capabilities;
     private final Set<? extends Sensor> sensors;
 
-    protected AbstractDevice(UUID id, String name, User owner, Class<? extends Capability>... capabilities) {
+    protected AbstractDevice(K id, String name, User owner, Class<? extends Capability>... capabilities) {
         this.id = id;
         this.name = name;
         this.owner = owner;
@@ -29,7 +29,7 @@ abstract class AbstractDevice implements Device {
         this.sensors = new HashSet<>();
     }
 
-    public UUID getId() {
+    public K getId() {
         return id;
     }
 

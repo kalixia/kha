@@ -6,8 +6,8 @@ import com.kalixia.ha.model.sensors.Sensor;
 import java.util.Set;
 import java.util.UUID;
 
-public interface Device {
-    UUID getId();
+public interface Device<K> {
+    K getId();
     User getOwner();
     String getName();
     Set<Class<? extends Capability>> getCapabilities();

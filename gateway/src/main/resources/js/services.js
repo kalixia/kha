@@ -1,7 +1,15 @@
 var gatewayServices = angular.module('gatewayServices', ['ngResource']);
 
+gatewayServices.factory('User', function($resource) {
+    return $resource('http://localhost\\:8082/:username', {username: '@id'});
+});
+
+//gatewayServices.factory('User', function($http) {
+//
+//});
+
 gatewayServices.factory('Device', function($resource) {
-    return $resource('http://localhost\\:8082/devices/:id', {id: '@id'});
+    return $resource('http://localhost\\:8082/:username/devices/:id', {username:'', name: '@id'});
 });
 
 /*

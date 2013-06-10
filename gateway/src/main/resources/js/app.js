@@ -1,15 +1,17 @@
-var app = angular.module('gateway', ['gatewayControllers','gatewayServices']);
+var app = angular.module('gateway', ['gatewayServices']);
 
 // Set up our mappings between URLs, templates, and controllers
 function gatewayRouteConfig($routeProvider) {
     $routeProvider.
-        when('/', {
-            controller: DeviceListController,
-            templateUrl: 'devices.html'
+//        when('/', {
+//            controller: DeviceListController,
+//            templateUrl: 'devices.html'
+//        }).
+        when('/:username', {
+            controller: UserDetailController,
+            templateUrl: 'user.html'
         }).
-        // Notice that for the detail view, we specify a parameterized URL component
-        // by placing a colon in front of the id
-        when('/device/:id', {
+        when('/:username/device/:id', {
             controller: DeviceDetailController,
             templateUrl: 'device.html'
         }).

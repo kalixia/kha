@@ -46,7 +46,7 @@ public class DeviceResource {
      */
     @GET
     @Path("{name}")
-    public @NotNull Device findDeviceById(@PathParam("username") String username, @PathParam("id") String name) {
+    public @NotNull Device findDeviceById(@PathParam("username") String username, @PathParam("name") String name) {
         return devicesService.findDeviceById(new DeviceRK(username, name)).toBlockingObservable().single();
     }
 

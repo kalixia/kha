@@ -16,13 +16,13 @@ class DevicesServiceImpl implements DevicesService<DeviceRK> {
 
     @Override
     def Observable<? extends Device<DeviceRK>> findAllDevicesOfUser(String username) {
-        LOGGER.info("Searching for all devices of user {}...", username)
+        LOGGER.info("Searching for all devices of user '{}'...", username)
         return devicesDao.findAllDevicesOfUser(username)
     }
 
     @Override
     def Observable<Device<DeviceRK>> findDeviceById(DeviceRK id) {
-        LOGGER.info("Searching for device {}", id)
+        LOGGER.info("Searching for device '{}' of user '{}'", id.getDeviceName(), id.getOwner())
         return Observable.just(devicesDao.findById(id))
     }
 

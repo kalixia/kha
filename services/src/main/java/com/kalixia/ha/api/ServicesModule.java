@@ -4,7 +4,6 @@ import com.kalixia.ha.dao.DevicesDao;
 import com.kalixia.ha.dao.SensorsDao;
 import com.kalixia.ha.dao.UsersDao;
 import com.kalixia.ha.dao.cassandra.CassandraModule;
-import com.kalixia.ha.dao.cassandra.DeviceRK;
 import dagger.Module;
 import dagger.Provides;
 import javax.inject.Singleton;
@@ -21,7 +20,7 @@ public class ServicesModule {
         return new UsersServiceImpl(dao);
     }
 
-    @Provides @Singleton DevicesService<DeviceRK> provideDevicesService(DevicesDao dao) {
+    @Provides @Singleton DevicesService provideDevicesService(DevicesDao dao) {
         return new DevicesServiceImpl(dao);
     }
 

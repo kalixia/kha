@@ -3,8 +3,9 @@ package com.kalixia.ha.dao.cassandra
 import com.google.common.collect.ImmutableMap
 import com.kalixia.ha.dao.DevicesDao
 import com.kalixia.ha.dao.UsersDao
-import com.kalixia.ha.model.Device
+import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.User
+import com.kalixia.ha.model.devices.DeviceID
 import com.kalixia.ha.model.devices.RGBLamp
 import com.netflix.astyanax.Keyspace
 import com.netflix.astyanax.MutationBatch
@@ -20,7 +21,7 @@ import groovy.util.logging.Slf4j
 import rx.Observable
 
 @Slf4j("LOGGER")
-public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
+public class CassandraDevicesDao implements DevicesDao {
     private final Keyspace keyspace;
     private final ColumnFamily<String, String> cfDevices;
     private final UsersDao usersDao;
@@ -58,7 +59,7 @@ public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
     }
 
     @Override
-    public Device<DeviceRK> findById(DeviceRK id) throws ConnectionException {
+    public Device findById(DeviceID id) throws ConnectionException {
         ColumnList<String> result = keyspace.prepareQuery(cfDevices)
                 .getKey(id.getRowKey())
                 .execute().getResult();
@@ -69,7 +70,7 @@ public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
     }
 
     @Override
-    public Device<DeviceRK> findByName(String name) throws ConnectionException {
+    public Device findByName(String name) throws ConnectionException {
         Rows<String, String> deviceRows = keyspace.prepareQuery(cfDevices)
                 .searchWithIndex()
                 .setRowLimit(1)
@@ -83,7 +84,7 @@ public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
     }
 
     @Override
-    public Observable<? extends Device<DeviceRK>> findAllDevicesOfUser(String username) throws ConnectionException {
+    public Observable<? extends Device> findAllDevicesOfUser(String username) throws ConnectionException {
         Rows<String, String> rows = keyspace.prepareQuery(cfDevices)
                 .searchWithIndex()
                 .addExpression().whereColumn("owner").equals().value(username)
@@ -95,16 +96,16 @@ public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
     }
 
     @Override
-    public void save(Device<DeviceRK> device) throws ConnectionException {
+    public void save(Device device) throws ConnectionException {
         MutationBatch m = keyspace.prepareMutationBatch();
-        DeviceRK id = new DeviceRK(device.getOwner().getUsername(), device.getName());
+        DeviceID id = new DeviceID(device.getOwner().getUsername(), device.getName());
         m.withRow(cfDevices, id.getRowKey())
                 .putColumn("name", device.getName())
                 .putColumn("owner", device.getOwner().getUsername());
         m.execute();
     }
 
-    private Device<DeviceRK> buildDeviceFromColumnList(ColumnList<String> result) throws ConnectionException {
+    private Device buildDeviceFromColumnList(ColumnList<String> result) throws ConnectionException {
         String deviceName = result.getStringValue("name", null);
         String ownerUsername = result.getStringValue("owner", null);
         User owner = usersDao.findByUsername(ownerUsername);
@@ -112,7 +113,7 @@ public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
         if (owner == null) {
             LOGGER.error("Invalid data: device {} is linked to owner {} which can't be found!", deviceName, ownerUsername);
         }
-        return new RGBLamp<>(new DeviceRK(ownerUsername, deviceName), deviceName, owner);
+        return new RGBLamp<>(new DeviceID(ownerUsername, deviceName), deviceName, owner);
     }
 
 }

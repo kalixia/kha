@@ -1,5 +1,6 @@
 package com.kalixia.ha.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class User {
@@ -8,8 +9,16 @@ public class User {
     private String firstName;
     private String lastName;
 
+    @JsonCreator
     public User(@JsonProperty("username") String username) {
         this.username = username;
+    }
+
+    public User(String username, String email, String firstName, String lastName) {
+        this.username = username;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public String getUsername() {

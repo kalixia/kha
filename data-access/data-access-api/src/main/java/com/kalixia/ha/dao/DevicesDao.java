@@ -1,12 +1,12 @@
 package com.kalixia.ha.dao;
 
-import com.kalixia.ha.model.Device;
+import com.kalixia.ha.model.devices.Device;
+import com.kalixia.ha.model.devices.DeviceID;
 import rx.Observable;
-import java.util.Set;
 
-public interface DevicesDao<K> {
-    Device<K> findById(K id) throws Exception;
-    Device<K> findByName(String name) throws Exception;
-    Observable<? extends Device<K>> findAllDevicesOfUser(String username) throws Exception;
-    void save(Device<K> device) throws Exception;
+public interface DevicesDao {
+    Device findById(DeviceID id) throws Exception;
+    Device findByName(String name) throws Exception;
+    Observable<? extends Device> findAllDevicesOfUser(String username) throws Exception;
+    void save(Device device) throws Exception;
 }

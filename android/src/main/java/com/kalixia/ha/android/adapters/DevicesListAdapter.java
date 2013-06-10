@@ -12,7 +12,7 @@ import com.googlecode.androidannotations.annotations.RootContext;
 import com.kalixia.ha.android.services.DevicesManager;
 import com.kalixia.ha.android.views.DeviceItemView;
 import com.kalixia.ha.android.views.DeviceItemView_;
-import com.kalixia.ha.model.Device;
+import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.capabilities.Light;
 
 import java.util.List;

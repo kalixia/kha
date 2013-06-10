@@ -3,7 +3,7 @@ package com.kalixia.ha.android.services;
 import com.googlecode.androidannotations.annotations.EBean;
 import com.googlecode.androidannotations.api.Scope;
 import com.kalixia.ha.model.Color;
-import com.kalixia.ha.model.Device;
+import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.devices.RGBLamp;
 
 import java.util.Arrays;

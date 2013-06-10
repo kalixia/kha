@@ -1,15 +1,16 @@
 package com.kalixia.ha.dao.cassandra
 
 import com.kalixia.ha.model.User
+import com.kalixia.ha.model.devices.DeviceID
 import com.kalixia.ha.model.devices.RGBLamp
 
 class DevicesDaoTest extends AbstractCassandraDaoTest {
 
     def "create a user with one device and retreive the create device"() {
         given:
-        def user = new User(username: 'johndoe', email: 'john@doe.com', firstName: 'John', lastName: 'Doe')
-        def deviceId = new DeviceRK(user.getUsername(), 'my lamp')
-        def device = new RGBLamp<DeviceRK>(deviceId, 'my lamp', user)
+        def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
+        def deviceId = new DeviceID(user.getUsername(), 'my lamp')
+        def device = new RGBLamp(deviceId, 'my lamp', user)
 
         when:
         usersDao.save(user)

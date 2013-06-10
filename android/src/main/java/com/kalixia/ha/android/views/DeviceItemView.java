@@ -6,7 +6,7 @@ import android.widget.TextView;
 import com.googlecode.androidannotations.annotations.EViewGroup;
 import com.googlecode.androidannotations.annotations.ViewById;
 import com.kalixia.ha.android.R;
-import com.kalixia.ha.model.Device;
+import com.kalixia.ha.model.devices.Device;
 
 @EViewGroup(R.layout.device_list_item)
 public class DeviceItemView extends LinearLayout {

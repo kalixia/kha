@@ -6,7 +6,7 @@ class UsersDaoTest extends AbstractCassandraDaoTest {
 
     def "test storing and retrieving user"() {
         given:
-        def user = new User(username: 'johndoe', email: 'john@doe.com', firstName: 'John', lastName: 'Doe')
+        def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
 
         when:
         usersDao.save(user)

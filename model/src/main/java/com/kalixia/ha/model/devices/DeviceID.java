@@ -1,10 +1,10 @@
-package com.kalixia.ha.dao.cassandra;
+package com.kalixia.ha.model.devices;
 
-public class DeviceRK {
+public class DeviceID {
     private final String owner;
     private final String deviceName;
 
-    public DeviceRK(String owner, String deviceName) {
+    public DeviceID(String owner, String deviceName) {
         // TODO: check if owner and deviceName are not null and not empty!
         this.owner = owner;
         this.deviceName = deviceName;
@@ -28,10 +28,10 @@ public class DeviceRK {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DeviceRK deviceRK = (DeviceRK) o;
+        DeviceID deviceID = (DeviceID) o;
 
-        if (!deviceName.equals(deviceRK.deviceName)) return false;
-        if (!owner.equals(deviceRK.owner)) return false;
+        if (!deviceName.equals(deviceID.deviceName)) return false;
+        if (!owner.equals(deviceID.owner)) return false;
 
         return true;
     }
@@ -45,7 +45,7 @@ public class DeviceRK {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("DeviceRK{");
+        final StringBuilder sb = new StringBuilder("DeviceID{");
         sb.append("owner='").append(owner).append('\'');
         sb.append(", deviceName='").append(deviceName).append('\'');
         sb.append('}');

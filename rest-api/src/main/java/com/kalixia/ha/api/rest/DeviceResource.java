@@ -3,9 +3,9 @@ package com.kalixia.ha.api.rest;
 import com.kalixia.ha.api.DevicesFactory;
 import com.kalixia.ha.api.DevicesService;
 import com.kalixia.ha.api.UsersService;
-import com.kalixia.ha.dao.cassandra.DeviceRK;
-import com.kalixia.ha.model.Device;
 import com.kalixia.ha.model.User;
+import com.kalixia.ha.model.devices.Device;
+import com.kalixia.ha.model.devices.DeviceID;
 import com.kalixia.ha.model.devices.RGBLamp;
 import com.kalixia.rawsag.codecs.jaxrs.UriTemplateUtils;
 import rx.Observable;
@@ -31,7 +31,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 @Produces(MediaType.APPLICATION_JSON)
 public class DeviceResource {
     @Inject
-    DevicesService<DeviceRK> devicesService;
+    DevicesService devicesService;
 
     @Inject
     UsersService usersService;
@@ -48,7 +48,7 @@ public class DeviceResource {
     public
     @NotNull
     Device findDeviceById(@PathParam("username") String username, @PathParam("name") String name) {
-        return devicesService.findDeviceById(new DeviceRK(username, name)).toBlockingObservable().single();
+        return devicesService.findDeviceById(new DeviceID(username, name)).toBlockingObservable().single();
     }
 
     @POST
@@ -69,7 +69,7 @@ public class DeviceResource {
                     .build();
         }
 
-        Device<DeviceRK> device = DevicesFactory.createDevice(name, owner, RGBLamp.class);
+        Device device = DevicesFactory.createDevice(name, owner, RGBLamp.class);
         if (devicesService.findDeviceById(device.getId()) == null) {
             devicesService.saveDevice(device);
             URI deviceURI = new URI(UriTemplateUtils.createURI(
@@ -107,8 +107,8 @@ public class DeviceResource {
                     .build();
         }
 
-        Device<DeviceRK> device = DevicesFactory.createDevice(name, owner, RGBLamp.class);
-        Observable<? extends Device<DeviceRK>> existingDevice = devicesService.findDeviceById(device.getId());
+        Device device = DevicesFactory.createDevice(name, owner, RGBLamp.class);
+        Observable<? extends Device> existingDevice = devicesService.findDeviceById(device.getId());
         if (existingDevice == null) {
             return Response
                     .status(Response.Status.NOT_FOUND)

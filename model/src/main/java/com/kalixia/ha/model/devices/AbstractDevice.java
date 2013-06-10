@@ -3,26 +3,24 @@ package com.kalixia.ha.model.devices;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Capability;
-import com.kalixia.ha.model.Device;
 import com.kalixia.ha.model.sensors.Sensor;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Abstract device class easing code a little bit.
  */
-abstract class AbstractDevice<K> implements Device<K> {
-    private final K id;
+abstract class AbstractDevice implements Device {
+    private final DeviceID id;
     private final String name;
     private final User owner;
     private final Set<Class<? extends Capability>> capabilities;
     private final Set<? extends Sensor> sensors;
 
-    protected AbstractDevice(K id, String name, User owner, Class<? extends Capability>... capabilities) {
+    protected AbstractDevice(DeviceID id, String name, User owner, Class<? extends Capability>... capabilities) {
         this.id = id;
         this.name = name;
         this.owner = owner;
@@ -31,7 +29,7 @@ abstract class AbstractDevice<K> implements Device<K> {
     }
 
     @JsonIgnore
-    public K getId() {
+    public DeviceID getId() {
         return id;
     }
 

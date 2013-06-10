@@ -2,11 +2,18 @@ package com.kalixia.ha.gateway;
 
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer;
+import com.fasterxml.jackson.databind.util.StdConverter;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.kalixia.ha.api.ServicesModule;
 import com.kalixia.ha.api.rest.GeneratedJaxRsDaggerModule;
+import com.kalixia.ha.model.User;
 import dagger.Module;
 import dagger.Provides;
-
 import javax.inject.Singleton;
 
 @Module(
@@ -32,6 +39,19 @@ public class GatewayModule {
 
     @Provides @Singleton JmxReporter provideMetricRegistry(MetricRegistry registry) {
         return JmxReporter.forRegistry(registry).inDomain("com.kalixia.ha.api.rest").build();
+    }
+
+    @Provides @Singleton ObjectMapper provideObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+        mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+        mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+
+        // register Jackson modules
+        mapper.registerModule(new JodaModule());
+        mapper.registerModule(new AfterburnerModule());
+
+        return mapper;
     }
 
 }

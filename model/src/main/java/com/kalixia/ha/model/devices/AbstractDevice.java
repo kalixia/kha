@@ -1,10 +1,11 @@
 package com.kalixia.ha.model.devices;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Capability;
+import com.kalixia.ha.model.internal.UserReferenceSerializer;
 import com.kalixia.ha.model.sensors.Sensor;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,7 +39,7 @@ abstract class AbstractDevice implements Device {
     }
 
     @Override
-    // TODO: override serialization -- should only send owner username!
+    @JsonSerialize(using = UserReferenceSerializer.class)
     public User getOwner() {
         return owner;
     }

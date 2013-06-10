@@ -21,9 +21,9 @@ class DevicesServiceImpl implements DevicesService {
     }
 
     @Override
-    def Observable<Device> findDeviceById(DeviceID id) {
+    def Device findDeviceById(DeviceID id) {
         LOGGER.info("Searching for device '{}' of user '{}'", id.getDeviceName(), id.getOwner())
-        return Observable.just(devicesDao.findById(id))
+        return devicesDao.findById(id)
     }
 
     @Override
@@ -31,4 +31,8 @@ class DevicesServiceImpl implements DevicesService {
         devicesDao.save(device)
     }
 
+    @Override
+    void deleteDevice(DeviceID id) {
+        devicesDao.delete(id)
+    }
 }

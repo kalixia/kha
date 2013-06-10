@@ -48,7 +48,7 @@ public class DeviceResource {
     public
     @NotNull
     Device findDeviceById(@PathParam("username") String username, @PathParam("name") String name) {
-        return devicesService.findDeviceById(new DeviceID(username, name)).toBlockingObservable().single();
+        return devicesService.findDeviceById(new DeviceID(username, name));
     }
 
     @POST
@@ -107,16 +107,20 @@ public class DeviceResource {
                     .build();
         }
 
-        Device device = DevicesFactory.createDevice(name, owner, RGBLamp.class);
-        Observable<? extends Device> existingDevice = devicesService.findDeviceById(device.getId());
+        Device device = DevicesFactory.createDevice(newName, owner, RGBLamp.class);
+        Device existingDevice = devicesService.findDeviceById(new DeviceID(username, name));
         if (existingDevice == null) {
             return Response
                     .status(Response.Status.NOT_FOUND)
                     .entity(Errors.withErrors(
                             new ErrorMessage("The device '%s' for user '%s' does not exist. " +
-                                    "CreÍate it first via a POST request.", name, username)))
+                                    "Create it first via a POST request.", name, username)))
                     .build();
         } else {
+            // ensure that this is the same device otherwise delete the old one and create the new one
+            if (!existingDevice.getId().equals(device.getId())) {
+                devicesService.deleteDevice(existingDevice.getId());
+            }
             devicesService.saveDevice(device);
             return Response.ok().build();
         }

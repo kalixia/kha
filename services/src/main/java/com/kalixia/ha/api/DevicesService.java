@@ -19,7 +19,7 @@ public interface DevicesService {
      * @param id the ID of the {@link Device} to search for
      * @return the device as an {@link Observable}
      */
-    Observable<? extends Device> findDeviceById(DeviceID id);
+    Device findDeviceById(DeviceID id);
 
     /**
      * Creates a new device.
@@ -28,4 +28,9 @@ public interface DevicesService {
      */
     void saveDevice(Device device);
 
+    /**
+     * Delete the {@link Device} having the specified <tt>id</tt>.
+     * @param id the ID of the {@link Device} to delete
+     */
+    void deleteDevice(DeviceID id);
 }

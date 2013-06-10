@@ -105,6 +105,13 @@ public class CassandraDevicesDao implements DevicesDao {
         m.execute();
     }
 
+    @Override
+    public void delete(DeviceID id) {
+        MutationBatch m = keyspace.prepareMutationBatch()
+        m.withRow(cfDevices, id.getRowKey()).delete()
+        m.execute()
+    }
+
     private Device buildDeviceFromColumnList(ColumnList<String> result) throws ConnectionException {
         String deviceName = result.getStringValue("name", null);
         String ownerUsername = result.getStringValue("owner", null);

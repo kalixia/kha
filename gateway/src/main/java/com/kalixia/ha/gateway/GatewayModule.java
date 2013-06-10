@@ -49,6 +49,7 @@ public class GatewayModule {
 
         // register Jackson modules
         mapper.registerModule(new JodaModule());
+//        mapper.registerModule(new GuavaModule());
         mapper.registerModule(new AfterburnerModule());
 
         return mapper;

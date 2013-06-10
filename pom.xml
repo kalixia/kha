@@ -156,6 +156,16 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-guava</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-afterburner</artifactId>
                 <version>${jackson.version}</version>
@@ -203,6 +213,13 @@
                 <version>2.0-rc3</version>
             </dependency>
 
+            <!-- Guava dependencies -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>14.0.1</version>
+            </dependency>
+
             <!-- Groovy dependencies -->
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
@@ -210,13 +227,6 @@
                 <version>${groovy.version}</version>
             </dependency>
 
-            <!-- Annotations Scanner dependencies -->
-            <dependency>
-                <groupId>eu.infomas</groupId>
-                <artifactId>annotation-detector</artifactId>
-                <version>3.0.1</version>
-            </dependency>
-            
             <!-- Logging dependencies -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>

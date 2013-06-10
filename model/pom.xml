@@ -19,6 +19,12 @@
             <artifactId>joda-time</artifactId>
         </dependency>
 
+        <!-- Guava dependencies -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
         <!-- Jackson dependencies -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -32,10 +38,6 @@
             <!--<groupId>com.fasterxml.jackson.jaxrs</groupId>-->
             <!--<artifactId>jackson-jaxrs-json-provider</artifactId>-->
         <!--</dependency>-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-afterburner</artifactId>
-        </dependency>
 
     </dependencies>
 

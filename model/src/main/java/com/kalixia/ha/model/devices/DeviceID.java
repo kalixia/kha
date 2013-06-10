@@ -1,11 +1,14 @@
 package com.kalixia.ha.model.devices;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class DeviceID {
     private final String owner;
     private final String deviceName;
 
     public DeviceID(String owner, String deviceName) {
-        // TODO: check if owner and deviceName are not null and not empty!
+        checkNotNull(owner, "Device owner can't be null");
+        checkNotNull(deviceName, "Device name can't be null");
         this.owner = owner;
         this.deviceName = deviceName;
     }

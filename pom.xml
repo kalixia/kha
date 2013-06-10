@@ -25,7 +25,7 @@
         <rxjava.version>0.9.0</rxjava.version>
         <astyanax.version>1.56.37</astyanax.version>
         <metrics.version>3.0.0-RC1</metrics.version>
-        <jackson.version>2.2.1</jackson.version>
+        <jackson.version>2.2.2</jackson.version>
         <spock.version>0.7-groovy-2.0</spock.version>
         <dagger.version>1.0.1</dagger.version>
         <groovy.version>2.1.4</groovy.version>

@@ -3,12 +3,15 @@ package com.kalixia.ha.api.rest;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
 import com.kalixia.rawsag.codecs.jaxrs.UriTemplateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -24,6 +27,8 @@ public class UserResource {
     @Inject
     UsersService service;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
+
     @GET
     @Path("{username}")
     public @NotNull User findByUsername(@PathParam("username") String username) {
@@ -33,18 +38,38 @@ public class UserResource {
         return user;
     }
 
-    /**
-     * Create a {@link User}.
-     * <p>
-     * <tt>curl -i -H "Accept: application/json" -X POST -d "{ username: 'johndoe', email: 'john@doe.com', firstName: 'John', lastName: 'Doe' }" http://localhost:8082</tt>
-     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUser(@Valid User user) throws URISyntaxException {
-        service.saveUser(user);
+        if (service.findByUsername(user.getUsername()) == null) {
+            service.saveUser(user);
+            URI userURI = new URI(UriTemplateUtils.createURI("/{username}", user.getUsername()));
+            return Response.created(userURI).build();
+        } else {    // user already exists; should use PUT method on the resource instead!
+            return Response
+                    .status(Response.Status.CONFLICT)
+                    .entity(Errors.withErrors(
+                            new ErrorMessage("The user '%s' already exists. Use PUT method on the resource instead!",
+                                    user.getUsername())))
+                    .build();
+        }
+    }
 
-        URI userURI = new URI(UriTemplateUtils.createURI("/{username}", user.getUsername()));
-        return Response.created(userURI).build();
+    @PUT
+    @Path("{username}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateUser(@PathParam("username") String username, @Valid User user) throws URISyntaxException {
+        if (service.findByUsername(username) == null) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(Errors.withErrors(
+                            new ErrorMessage("The user '%s' does not exist. Create it first via a POST request.",
+                                    username)))
+                    .build();
+        } else {
+            service.saveUser(user);
+            return Response.ok().build();
+        }
     }
 
 }

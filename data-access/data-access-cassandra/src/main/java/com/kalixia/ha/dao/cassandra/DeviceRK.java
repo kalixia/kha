@@ -43,4 +43,12 @@ public class DeviceRK {
         return result;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DeviceRK{");
+        sb.append("owner='").append(owner).append('\'');
+        sb.append(", deviceName='").append(deviceName).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

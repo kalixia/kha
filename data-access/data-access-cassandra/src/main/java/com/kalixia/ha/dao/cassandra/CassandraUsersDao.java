@@ -55,15 +55,12 @@ public class CassandraUsersDao implements UsersDao {
 
     @Override
     public void save(User user) throws ConnectionException {
-        User userFound = findByUsername(user.getUsername());
-        if (userFound == null) {
-            MutationBatch m = keyspace.prepareMutationBatch();
-            m.withRow(cfUsers, user.getUsername())
-                    .putColumn("email", user.getEmail())
-                    .putColumn("firstName", user.getFirstName())
-                    .putColumn("lastName", user.getLastName());
-            m.execute();
-        }
+        MutationBatch m = keyspace.prepareMutationBatch();
+        m.withRow(cfUsers, user.getUsername())
+                .putColumn("email", user.getEmail())
+                .putColumn("firstName", user.getFirstName())
+                .putColumn("lastName", user.getLastName());
+        m.execute();
     }
 
 }

@@ -1,23 +1,19 @@
 package com.kalixia.ha.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class User {
-    private String username;
+    private final String username;
     private String email;
     private String firstName;
     private String lastName;
 
-    public User() {}
-
-    public User(String username) {
+    public User(@JsonProperty("username") String username) {
         this.username = username;
     }
 
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {

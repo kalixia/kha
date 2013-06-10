@@ -96,15 +96,12 @@ public class CassandraDevicesDao implements DevicesDao<DeviceRK> {
 
     @Override
     public void save(Device<DeviceRK> device) throws ConnectionException {
-        Device deviceFound = findById(device.getId());
-        if (deviceFound == null) {
-            MutationBatch m = keyspace.prepareMutationBatch();
-            DeviceRK id = new DeviceRK(device.getOwner().getUsername(), device.getName());
-            m.withRow(cfDevices, id.getRowKey())
-                    .putColumn("name", device.getName())
-                    .putColumn("owner", device.getOwner().getUsername());
-            m.execute();
-        }
+        MutationBatch m = keyspace.prepareMutationBatch();
+        DeviceRK id = new DeviceRK(device.getOwner().getUsername(), device.getName());
+        m.withRow(cfDevices, id.getRowKey())
+                .putColumn("name", device.getName())
+                .putColumn("owner", device.getOwner().getUsername());
+        m.execute();
     }
 
     private Device<DeviceRK> buildDeviceFromColumnList(ColumnList<String> result) throws ConnectionException {

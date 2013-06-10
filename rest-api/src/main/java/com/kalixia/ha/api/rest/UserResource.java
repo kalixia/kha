@@ -31,11 +31,14 @@ public class UserResource {
 
     @GET
     @Path("{username}")
-    public @NotNull User findByUsername(@PathParam("username") String username) {
+    public Response findByUsername(@PathParam("username") String username) {
         User user = service.findByUsername(username);
         if (user == null)
             throw new WebApplicationException(Response.Status.NOT_FOUND);
-        return user;
+        return Response
+                .ok(user)
+                .link(UriTemplateUtils.createURI("/{username}/devices", username), "devices")
+                .build();
     }
 
     @POST
@@ -44,7 +47,8 @@ public class UserResource {
         if (service.findByUsername(user.getUsername()) == null) {
             service.saveUser(user);
             URI userURI = new URI(UriTemplateUtils.createURI("/{username}", user.getUsername()));
-            return Response.created(userURI).build();
+            return Response
+                    .created(userURI).build();
         } else {    // user already exists; should use PUT method on the resource instead!
             return Response
                     .status(Response.Status.CONFLICT)

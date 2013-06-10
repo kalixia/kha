@@ -16,9 +16,8 @@ import com.netflix.astyanax.model.Row
 import com.netflix.astyanax.model.Rows
 import com.netflix.astyanax.serializers.ComparatorType
 import com.netflix.astyanax.serializers.StringSerializer
-import rx.Observable
 import groovy.util.logging.Slf4j
-import rx.Subscription
+import rx.Observable
 
 @Slf4j("LOGGER")
 public class CassandraDevicesDao implements DevicesDao<DeviceRK> {

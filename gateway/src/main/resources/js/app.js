@@ -37,3 +37,7 @@ function gatewayRouteConfig($routeProvider) {
 
 app.config(['$routeProvider', gatewayRouteConfig]);
 //app.config(['$httpProvider', gatewayApiUsageConfig]);
+//app.config(["$httpProvider", function($httpProvider) {
+//  $httpProvider.defaults.headers.common['X-App-Id1'] = 'X';
+//  $httpProvider.defaults.headers.get['X-App-Id1'] = 'P';
+//}])

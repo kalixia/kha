@@ -21,7 +21,7 @@ import groovy.util.logging.Slf4j
 import rx.Observable
 
 @Slf4j("LOGGER")
-public class CassandraDevicesDao implements DevicesDao {
+public class CassandraDevicesDao extends AbstractCassandraDao<Device, String> implements DevicesDao {
     private final Keyspace keyspace;
     private final ColumnFamily<String, String> cfDevices;
     private final UsersDao usersDao;
@@ -63,10 +63,7 @@ public class CassandraDevicesDao implements DevicesDao {
         ColumnList<String> result = keyspace.prepareQuery(cfDevices)
                 .getKey(id.getRowKey())
                 .execute().getResult();
-        if (result.isEmpty()) {
-            return null;
-        }
-        return buildDeviceFromColumnList(result);
+        return buildFromColumnList(id.rowKey, result);
     }
 
     @Override
@@ -77,7 +74,8 @@ public class CassandraDevicesDao implements DevicesDao {
                 .addExpression().whereColumn("name").equals().value(name)
                 .execute().getResult();
         if (deviceRows.iterator().hasNext()) {
-            return buildDeviceFromColumnList(deviceRows.iterator().next().getColumns());
+            def row = deviceRows.iterator().next()
+            return buildFromColumnList(row.key, row.columns);
         } else {
             return null;        // no device found!
         }
@@ -91,7 +89,7 @@ public class CassandraDevicesDao implements DevicesDao {
                 .execute().getResult()
 
         return Observable.from(rows).map({ Row<String, String> row ->
-            buildDeviceFromColumnList(row.getColumns())
+            buildFromColumnList(row.key, row.columns)
         })
     }
 
@@ -112,7 +110,11 @@ public class CassandraDevicesDao implements DevicesDao {
         m.execute()
     }
 
-    private Device buildDeviceFromColumnList(ColumnList<String> result) throws ConnectionException {
+    @Override
+    protected Device buildFromColumnList(String id, ColumnList<String> result) throws ConnectionException {
+        if (result.isEmpty()) {
+            return null;
+        }
         String deviceName = result.getStringValue("name", null);
         String ownerUsername = result.getStringValue("owner", null);
         User owner = usersDao.findByUsername(ownerUsername);
@@ -122,6 +124,5 @@ public class CassandraDevicesDao implements DevicesDao {
         }
         return new RGBLamp<>(new DeviceID(ownerUsername, deviceName), deviceName, owner);
     }
-
 }
 

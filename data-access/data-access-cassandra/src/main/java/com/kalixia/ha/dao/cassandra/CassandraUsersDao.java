@@ -14,7 +14,7 @@ import com.netflix.astyanax.serializers.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CassandraUsersDao implements UsersDao {
+public class CassandraUsersDao extends AbstractCassandraDao<User, String> implements UsersDao {
     private final Keyspace keyspace;
     private final ColumnFamily<String, String> cfUsers;
     private static final Logger LOGGER = LoggerFactory.getLogger(CassandraUsersDao.class);
@@ -34,6 +34,17 @@ public class CassandraUsersDao implements UsersDao {
                     .put("default_validation_class", ComparatorType.UTF8TYPE.getTypeName())
                     .put("key_validation_class", ComparatorType.UTF8TYPE.getTypeName())
                     .put("comparator_type", ComparatorType.UTF8TYPE.getTypeName())
+                    .put("column_metadata", ImmutableMap.<String, Object>builder()
+                        .put("email", ImmutableMap.<String, Object>builder()
+                                .put("validation_class", ComparatorType.UTF8TYPE.getTypeName())
+                                .build())
+                        .put("firstName", ImmutableMap.<String, Object>builder()
+                                .put("validation_class", ComparatorType.UTF8TYPE.getTypeName())
+                                .build())
+                        .put("lastName", ImmutableMap.<String, Object>builder()
+                                .put("validation_class", ComparatorType.UTF8TYPE.getTypeName())
+                                .build())
+                        .build())
                     .build());
         }
     }
@@ -43,14 +54,7 @@ public class CassandraUsersDao implements UsersDao {
         ColumnList<String> result = keyspace.prepareQuery(cfUsers)
                 .getKey(username)
                 .execute().getResult();
-        if (result.isEmpty()) {
-            return null;
-        }
-        User user = new User(username);
-        user.setEmail(result.getStringValue("email", null));
-        user.setFirstName(result.getStringValue("firstName", null));
-        user.setLastName(result.getStringValue("lastName", null));
-        return user;
+        return buildFromColumnList(username, result);
     }
 
     @Override
@@ -63,4 +67,15 @@ public class CassandraUsersDao implements UsersDao {
         m.execute();
     }
 
+    @Override
+    protected User buildFromColumnList(String username, ColumnList<String> result) throws ConnectionException {
+        if (result.isEmpty()) {
+            return null;
+        }
+        User user = new User(username);
+        user.setEmail(result.getStringValue("email", null));
+        user.setFirstName(result.getStringValue("firstName", null));
+        user.setLastName(result.getStringValue("lastName", null));
+        return user;
+    }
 }

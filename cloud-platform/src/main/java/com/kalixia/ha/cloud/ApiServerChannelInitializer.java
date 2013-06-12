@@ -3,11 +3,11 @@ package com.kalixia.ha.cloud;
 import com.fasterxml.jackson.core.json.PackageVersion;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.kalixia.grapi.ApiProtocolSwitcher;
+import com.kalixia.grapi.codecs.json.ByteBufSerializer;
+import com.kalixia.grapi.codecs.rest.RESTCodec;
+import com.kalixia.grapi.codecs.rxjava.ObservableEncoder;
 import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
-import com.kalixia.rawsag.ApiProtocolSwitcher;
-import com.kalixia.rawsag.codecs.json.ByteBufSerializer;
-import com.kalixia.rawsag.codecs.rest.RESTCodec;
-import com.kalixia.rawsag.codecs.rxjava.ObservableEncoder;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -22,7 +22,6 @@ import io.netty.handler.logging.MessageLoggingHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.EventExecutorGroup;
-
 import javax.inject.Inject;
 
 public class ApiServerChannelInitializer extends ChannelInitializer<SocketChannel> {

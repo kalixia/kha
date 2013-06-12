@@ -14,6 +14,7 @@ class UsersServiceImpl implements UsersService {
 
     @Override
     User findByUsername(String username) {
+        LOGGER.info("Searching for user '{}'...", username)
         return dao.findByUsername(username)
     }
 

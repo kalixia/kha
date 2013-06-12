@@ -1,15 +1,15 @@
 var gatewayServices = angular.module('gatewayServices', ['ngResource', 'restangular'])
     .config(function(RestangularProvider) {
-        RestangularProvider.setBaseUrl("http\\://localhost:8082");
+        RestangularProvider.setBaseUrl("http://localhost\\:8082");
     });
 
-gatewayServices.factory('User', function($resource) {
-    return $resource('http://localhost\\:8082/:username', {username: '@id'});
-});
+//gatewayServices.factory('User', function($resource) {
+//    return $resource('http://localhost\\:8082/:username', {username: '@id'});
+//});
 
-gatewayServices.factory('Device', function($resource) {
-    return $resource('http://localhost\\:8082/:username/devices/:id', {username:'', name: '@id'});
-});
+//gatewayServices.factory('Device', function($resource) {
+//    return $resource('http://localhost\\:8082/:username/devices/:id', {username:'', name: '@id'});
+//});
 
 /*
 gatewayServices.factory('DeviceWS', ['$q', function ($q) {

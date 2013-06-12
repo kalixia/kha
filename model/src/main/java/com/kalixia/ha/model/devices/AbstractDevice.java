@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Capability;
+import com.kalixia.ha.model.internal.CapabilitiesSerializer;
 import com.kalixia.ha.model.internal.UserReferenceSerializer;
 import com.kalixia.ha.model.sensors.Sensor;
 import java.util.Arrays;
@@ -44,6 +45,8 @@ abstract class AbstractDevice implements Device {
         return owner;
     }
 
+    @Override
+    @JsonSerialize(using = CapabilitiesSerializer.class)
     public Set<Class<? extends Capability>> getCapabilities() {
         return capabilities;
     }

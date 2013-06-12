@@ -20,7 +20,7 @@
     </modules>
 
     <properties>
-        <rawsag.version>0.1-SNAPSHOT</rawsag.version>
+        <grapi.version>0.1-SNAPSHOT</grapi.version>
         <hystrix.version>1.2.16</hystrix.version>
         <rxjava.version>0.9.0</rxjava.version>
         <astyanax.version>1.56.37</astyanax.version>
@@ -34,16 +34,16 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- RaWSAG dependencies -->
+            <!-- Grapi dependencies -->
             <dependency>
-                <groupId>com.kalixia.rawsag</groupId>
+                <groupId>com.kalixia.grapi</groupId>
                 <artifactId>netty-codecs</artifactId>
-                <version>${rawsag.version}</version>
+                <version>${grapi.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.kalixia.rawsag</groupId>
+                <groupId>com.kalixia.grapi</groupId>
                 <artifactId>netty-compiler</artifactId>
-                <version>${rawsag.version}</version>
+                <version>${grapi.version}</version>
                 <scope>provided</scope>
             </dependency>
 

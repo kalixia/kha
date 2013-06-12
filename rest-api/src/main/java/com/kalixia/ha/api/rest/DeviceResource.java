@@ -1,5 +1,6 @@
 package com.kalixia.ha.api.rest;
 
+import com.kalixia.grapi.codecs.jaxrs.UriTemplateUtils;
 import com.kalixia.ha.api.DevicesFactory;
 import com.kalixia.ha.api.DevicesService;
 import com.kalixia.ha.api.UsersService;
@@ -7,8 +8,6 @@ import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.devices.DeviceID;
 import com.kalixia.ha.model.devices.RGBLamp;
-import com.kalixia.rawsag.codecs.jaxrs.UriTemplateUtils;
-import rx.Observable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;

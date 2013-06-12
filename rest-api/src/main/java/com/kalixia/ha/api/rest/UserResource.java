@@ -1,8 +1,8 @@
 package com.kalixia.ha.api.rest;
 
+import com.kalixia.grapi.codecs.jaxrs.UriTemplateUtils;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
-import com.kalixia.rawsag.codecs.jaxrs.UriTemplateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.inject.Inject;

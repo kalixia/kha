@@ -20,12 +20,12 @@
         </dependency>
 
         <dependency>
-            <groupId>com.kalixia.rawsag</groupId>
+            <groupId>com.kalixia.grapi</groupId>
             <artifactId>netty-codecs</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.kalixia.rawsag</groupId>
+            <groupId>com.kalixia.grapi</groupId>
             <artifactId>netty-compiler</artifactId>
         </dependency>
 

@@ -1,5 +1,7 @@
 package com.kalixia.ha.model.devices;
 
+import com.google.common.base.Objects;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DeviceID {
@@ -48,10 +50,9 @@ public class DeviceID {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("DeviceID{");
-        sb.append("owner='").append(owner).append('\'');
-        sb.append(", deviceName='").append(deviceName).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return Objects.toStringHelper(this)
+                .add("owner", owner)
+                .add("deviceName", deviceName)
+                .toString();
     }
 }

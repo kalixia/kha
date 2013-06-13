@@ -2,6 +2,7 @@ package com.kalixia.ha.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 
 public class User {
     private final String username;
@@ -75,12 +76,11 @@ public class User {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("User{");
-        sb.append("username='").append(username).append('\'');
-        sb.append(", email='").append(email).append('\'');
-        sb.append(", firstName='").append(firstName).append('\'');
-        sb.append(", lastName='").append(lastName).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return Objects.toStringHelper(this)
+                .add("username", username)
+                .add("email", email)
+                .add("firstName", firstName)
+                .add("lastName", lastName)
+                .toString();
     }
 }

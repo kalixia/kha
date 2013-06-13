@@ -2,6 +2,9 @@ package com.kalixia.ha.model.devices;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Capability;
 import com.kalixia.ha.model.internal.CapabilitiesSerializer;
@@ -26,8 +29,8 @@ abstract class AbstractDevice implements Device {
         this.id = id;
         this.name = name;
         this.owner = owner;
-        this.capabilities = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(capabilities)));
-        this.sensors = new HashSet<>();
+        this.capabilities = Collections.unmodifiableSet(Sets.newHashSet(capabilities));
+        this.sensors = Sets.newHashSet();
     }
 
     @JsonIgnore
@@ -63,12 +66,12 @@ abstract class AbstractDevice implements Device {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("AbstractDevice{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", owner='").append(owner).append('\'');
-        sb.append(", capabilities=").append(capabilities);
-        sb.append('}');
-        return sb.toString();
+        return Objects.toStringHelper(this)
+                .add("id", id)
+                .add("name", name)
+                .add("owner", owner)
+                .add("capabilities", capabilities)
+                .add("sensors", sensors)
+                .toString();
     }
 }

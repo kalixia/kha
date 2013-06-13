@@ -1,5 +1,6 @@
 package com.kalixia.ha.model.sensors;
 
+import com.google.common.base.Objects;
 import org.joda.time.Instant;
 
 import java.io.Serializable;
@@ -28,10 +29,9 @@ public class DataPoint<T> implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("DataPoint{");
-        sb.append("value=").append(value);
-        sb.append(", at=").append(at);
-        sb.append('}');
-        return sb.toString();
+        return Objects.toStringHelper(this)
+                .add("value", value)
+                .add("at", at)
+                .toString();
     }
 }

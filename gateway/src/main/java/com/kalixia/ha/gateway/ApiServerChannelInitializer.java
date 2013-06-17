@@ -3,7 +3,7 @@ package com.kalixia.ha.gateway;
 import com.fasterxml.jackson.core.json.PackageVersion;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.kalixia.grapi.ApiProtocolSwitcher;
+import com.kalixia.grapi.codecs.ApiProtocolSwitcher;
 import com.kalixia.grapi.codecs.json.ByteBufSerializer;
 import com.kalixia.grapi.codecs.rest.RESTCodec;
 import com.kalixia.grapi.codecs.rxjava.ObservableEncoder;

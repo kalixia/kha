@@ -37,7 +37,7 @@ public class GatewayModule {
         return new WebAppServer(8080);
     }
 
-    @Provides @Singleton JmxReporter provideMetricRegistry(MetricRegistry registry) {
+    @Provides @Singleton JmxReporter provideJmxReporter(MetricRegistry registry) {
         return JmxReporter.forRegistry(registry).inDomain("com.kalixia.ha.api.rest").build();
     }
 

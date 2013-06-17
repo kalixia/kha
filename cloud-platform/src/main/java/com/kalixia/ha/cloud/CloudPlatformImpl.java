@@ -29,7 +29,7 @@ public class CloudPlatformImpl implements CloudPlatform {
 
     @Override
     public void start() {
-        graphiteReporter.start(1, TimeUnit.MINUTES);
+        graphiteReporter.start(15, TimeUnit.SECONDS);
         startApi();
         startCloudRelay();
         startWebApp();

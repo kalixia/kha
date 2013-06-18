@@ -54,6 +54,7 @@ public class DeviceResource {
                 .ok(device)
                 .link(UriTemplateUtils.createURI("/{username}", username), "owner")
                 .header(HttpHeaders.LAST_MODIFIED, device.getLastUpdateDate())
+                .header(HttpHeaders.ETAG, device.getLastUpdateDate())
                 .build();
     }
 
@@ -131,6 +132,5 @@ public class DeviceResource {
             return Response.ok().build();
         }
     }
-
 
 }

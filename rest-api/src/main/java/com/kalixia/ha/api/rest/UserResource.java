@@ -39,6 +39,7 @@ public class UserResource {
                 .ok(user)
                 .link(UriTemplateUtils.createURI("/{username}/devices", username), "devices")
                 .header(HttpHeaders.LAST_MODIFIED, user.getLastUpdateDate())
+                .header(HttpHeaders.ETAG, user.getLastUpdateDate().toDate())
                 .build();
     }
 

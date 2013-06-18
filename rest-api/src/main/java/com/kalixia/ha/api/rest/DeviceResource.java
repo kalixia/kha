@@ -17,6 +17,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -44,10 +46,15 @@ public class DeviceResource {
 
     @GET
     @Path("{name}")
-    public
-    @NotNull
-    Device findDeviceById(@PathParam("username") String username, @PathParam("name") String name) {
-        return devicesService.findDeviceById(new DeviceID(username, name));
+    public @NotNull Response findDeviceById(@PathParam("username") String username, @PathParam("name") String name) {
+        Device device = devicesService.findDeviceById(new DeviceID(username, name));
+        if (device == null)
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        return Response
+                .ok(device)
+                .link(UriTemplateUtils.createURI("/{username}", username), "owner")
+                .header(HttpHeaders.LAST_MODIFIED, device.getLastUpdateDate())
+                .build();
     }
 
     @POST

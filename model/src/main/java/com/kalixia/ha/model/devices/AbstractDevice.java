@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.kalixia.ha.model.AbstractAuditable;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Capability;
 import com.kalixia.ha.model.internal.CapabilitiesSerializer;
 import com.kalixia.ha.model.internal.UserReferenceSerializer;
 import com.kalixia.ha.model.sensors.Sensor;
+import org.joda.time.DateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,7 +20,7 @@ import java.util.Set;
 /**
  * Abstract device class easing code a little bit.
  */
-abstract class AbstractDevice implements Device {
+abstract class AbstractDevice extends AbstractAuditable implements Device {
     private final DeviceID id;
     private final String name;
     private final User owner;
@@ -26,6 +28,17 @@ abstract class AbstractDevice implements Device {
     private final Set<? extends Sensor> sensors;
 
     protected AbstractDevice(DeviceID id, String name, User owner, Class<? extends Capability>... capabilities) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.owner = owner;
+        this.capabilities = Collections.unmodifiableSet(Sets.newHashSet(capabilities));
+        this.sensors = Sets.newHashSet();
+    }
+
+    protected AbstractDevice(DeviceID id, String name, User owner, DateTime creationDate, DateTime lastUpdateDate,
+                             Class<? extends Capability>... capabilities) {
+        super(creationDate, lastUpdateDate);
         this.id = id;
         this.name = name;
         this.owner = owner;

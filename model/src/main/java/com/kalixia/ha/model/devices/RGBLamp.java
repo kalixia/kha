@@ -6,6 +6,7 @@ import com.kalixia.ha.model.capabilities.Dimmer;
 import com.kalixia.ha.model.capabilities.Light;
 import com.kalixia.ha.model.capabilities.Switch;
 import com.kalixia.ha.model.capabilities.Temperature;
+import org.joda.time.DateTime;
 
 import java.util.UUID;
 
@@ -21,7 +22,11 @@ public class RGBLamp extends AbstractDevice implements Dimmer, Switch, Temperatu
 
     @SuppressWarnings("unchecked")
     public RGBLamp(DeviceID id, String name, User owner) {
-        super(id, name, owner, Switch.class, Light.class);
+        super(id, name, owner);
+    }
+
+    public RGBLamp(DeviceID id, String name, User owner, DateTime creationDate, DateTime lastUpdateDate) {
+        super(id, name, owner, creationDate, lastUpdateDate, Switch.class, Light.class);
     }
 
     @Override

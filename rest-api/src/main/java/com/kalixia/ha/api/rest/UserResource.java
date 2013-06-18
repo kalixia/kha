@@ -15,11 +15,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import static javax.ws.rs.core.HttpHeaders.CACHE_CONTROL;
+import static javax.ws.rs.core.HttpHeaders.ETAG;
+import static javax.ws.rs.core.HttpHeaders.LAST_MODIFIED;
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -38,8 +41,9 @@ public class UserResource {
         return Response
                 .ok(user)
                 .link(UriTemplateUtils.createURI("/{username}/devices", username), "devices")
-                .header(HttpHeaders.LAST_MODIFIED, user.getLastUpdateDate())
-                .header(HttpHeaders.ETAG, user.getLastUpdateDate().toDate())
+                .header(LAST_MODIFIED, user.getLastUpdateDate())
+                .header(ETAG, user.getLastUpdateDate().toDate())
+                .header(CACHE_CONTROL, "max-age=60, must-revalidate")
                 .build();
     }
 

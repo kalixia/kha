@@ -18,7 +18,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -27,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static javax.ws.rs.core.HttpHeaders.CACHE_CONTROL;
+import static javax.ws.rs.core.HttpHeaders.ETAG;
+import static javax.ws.rs.core.HttpHeaders.LAST_MODIFIED;
 
 @Path("/{username}/devices")
 @Produces(MediaType.APPLICATION_JSON)
@@ -53,8 +55,9 @@ public class DeviceResource {
         return Response
                 .ok(device)
                 .link(UriTemplateUtils.createURI("/{username}", username), "owner")
-                .header(HttpHeaders.LAST_MODIFIED, device.getLastUpdateDate())
-                .header(HttpHeaders.ETAG, device.getLastUpdateDate())
+                .header(LAST_MODIFIED, device.getLastUpdateDate())
+                .header(ETAG, device.getLastUpdateDate())
+                .header(CACHE_CONTROL, "max-age=60, must-revalidate")
                 .build();
     }
 

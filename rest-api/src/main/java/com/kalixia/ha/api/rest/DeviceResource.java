@@ -40,10 +40,14 @@ public class DeviceResource {
     UsersService usersService;
 
     @GET
-    public
-    @NotNull
-    List<? extends Device> findAllDevicesOfUser(@PathParam("username") String username) {
-        return devicesService.findAllDevicesOfUser(username).toList().toBlockingObservable().single();
+    public @NotNull Response findAllDevicesOfUser(@PathParam("username") String username) {
+        List<? extends Device> devices = devicesService.findAllDevicesOfUser(username)
+                .toList().toBlockingObservable().single();
+        return Response
+                .ok(devices)
+                .link(UriTemplateUtils.createURI("/{username}", username), "owner")
+                .header(CACHE_CONTROL, "max-age=60, must-revalidate")
+                .build();
     }
 
     @GET

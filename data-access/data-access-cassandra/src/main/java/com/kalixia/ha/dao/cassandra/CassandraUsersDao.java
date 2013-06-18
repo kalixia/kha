@@ -11,6 +11,7 @@ import com.netflix.astyanax.model.ColumnFamily;
 import com.netflix.astyanax.model.ColumnList;
 import com.netflix.astyanax.serializers.ComparatorType;
 import com.netflix.astyanax.serializers.StringSerializer;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +45,12 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String> implem
                         .put("lastName", ImmutableMap.<String, Object>builder()
                                 .put("validation_class", ComparatorType.UTF8TYPE.getTypeName())
                                 .build())
+                        .put("creationDate", ImmutableMap.<String, Object>builder()
+                                .put("validation_class", ComparatorType.DATETYPE.getTypeName())
+                                .build())
+                        .put("lastUpdateDate", ImmutableMap.<String, Object>builder()
+                                .put("validation_class", ComparatorType.DATETYPE.getTypeName())
+                                .build())
                         .build())
                     .build());
         }
@@ -59,11 +66,15 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String> implem
 
     @Override
     public void save(User user) throws ConnectionException {
+        user.setLastUpdateDate(new DateTime());
         MutationBatch m = keyspace.prepareMutationBatch();
         m.withRow(cfUsers, user.getUsername())
                 .putColumn("email", user.getEmail())
                 .putColumn("firstName", user.getFirstName())
-                .putColumn("lastName", user.getLastName());
+                .putColumn("lastName", user.getLastName())
+                .putColumn("creationDate", user.getCreationDate().toDate())
+                .putColumn("lastUpdateDate", user.getLastUpdateDate().toDate())
+        ;
         m.execute();
     }
 
@@ -72,7 +83,9 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String> implem
         if (result.isEmpty()) {
             return null;
         }
-        User user = new User(username);
+        DateTime creationDate = new DateTime(result.getDateValue("creationDate", null));
+        DateTime lastUpdateDate = new DateTime(result.getDateValue("lastUpdateDate", null));
+        User user = new User(username, creationDate, lastUpdateDate);
         user.setEmail(result.getStringValue("email", null));
         user.setFirstName(result.getStringValue("firstName", null));
         user.setLastName(result.getStringValue("lastName", null));

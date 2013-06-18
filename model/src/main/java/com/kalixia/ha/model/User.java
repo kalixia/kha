@@ -3,8 +3,9 @@ package com.kalixia.ha.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
+import org.joda.time.DateTime;
 
-public class User {
+public class User extends AbstractAuditable {
     private final String username;
     private String email;
     private String firstName;
@@ -12,10 +13,17 @@ public class User {
 
     @JsonCreator
     public User(@JsonProperty("username") String username) {
+        super();
+        this.username = username;
+    }
+
+    public User(String username, DateTime creationDate, DateTime lastUpdateDate) {
+        super(creationDate, lastUpdateDate);
         this.username = username;
     }
 
     public User(String username, String email, String firstName, String lastName) {
+        super();
         this.username = username;
         this.email = email;
         this.firstName = firstName;

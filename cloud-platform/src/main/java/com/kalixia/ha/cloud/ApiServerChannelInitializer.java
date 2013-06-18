@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kalixia.grapi.codecs.ApiProtocolSwitcher;
 import com.kalixia.grapi.codecs.json.ByteBufSerializer;
 import com.kalixia.grapi.codecs.rest.RESTCodec;
-import com.kalixia.grapi.codecs.rxjava.ObservableEncoder;
 import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
@@ -25,9 +24,8 @@ import io.netty.util.concurrent.EventExecutorGroup;
 import javax.inject.Inject;
 
 public class ApiServerChannelInitializer extends ChannelInitializer<SocketChannel> {
-    private final ObjectMapper objectMapper;
     private final ChannelHandler apiProtocolSwitcher;
-    private final ObservableEncoder rxjavaHandler;
+//    private final ObservableEncoder rxjavaHandler;
     private final GeneratedJaxRsModuleHandler jaxRsHandlers;
 //    private final EventExecutorGroup rxJavaGroup;
     private final EventExecutorGroup jaxRsGroup;
@@ -37,11 +35,10 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
     @Inject
     public ApiServerChannelInitializer(ObjectMapper objectMapper,
                                        ApiProtocolSwitcher apiProtocolSwitcher,
-                                       ObservableEncoder rxjavaHandler,
+//                                       ObservableEncoder rxjavaHandler,
                                        GeneratedJaxRsModuleHandler jaxRsModuleHandler) {
-        this.objectMapper = objectMapper;
         this.apiProtocolSwitcher = apiProtocolSwitcher;
-        this.rxjavaHandler = rxjavaHandler;
+//        this.rxjavaHandler = rxjavaHandler;
         this.jaxRsHandlers =  jaxRsModuleHandler;
         SimpleModule nettyModule = new SimpleModule("Netty", PackageVersion.VERSION);
         nettyModule.addSerializer(new ByteBufSerializer());

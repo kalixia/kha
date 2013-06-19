@@ -4,6 +4,9 @@ SITE
     apache2 (1.6.6)
     apt (2.0.0)
     build-essential (1.4.0)
+    chef_handler (1.1.4)
+    java (1.11.6)
+      windows (>= 0.0.0)
     memcached (1.4.0)
       runit (~> 1.0)
       yum (>= 0.0.0)
@@ -13,6 +16,8 @@ SITE
     runit (1.1.6)
       build-essential (>= 0.0.0)
       yum (>= 0.0.0)
+    windows (1.10.0)
+      chef_handler (>= 0.0.0)
     yum (2.3.0)
 
 GIT
@@ -37,5 +42,6 @@ DEPENDENCIES
   apt (>= 0)
   build-essential (>= 0)
   graphite (>= 0)
+  java (>= 0)
   ntp (>= 0)
 

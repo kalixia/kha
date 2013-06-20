@@ -11,7 +11,8 @@ cookbook 'ntp',
 
 #cookbook 'cassandra'
 cookbook 'java'
-#cookbook 'datastax-cassandra'
+
+cookbook 'nginx'
 
 cookbook 'graphite',
 	:git => 'https://github.com/hw-cookbooks/graphite'

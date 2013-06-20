@@ -1,0 +1,14 @@
+server {
+  listen   80;
+  server_name  <%= node['hostname'] %>;
+
+  access_log  <%= node['nginx']['log_dir'] %>/localhost.access.log;
+
+  location /graphite {
+    proxy_pass http://33.33.33.99:80;
+    #proxy_cache cache;
+    #proxy_cache_valid 12h;
+    #expires 12h;
+    #proxy_cache_use_stale error timeout invalid_header updating;
+  }
+}

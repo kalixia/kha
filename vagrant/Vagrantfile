@@ -6,8 +6,6 @@ Vagrant.configure("2") do |config|
   config.vm.box_url = "http://grahamc.com/vagrant/ubuntu-12.04.2-i386-chef-11-omnibus.box"
   config.cache.auto_detect = true
 
-  config.dns.tld = "dev"
-
   config.vm.define :proxy do |proxy|
     proxy.vm.hostname = 'proxy'
     proxy.vm.network :forwarded_port, guest:   80, host: 8081
@@ -26,6 +24,31 @@ Vagrant.configure("2") do |config|
           :gzip => 'on',
           :gzip_http_version => '1.1'
         } 
+      }
+    end
+  end
+
+  config.vm.define :gateway do |gateway|
+    gateway.vm.hostname = 'proxy'
+    gateway.vm.network :forwarded_port, guest: 8082, host: 8082   # REST API
+    gateway.vm.network :private_network, ip: "33.33.33.11"
+    gateway.vm.provider "virtualbox" do |v|
+      v.name = 'Gateway'
+      v.customize ["modifyvm", :id, "--cpuexecutioncap", "50", "--memory", "256"]
+    end
+    gateway.vm.provision :chef_solo do |chef|
+      chef.cookbooks_path = [ "cookbooks", "site-cookbooks" ]
+      chef.add_recipe "apt"
+      chef.add_recipe "ntp"
+      chef.add_recipe "ha-gateway"
+      chef.json = {
+        :java => {
+          :jdk_version  => '7',
+          :install_flavor => 'oracle',
+          :oracle => {
+            :accept_oracle_download_terms => 'true'
+          }
+        }
       }
     end
   end

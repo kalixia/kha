@@ -119,6 +119,47 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>jdeb</artifactId>
+                <groupId>org.vafer</groupId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jdeb</goal>
+                        </goals>
+                        <configuration>
+                            <deb>${project.build.directory}/ha-${project.artifactId}_${project.version}_all.deb</deb>
+                            <dataSet>
+                                <data>
+                                    <src>${project.build.directory}/appassembler/bin/ha-gateway</src>
+                                    <type>file</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/share/ha-gateway/bin</prefix>
+                                        <filemode>744</filemode>
+                                    </mapper>
+                                </data>
+                                <data>
+                                    <type>link</type>
+                                    <linkName>/usr/bin/ha-gateway</linkName>
+                                    <linkTarget>/usr/share/ha-gateway/bin/ha-gateway</linkTarget>
+                                    <symlink>true</symlink>
+                                </data>
+                                <data>
+                                    <src>${project.build.directory}/appassembler/lib</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/share/ha-gateway/lib</prefix>
+                                    </mapper>
+                                </data>
+                            </dataSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

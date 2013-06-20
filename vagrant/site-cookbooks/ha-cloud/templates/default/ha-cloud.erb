@@ -4,6 +4,11 @@ server {
 
   access_log  <%= node['nginx']['log_dir'] %>/localhost.access.log;
 
+  #location / {
+  #  root   /var/www/gateway;
+  #  index  index.html index.htm;
+  #}
+
   location /graphite {
     proxy_pass http://33.33.33.99:80;
     #proxy_cache cache;

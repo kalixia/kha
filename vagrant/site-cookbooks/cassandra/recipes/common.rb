@@ -4,6 +4,7 @@
     owner node["cassandra"]["user"]
     group node["cassandra"]["user"]
     mode  0644
+    variables :cassandra => node[:cassandra]
     notifies :restart, resources(:service => "cassandra")
   end
 end

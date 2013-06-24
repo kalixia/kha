@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.define :proxy do |proxy|
     proxy.vm.hostname = 'proxy'
     proxy.vm.network :forwarded_port, guest:   80, host: 8081
-    proxy.vm.network :private_network, ip: "33.33.33.1"
+    proxy.vm.network :private_network, ip: "10.33.0.1"
     proxy.vm.provider "virtualbox" do |v|
       v.name = 'Proxy'
       v.customize ["modifyvm", :id, "--cpuexecutioncap", "50", "--memory", "256"]
@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
   config.vm.define :gateway do |gateway|
     gateway.vm.hostname = 'proxy'
     gateway.vm.network :forwarded_port, guest: 8082, host: 8082   # REST API
-    gateway.vm.network :private_network, ip: "33.33.33.11"
+    gateway.vm.network :private_network, ip: "10.33.1.1"
     gateway.vm.provider "virtualbox" do |v|
       v.name = 'Gateway'
       v.customize ["modifyvm", :id, "--cpuexecutioncap", "50", "--memory", "256"]
@@ -53,20 +53,58 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define :cassandra1 do |cassandra1|
-    cassandra1.vm.network :forwarded_port, guest:  9160, host:  9160  # rpc port
-    cassandra1.vm.network :forwarded_port, guest:  7000, host:  7000  # storage port
-    #cassandra1.vm.network :forwarded_port, guest: 12345, host: 12345  # jmx_dash port
-    cassandra1.vm.provider "virtualbox" do |v|
+  config.vm.define :cassandra1 do |cassandra|
+    cassandra.vm.hostname = "cassandra-node1"
+    #cassandra.vm.network :forwarded_port, guest:  9160, host:  9160  # rpc port
+    #cassandra.vm.network :forwarded_port, guest:  7000, host:  7000  # storage port
+    #cassandra.vm.network :forwarded_port, guest: 12345, host: 12345  # jmx_dash port
+    cassandra.vm.network :private_network, ip: "10.33.2.1"
+    cassandra.vm.provider "virtualbox" do |v|
       v.name = 'Cassandra - Node 1'
       v.customize ["modifyvm", :id, "--cpuexecutioncap", "50", "--memory", "1024"]
     end
-    cassandra1.vm.provision :chef_solo do |chef|
+    cassandra.vm.provision :chef_solo do |chef|
       chef.cookbooks_path = [ "cookbooks", "site-cookbooks" ]
       chef.add_recipe "cassandra::datastax"
       chef.json = {
         :cassandra => {
           :cluster_name => 'test',
+          :listen_address => "10.33.2.1",
+          :rpc_address => "10.33.2.1",
+          :seeds => [ '10.33.2.1', '10.33.2.2' ],
+          :vnodes => '256',
+          :java_heap_size_max => '1024',
+          :java_heap_size_eden => '1024'
+        },
+        :java => {
+          :jdk_version  => '6',         # Datastax recommends usage of Java 6!
+          :install_flavor => 'oracle',
+          :oracle => {
+            :accept_oracle_download_terms => 'true'
+          }
+        }
+      }
+    end
+  end
+  config.vm.define :cassandra2 do |cassandra|
+    cassandra.vm.hostname = "cassandra-node2"
+    #cassandra.vm.network :forwarded_port, guest:  9160, host:  9160  # rpc port
+    #cassandra.vm.network :forwarded_port, guest:  7000, host:  7000  # storage port
+    #cassandra.vm.network :forwarded_port, guest: 12345, host: 12345  # jmx_dash port
+    cassandra.vm.network :private_network, ip: "10.33.2.2"
+    cassandra.vm.provider "virtualbox" do |v|
+      v.name = 'Cassandra - Node 2'
+      v.customize ["modifyvm", :id, "--cpuexecutioncap", "50", "--memory", "1024"]
+    end
+    cassandra.vm.provision :chef_solo do |chef|
+      chef.cookbooks_path = [ "cookbooks", "site-cookbooks" ]
+      chef.add_recipe "cassandra::datastax"
+      chef.json = {
+        :cassandra => {
+          :cluster_name => 'test',
+          :listen_address => "10.33.2.2",
+          :rpc_address => "10.33.2.2",
+          :seeds => [ '10.33.2.1', '10.33.2.2' ],
           :vnodes => '256',
           :java_heap_size_max => '1024',
           :java_heap_size_eden => '1024'
@@ -86,7 +124,7 @@ Vagrant.configure("2") do |config|
     graphite.vm.hostname = 'monitoring'
     #graphite.vm.network :forwarded_port, guest:   80, host: 8081  # Graphite webapp
     graphite.vm.network :forwarded_port, guest: 2003, host: 2003  # Carbon port
-    graphite.vm.network :private_network, ip: "33.33.33.99"
+    graphite.vm.network :private_network, ip: "10.33.99.1"
     graphite.vm.provider "virtualbox" do |v|
       v.name = 'Graphite'
       v.customize ["modifyvm", :id, "--cpuexecutioncap", "50", "--memory", "512"]

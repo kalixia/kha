@@ -19,7 +19,7 @@ public class CassandraUtils {
             LOGGER.warn("Keyspace '{}' does not exists. Creation in progress...", keyspace.getKeyspaceName());
             keyspace.createKeyspace(ImmutableMap.<String, Object>builder()
                     .put("strategy_options", ImmutableMap.<String, Object>builder()
-                            .put("replication_factor", "2")
+                            .put("replication_factor", "3")
                             .build())
                     .put("strategy_class", "SimpleStrategy")
                     .build()

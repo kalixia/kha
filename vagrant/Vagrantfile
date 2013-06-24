@@ -53,70 +53,39 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define :cassandra1 do |cassandra|
-    cassandra.vm.hostname = "cassandra-node1"
-    #cassandra.vm.network :forwarded_port, guest:  9160, host:  9160  # rpc port
-    #cassandra.vm.network :forwarded_port, guest:  7000, host:  7000  # storage port
-    #cassandra.vm.network :forwarded_port, guest: 12345, host: 12345  # jmx_dash port
-    cassandra.vm.network :private_network, ip: "10.33.2.1"
-    cassandra.vm.provider "virtualbox" do |v|
-      v.name = 'Cassandra - Node 1'
-      v.customize ["modifyvm", :id, "--cpuexecutioncap", "50", "--memory", "1024"]
-    end
-    cassandra.vm.provision :chef_solo do |chef|
-      chef.cookbooks_path = [ "cookbooks", "site-cookbooks" ]
-      chef.add_recipe "cassandra::datastax"
-      chef.json = {
-        :cassandra => {
-          :cluster_name => 'test',
-          :listen_address => "10.33.2.1",
-          :rpc_address => "10.33.2.1",
-          :seeds => [ '10.33.2.1', '10.33.2.2' ],
-          :vnodes => '256',
-          :java_heap_size_max => '1024',
-          :java_heap_size_eden => '1024'
-        },
-        :java => {
-          :jdk_version  => '6',         # Datastax recommends usage of Java 6!
-          :install_flavor => 'oracle',
-          :oracle => {
-            :accept_oracle_download_terms => 'true'
+# Provision 2 Cassandra nodes
+  cassandraNodesIPs = ['10.33.2.11', '10.33.2.12']
+  cassandraNodesIPs.each_with_index do |ip, index|
+    nodeNumber = index + 1
+    config.vm.define "cassandra#{nodeNumber}" do |cassandra|
+      cassandra.vm.hostname = "cassandra#{nodeNumber}"
+      cassandra.vm.network :private_network, ip: ip
+      cassandra.vm.provider "virtualbox" do |v|
+        v.name = "Cassandra - Node #{nodeNumber}"
+        v.customize ["modifyvm", :id, "--cpuexecutioncap", "50", "--memory", "1024"]
+      end
+      cassandra.vm.provision :chef_solo do |chef|
+        chef.cookbooks_path = [ "cookbooks", "site-cookbooks" ]
+        chef.add_recipe "cassandra::datastax"
+        chef.json = {
+          :cassandra => {
+            :cluster_name => 'test',
+            :listen_address => ip,
+            :rpc_address => ip,
+            :seeds => cassandraNodesIPs,
+            :vnodes => '4',
+            :java_heap_size_max => '1024',
+            :java_heap_size_eden => '1024'
+          },
+          :java => {
+            :jdk_version  => '6',         # Datastax recommends usage of Java 6!
+            :install_flavor => 'oracle',
+            :oracle => {
+              :accept_oracle_download_terms => 'true'
+            }
           }
         }
-      }
-    end
-  end
-  config.vm.define :cassandra2 do |cassandra|
-    cassandra.vm.hostname = "cassandra-node2"
-    #cassandra.vm.network :forwarded_port, guest:  9160, host:  9160  # rpc port
-    #cassandra.vm.network :forwarded_port, guest:  7000, host:  7000  # storage port
-    #cassandra.vm.network :forwarded_port, guest: 12345, host: 12345  # jmx_dash port
-    cassandra.vm.network :private_network, ip: "10.33.2.2"
-    cassandra.vm.provider "virtualbox" do |v|
-      v.name = 'Cassandra - Node 2'
-      v.customize ["modifyvm", :id, "--cpuexecutioncap", "50", "--memory", "1024"]
-    end
-    cassandra.vm.provision :chef_solo do |chef|
-      chef.cookbooks_path = [ "cookbooks", "site-cookbooks" ]
-      chef.add_recipe "cassandra::datastax"
-      chef.json = {
-        :cassandra => {
-          :cluster_name => 'test',
-          :listen_address => "10.33.2.2",
-          :rpc_address => "10.33.2.2",
-          :seeds => [ '10.33.2.1', '10.33.2.2' ],
-          :vnodes => '256',
-          :java_heap_size_max => '1024',
-          :java_heap_size_eden => '1024'
-        },
-        :java => {
-          :jdk_version  => '6',         # Datastax recommends usage of Java 6!
-          :install_flavor => 'oracle',
-          :oracle => {
-            :accept_oracle_download_terms => 'true'
-          }
-        }
-      }
+      end
     end
   end
 

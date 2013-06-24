@@ -14,6 +14,10 @@ package 'dsc12' do
 	action :install
 end
 
+#package 'opscenter-free' do        libssl0.9.8
+#	action :install
+#end
+
 # Ensure service is enabled and started
 service "cassandra" do
   supports :restart => true, :status => true

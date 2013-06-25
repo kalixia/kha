@@ -1,6 +1,6 @@
 package com.kalixia.ha.gateway.commands.sensors;
 
-import com.kalixia.ha.model.capabilities.Temperature;
+import com.kalixia.ha.model.sensors.Temperature;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;

@@ -25,7 +25,7 @@ abstract class AbstractDevice extends AbstractAuditable implements Device {
     private final String name;
     private final User owner;
     private final Set<Class<? extends Capability>> capabilities;
-    private final Set<? extends Sensor> sensors;
+    private final Set<Sensor> sensors;
 
     protected AbstractDevice(DeviceID id, String name, User owner, Class<? extends Capability>... capabilities) {
         super();
@@ -64,12 +64,18 @@ abstract class AbstractDevice extends AbstractAuditable implements Device {
     @Override
     @JsonSerialize(using = CapabilitiesSerializer.class)
     public Set<Class<? extends Capability>> getCapabilities() {
-        return capabilities;
+        return Collections.unmodifiableSet(capabilities);
     }
 
     @Override
     public boolean hasCapability(Class<? extends Capability> capability) {
         return capabilities.contains(capability);
+    }
+
+    @Override
+    public Device addSensor(Sensor sensor) {
+        sensors.add(sensor);
+        return this;
     }
 
     @Override

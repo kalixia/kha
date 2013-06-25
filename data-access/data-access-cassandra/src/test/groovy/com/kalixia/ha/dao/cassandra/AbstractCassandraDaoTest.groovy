@@ -1,6 +1,7 @@
 package com.kalixia.ha.dao.cassandra
 
 import com.kalixia.ha.dao.DevicesDao
+import com.kalixia.ha.dao.SensorsDao
 import com.kalixia.ha.dao.UsersDao
 import com.netflix.astyanax.Keyspace
 import groovy.util.logging.Slf4j
@@ -14,6 +15,7 @@ import spock.lang.Specification
 @Slf4j("LOGGER")
 abstract class AbstractCassandraDaoTest extends Specification {
     @Shared UsersDao usersDao
+    @Shared SensorsDao sensorsDao
     @Shared DevicesDao devicesDao
     @Shared Keyspace keyspace;
 
@@ -27,6 +29,7 @@ abstract class AbstractCassandraDaoTest extends Specification {
         keyspace = cassandraModule.provideKeyspace(cassandraContext)
 
         usersDao = new CassandraUsersDao(keyspace)
+        sensorsDao = new CassandraSensorsDao(keyspace)
         devicesDao = new CassandraDevicesDao(keyspace, usersDao)
     }
 

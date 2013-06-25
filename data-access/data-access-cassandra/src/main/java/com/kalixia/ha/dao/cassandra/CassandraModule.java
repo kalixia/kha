@@ -17,7 +17,6 @@ import dagger.Module;
 import dagger.Provides;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.inject.Singleton;
 
 @Module(library = true)
@@ -25,12 +24,12 @@ public class CassandraModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(CassandraModule.class);
 
     @Provides @Singleton UsersDao provideUserDao(Keyspace keyspace) {
-        try {
+//        try {
             return new CassandraUsersDao(keyspace);
-        } catch (ConnectionException e) {
-            LOGGER.error("Can't initialize Users DAO", e);
-            return null;
-        }
+//        } catch (ConnectionException e) {
+//            LOGGER.error("Can't initialize Users DAO", e);
+//            return null;
+//        }
     }
 
     @Provides @Singleton DevicesDao provideDevicesDao(Keyspace keyspace, UsersDao usersDao) {
@@ -43,12 +42,12 @@ public class CassandraModule {
     }
 
     @Provides @Singleton SensorsDao provideSensorsDao(Keyspace keyspace) {
-        try {
+//        try {
             return new CassandraSensorsDao(keyspace);
-        } catch (ConnectionException e) {
-            LOGGER.error("Can't initialize Sensors DAO", e);
-            return null;
-        }
+//        } catch (ConnectionException e) {
+//            LOGGER.error("Can't initialize Sensors DAO", e);
+//            return null;
+//        }
     }
 
     @Provides @Singleton Keyspace provideKeyspace(AstyanaxContext<Keyspace> ctx) {
@@ -63,6 +62,8 @@ public class CassandraModule {
                 .withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
                         .setDiscoveryType(NodeDiscoveryType.RING_DESCRIBE)
                         .setConnectionPoolType(ConnectionPoolType.TOKEN_AWARE)
+                        .setTargetCassandraVersion("1.2")
+                        .setCqlVersion("3.0.0")
                 )
                 .withConnectionPoolConfiguration(pool
 //                        .setBadHostDetector(new BadHostDetectorImpl(pool))

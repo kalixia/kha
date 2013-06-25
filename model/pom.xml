@@ -19,6 +19,13 @@
             <artifactId>joda-time</artifactId>
         </dependency>
 
+        <!-- JScience for SI units -->
+        <dependency>
+            <groupId>org.jscience</groupId>
+            <artifactId>jscience</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+
         <!-- Guava dependencies -->
         <dependency>
             <groupId>com.google.guava</groupId>

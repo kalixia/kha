@@ -5,10 +5,12 @@ import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Dimmer;
 import com.kalixia.ha.model.capabilities.Light;
 import com.kalixia.ha.model.capabilities.Switch;
-import com.kalixia.ha.model.capabilities.Temperature;
+import com.kalixia.ha.model.sensors.DataPoint;
+import com.kalixia.ha.model.sensors.Temperature;
 import org.joda.time.DateTime;
-
-import java.util.UUID;
+import org.joda.time.Instant;
+import javax.measure.unit.SI;
+import javax.measure.unit.Unit;
 
 /**
  * Devices which controls a RGB lamp or RGB Led Strip.
@@ -64,11 +66,17 @@ public class RGBLamp extends AbstractDevice implements Dimmer, Switch, Temperatu
         return intensity;
     }
 
-    public float getCelsius() {
+    public Float getCelsius() {
         return celsius;
     }
 
-    public void setCelsius(float celsius) {
+    public void setCelsius(Float celsius) {
         this.celsius = celsius;
     }
+
+    @Override
+    public Unit getUnit() {
+        return SI.CELSIUS;
+    }
+
 }

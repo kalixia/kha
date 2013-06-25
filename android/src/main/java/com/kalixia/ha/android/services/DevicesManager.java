@@ -3,7 +3,9 @@ package com.kalixia.ha.android.services;
 import com.googlecode.androidannotations.annotations.EBean;
 import com.googlecode.androidannotations.api.Scope;
 import com.kalixia.ha.model.Color;
+import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
+import com.kalixia.ha.model.devices.DeviceID;
 import com.kalixia.ha.model.devices.RGBLamp;
 
 import java.util.Arrays;
@@ -15,11 +17,12 @@ public class DevicesManager {
 
     public List<? extends Device> findAllDevices() {
         // TODO: call REST API instead!
-        RGBLamp lamp1 = new RGBLamp(UUID.randomUUID(), "Lamp 1");
-        RGBLamp lamp2 = new RGBLamp(UUID.randomUUID(), "Lamp 2");
-        RGBLamp lamp3 = new RGBLamp(UUID.randomUUID(), "Lamp 3");
-        RGBLamp lamp4 = new RGBLamp(UUID.randomUUID(), "Lamp 4");
-        RGBLamp lamp5 = new RGBLamp(UUID.randomUUID(), "Lamp 5");
+        User owner = new User("johndoe");
+        RGBLamp lamp1 = new RGBLamp(new DeviceID("johndoe", "Lamp 1"), "Lamp 1", owner);
+        RGBLamp lamp2 = new RGBLamp(new DeviceID("johndoe", "Lamp 2"), "Lamp 2", owner);
+        RGBLamp lamp3 = new RGBLamp(new DeviceID("johndoe", "Lamp 3"), "Lamp 3", owner);
+        RGBLamp lamp4 = new RGBLamp(new DeviceID("johndoe", "Lamp 4"), "Lamp 4", owner);
+        RGBLamp lamp5 = new RGBLamp(new DeviceID("johndoe", "Lamp 5"), "Lamp 5", owner);
 
         // set random colors and switch both lamps on
         lamp1.setColor(new Color(0f, 1f, 1f));

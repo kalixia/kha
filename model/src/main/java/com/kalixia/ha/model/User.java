@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import org.joda.time.DateTime;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class User extends AbstractAuditable {
     private final String username;
     private String email;
@@ -18,12 +20,20 @@ public class User extends AbstractAuditable {
     }
 
     public User(String username, DateTime creationDate, DateTime lastUpdateDate) {
-        super(creationDate, lastUpdateDate);
-        this.username = username;
+        this(username, null, null, null, creationDate, lastUpdateDate);
     }
 
     public User(String username, String email, String firstName, String lastName) {
-        super();
+        this(username, email, firstName, lastName, new DateTime(), new DateTime());
+    }
+
+    public User(String username, String email, String firstName, String lastName,
+                DateTime creationDate, DateTime lastUpdateDate) {
+        super(creationDate, lastUpdateDate);
+        checkNotNull(username, "The username can't be null");
+        checkNotNull(email, "The email can't be null");
+        checkNotNull(firstName, "The first name can't be null");
+        checkNotNull(lastName, "The last name can't be null");
         this.username = username;
         this.email = email;
         this.firstName = firstName;

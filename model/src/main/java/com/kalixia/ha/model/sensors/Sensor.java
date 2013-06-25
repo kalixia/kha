@@ -1,6 +1,8 @@
 package com.kalixia.ha.model.sensors;
 
-public interface Sensor<T> {
-    T getValue();
-    DataPoint<T> getLastDataPoint();
+import javax.measure.unit.Unit;
+
+public interface Sensor {
+    String getName();
+    Unit getUnit();
 }

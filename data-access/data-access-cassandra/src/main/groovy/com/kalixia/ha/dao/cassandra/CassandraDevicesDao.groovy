@@ -1,39 +1,55 @@
 package com.kalixia.ha.dao.cassandra
 
 import com.google.common.collect.ImmutableMap
+import com.google.common.collect.Maps
 import com.kalixia.ha.dao.DevicesDao
 import com.kalixia.ha.dao.UsersDao
-import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.User
+import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.devices.DeviceID
 import com.kalixia.ha.model.devices.RGBLamp
+import com.kalixia.ha.model.sensors.MutableSensor
+import com.kalixia.ha.model.sensors.Sensor
 import com.netflix.astyanax.Keyspace
 import com.netflix.astyanax.MutationBatch
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException
 import com.netflix.astyanax.ddl.KeyspaceDefinition
+import com.netflix.astyanax.model.Column
 import com.netflix.astyanax.model.ColumnFamily
 import com.netflix.astyanax.model.ColumnList
-import com.netflix.astyanax.model.Row
-import com.netflix.astyanax.model.Rows
-import com.netflix.astyanax.serializers.ComparatorType
+import com.netflix.astyanax.model.Equality
+import com.netflix.astyanax.serializers.AnnotatedCompositeSerializer
 import com.netflix.astyanax.serializers.StringSerializer
 import groovy.util.logging.Slf4j
 import org.joda.time.DateTime
 import rx.Observable
+import rx.Observer
 
-import static com.netflix.astyanax.serializers.ComparatorType.DATETYPE
+import javax.measure.unit.Unit
+
 import static com.netflix.astyanax.serializers.ComparatorType.UTF8TYPE
 
 @Slf4j("LOGGER")
-public class CassandraDevicesDao extends AbstractCassandraDao<Device, String> implements DevicesDao {
+public class CassandraDevicesDao extends AbstractCassandraDao<Device, String, SensorProperty> implements DevicesDao {
     private final Keyspace keyspace
-    private final ColumnFamily<String, String> cfDevices
+    private final ColumnFamily<String, SensorProperty> cfDevices
+    private final ColumnFamily<String, UserProperty> cfUsers
     private final UsersDao usersDao
+    private final AnnotatedCompositeSerializer userPropertySerializer
+    private static final SensorProperty COL_NAME = new SensorProperty(property: "name")
+    private static final SensorProperty COL_OWNER = new SensorProperty(property: "owner")
+    private static final SensorProperty COL_CREATION_DATE = new SensorProperty(property: "creationDate")
+    private static final SensorProperty COL_LAST_UPDATE_DATE = new SensorProperty(property: "lastUpdateDate")
 
     public CassandraDevicesDao(Keyspace keyspace, UsersDao usersDao) throws ConnectionException {
         this.keyspace = keyspace
         this.usersDao = usersDao
-        cfDevices = new ColumnFamily<>("Devices", StringSerializer.get(), StringSerializer.get())
+
+        AnnotatedCompositeSerializer sensorPropertySerializer = new AnnotatedCompositeSerializer(SensorProperty.class)
+        cfDevices = new ColumnFamily<>("Devices", StringSerializer.get(), sensorPropertySerializer)
+
+        userPropertySerializer = new AnnotatedCompositeSerializer(UserProperty.class)
+        cfUsers = new ColumnFamily<>("Users", StringSerializer.get(), userPropertySerializer)
 
         // analyze keyspace schema
         KeyspaceDefinition keyspaceDefinition = CassandraUtils.getOrCreateKeyspace(keyspace)
@@ -43,63 +59,56 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, String> im
             // column family is missing -- create it!
             LOGGER.warn("Creating missing Column Family '{}'", cfDevices.getName())
             keyspace.createColumnFamily(cfDevices, ImmutableMap.<String, Object>builder()
-                    .put("default_validation_class", UTF8TYPE.getTypeName())
                     .put("key_validation_class", UTF8TYPE.getTypeName())
-                    .put("comparator_type", UTF8TYPE.getTypeName())
-                    .put("column_metadata", ImmutableMap.<String, Object>builder()
-                            .put("name", ImmutableMap.<String, Object>builder()
-                                    .put("validation_class", UTF8TYPE.getTypeName())
-                                    .put("index_name", "idx_device_name")
-                                    .put("index_type", "KEYS")
-                                    .build())
-                            .put("owner", ImmutableMap.<String, Object>builder()
-                                    .put("validation_class", UTF8TYPE.getTypeName())
-                                    .put("index_name", "idx_owner_username")
-                                    .put("index_type", "KEYS")
-                                    .build())
-                            .put("creationDate", ImmutableMap.<String, Object>builder()
-                                    .put("validation_class", DATETYPE.getTypeName())
-                                    .build())
-                            .put("lastUpdateDate", ImmutableMap.<String, Object>builder()
-                                    .put("validation_class", DATETYPE.getTypeName())
-                                    .build())
-                            .build())
+                    .put("comparator_type", "CompositeType(UTF8Type,UTF8Type)")
+//                    .put("column_metadata", ImmutableMap.<String, Object>builder()
+//                            .put("name", ImmutableMap.<String, Object>builder()
+//                                    .put("validation_class", UTF8TYPE.getTypeName())
+//                                    .build())
+//                            .put(":owner", ImmutableMap.<String, Object>builder()
+//                                    .put("validation_class", UTF8TYPE.getTypeName())
+//                                    .put("index_name", "idx_owner_username")
+//                                    .put("index_type", "KEYS")
+//                                    .build())
+//                            .put("creationDate", ImmutableMap.<String, Object>builder()
+//                                    .put("validation_class", DATETYPE.getTypeName())
+//                                    .build())
+//                            .put("lastUpdateDate", ImmutableMap.<String, Object>builder()
+//                                    .put("validation_class", DATETYPE.getTypeName())
+//                                    .build())
+//                            .build())
                     .build())
         }
     }
 
     @Override
     public Device findById(DeviceID id) throws ConnectionException {
-        ColumnList<String> result = keyspace.prepareQuery(cfDevices)
+        ColumnList<SensorProperty> result = keyspace.prepareQuery(cfDevices)
                 .getKey(id.getRowKey())
                 .execute().getResult()
-        return buildFromColumnList(id.rowKey, result)
-    }
-
-    @Override
-    public Device findByName(String name) throws ConnectionException {
-        Rows<String, String> deviceRows = keyspace.prepareQuery(cfDevices)
-                .searchWithIndex()
-                .setRowLimit(1)
-                .addExpression().whereColumn("name").equals().value(name)
-                .execute().getResult();
-        if (deviceRows.iterator().hasNext()) {
-            def row = deviceRows.iterator().next()
-            return buildFromColumnList(row.key, row.columns)
-        } else {
-            return null        // no device found!
+        try {
+            return buildFromColumnList(id.rowKey, result)
+        } catch (NullPointerException e) {
+            throw new IllegalStateException("User should be found for device $id", e)
         }
     }
 
     @Override
     public Observable<? extends Device> findAllDevicesOfUser(String username) throws ConnectionException {
-        Rows<String, String> rows = keyspace.prepareQuery(cfDevices)
-                .searchWithIndex()
-                .addExpression().whereColumn("owner").equals().value(username)
-                .execute().getResult()
+        def startColumn = userPropertySerializer.makeEndpoint("device", Equality.EQUAL).toBytes()
+        def endColumn = userPropertySerializer.makeEndpoint("device", Equality.LESS_THAN_EQUALS).toBytes()
 
-        return Observable.from(rows).map({ Row<String, String> row ->
-            buildFromColumnList(row.key, row.columns)
+        ColumnList<UserProperty> devicesNames = keyspace.prepareQuery(cfUsers)
+                .getKey(username)
+                .withColumnRange(startColumn, endColumn, false, 10000)
+                .autoPaginate(true)
+                .execute().getResult()
+        return Observable.create({ Observer<Device> observer ->
+            devicesNames.each { Column<UserProperty> col ->
+                Device device = findById(new DeviceID(username, col.name.property))
+                observer.onNext(device)
+            }
+            observer.onCompleted()
         })
     }
 
@@ -107,13 +116,20 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, String> im
     public void save(Device device) throws ConnectionException {
         device.setLastUpdateDate(new DateTime())
         MutationBatch m = keyspace.prepareMutationBatch()
-        DeviceID id = new DeviceID(device.getOwner().getUsername(), device.getName())
-        m.withRow(cfDevices, id.getRowKey())
-                .putColumn("name", device.getName())
-                .putColumn("owner", device.getOwner().getUsername())
-                .putColumn("creationDate", device.getCreationDate().toDate())
-                .putColumn("lastUpdateDate", device.getLastUpdateDate().toDate())
-        ;
+        DeviceID id = new DeviceID(device.owner.username, device.name)
+        def row = m.withRow(cfDevices, id.rowKey)
+        row
+                .putColumn(COL_NAME, device.name)
+                .putColumn(COL_OWNER, device.owner.username)
+                .putColumn(COL_CREATION_DATE, device.creationDate.toDate())
+                .putColumn(COL_LAST_UPDATE_DATE, device.lastUpdateDate.toDate())
+        device.sensors.each { Sensor sensor ->
+            row
+                .putColumn(new SensorProperty(sensor: sensor.name, property: 'name'), sensor.name)
+                .putColumn(new SensorProperty(sensor: sensor.name, property: 'unit'), sensor.unit.toString())
+        }
+        m.withRow(cfUsers, device.owner.username)
+            .putColumn(new UserProperty(type: "device", property: device.getName()))
         m.execute()
     }
 
@@ -125,20 +141,62 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, String> im
     }
 
     @Override
-    protected Device buildFromColumnList(String id, ColumnList<String> result) throws ConnectionException {
+    protected Device buildFromColumnList(String id, ColumnList<SensorProperty> result) throws ConnectionException {
         if (result.isEmpty()) {
             return null;
         }
-        DateTime creationDate = new DateTime(result.getDateValue("creationDate", null))
-        DateTime lastUpdateDate = new DateTime(result.getDateValue("lastUpdateDate", null))
-        String deviceName = result.getStringValue("name", null)
-        String ownerUsername = result.getStringValue("owner", null)
-        User owner = usersDao.findByUsername(ownerUsername)
 
+        String deviceName, ownerUsername
+        DateTime creationDate, lastUpdateDate
+        Map<String, MutableSensor> sensorsMap = Maps.newHashMap()
+        result.each { Column<SensorProperty> col ->
+            switch (col.name) {
+                case COL_NAME:
+                    deviceName = col.stringValue
+                    break;
+                case COL_OWNER:
+                    ownerUsername = col.stringValue
+                    break;
+                case COL_CREATION_DATE:
+                    creationDate = new DateTime(col.dateValue)
+                    break;
+                case COL_LAST_UPDATE_DATE:
+                    lastUpdateDate = new DateTime(col.dateValue)
+                    break;
+                default:
+                    def sensorName = col.name.sensor
+                    def sensorProperty = col.name.property
+                    def sensorPropertyValue = col.stringValue
+
+                    MutableSensor sensor
+                    if (sensorsMap.containsKey(sensorName))
+                        sensor = sensorsMap.get(sensorName)
+                    else
+                        sensor = new MutableSensor()
+
+                    switch (sensorProperty) {
+                        case 'name':
+                            sensor.name = sensorPropertyValue
+                            break;
+                        case 'unit':
+                            sensor.unit = Unit.valueOf(sensorPropertyValue)
+                            break;
+                        default:
+                            LOGGER.error("Found unexpected column (${col.getName().sensor},${col.getName().property})")
+                    }
+                    sensorsMap.put(sensorName, sensor)
+            }
+        }
+
+        User owner = usersDao.findByUsername(ownerUsername)
         if (owner == null) {
             LOGGER.error("Invalid data: device {} is linked to owner {} which can't be found!", deviceName, ownerUsername)
         }
-        return new RGBLamp<>(new DeviceID(ownerUsername, deviceName), deviceName, owner, creationDate, lastUpdateDate)
+        def device = new RGBLamp<>(new DeviceID(ownerUsername, deviceName), deviceName, owner, creationDate, lastUpdateDate)
+        sensorsMap.values().each { Sensor sensor ->
+            device.addSensor(sensor)
+        }
+        return device
     }
 }
 

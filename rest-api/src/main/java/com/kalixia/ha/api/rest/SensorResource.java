@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.UUID;
 
-@Path("/devices/{deviceID}/sensors")
+@Path("/{username}/devices/{device}/sensors")
 @Produces(MediaType.APPLICATION_JSON)
 public class SensorResource {
     @Inject

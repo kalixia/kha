@@ -12,7 +12,10 @@ public interface Device extends Auditable {
     DeviceID getId();
     User getOwner();
     String getName();
+
     Set<Class<? extends Capability>> getCapabilities();
     boolean hasCapability(Class<? extends Capability> capability);
+
+    Device addSensor(Sensor sensor);
     Set<? extends Sensor> getSensors();
 }

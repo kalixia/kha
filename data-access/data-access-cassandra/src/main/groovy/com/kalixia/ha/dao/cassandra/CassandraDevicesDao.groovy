@@ -105,8 +105,14 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, UUID, Sens
 
     @Override
     public Device findByOwnerAndName(String ownerUsername, String name) throws ConnectionException {
-        def startColumn = userPropertySerializer.makeEndpoint("device", Equality.EQUAL).toBytes()
-        def endColumn = userPropertySerializer.makeEndpoint("device", Equality.LESS_THAN_EQUALS).toBytes()
+        def startColumn = userPropertySerializer
+                .makeEndpoint("device", Equality.EQUAL)
+                .append(name, Equality.EQUAL)
+                .toBytes()
+        def endColumn = userPropertySerializer
+                .makeEndpoint("device", Equality.EQUAL)
+                .append(name, Equality.LESS_THAN_EQUALS)
+                .toBytes()
 
         ColumnList<UserProperty> devicesNames = keyspace.prepareQuery(cfUsers)
                 .getKey(ownerUsername)

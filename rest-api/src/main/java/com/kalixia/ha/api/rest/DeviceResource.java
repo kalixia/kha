@@ -50,7 +50,7 @@ public class DeviceResource {
 
     @GET
     @Path("{name}")
-    public @NotNull Response findDeviceById(@PathParam("username") String username, @PathParam("name") String name) {
+    public @NotNull Response findDeviceByName(@PathParam("username") String username, @PathParam("name") String name) {
         Device device = devicesService.findDeviceByName(username, name);
         if (device == null)
             throw new WebApplicationException(Response.Status.NOT_FOUND);

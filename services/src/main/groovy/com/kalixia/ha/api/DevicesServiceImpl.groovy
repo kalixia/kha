@@ -2,7 +2,6 @@ package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.DevicesDao
 import com.kalixia.ha.model.devices.Device
-import com.kalixia.ha.model.devices.DeviceID
 import groovy.util.logging.Slf4j
 import rx.Observable
 
@@ -21,9 +20,15 @@ class DevicesServiceImpl implements DevicesService {
     }
 
     @Override
-    def Device findDeviceById(DeviceID id) {
-        LOGGER.info("Searching for device '{}' of user '{}'", id.getDeviceName(), id.getOwner())
+    def Device findDeviceById(UUID id) {
+        LOGGER.info("Searching for device with ID {}'", id)
         return devicesDao.findById(id)
+    }
+
+    @Override
+    def Device findDeviceByName(String ownerUsername, String name) {
+        LOGGER.info("Searching for device of user '{}' named '{}'", ownerUsername, name)
+        return devicesDao.findByOwnerAndName(ownerUsername, name)
     }
 
     @Override
@@ -32,7 +37,7 @@ class DevicesServiceImpl implements DevicesService {
     }
 
     @Override
-    void deleteDevice(DeviceID id) {
+    void deleteDevice(UUID id) {
         devicesDao.delete(id)
     }
 }

@@ -1,9 +1,10 @@
 package com.kalixia.ha.dao.cassandra
 
 import com.kalixia.ha.model.User
-import com.kalixia.ha.model.devices.DeviceID
+
 import com.kalixia.ha.model.devices.RGBLamp
 import com.kalixia.ha.model.sensors.Sensor
+import com.netflix.astyanax.util.TimeUUIDUtils
 
 import javax.measure.unit.SI
 import javax.measure.unit.Unit
@@ -13,7 +14,7 @@ class DevicesDaoTest extends AbstractCassandraDaoTest {
     def "create a user with one device without sensors and retrieve the created device by its ID"() {
         given:
         def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
-        def deviceId = new DeviceID(user.getUsername(), 'my lamp')
+        def deviceId = TimeUUIDUtils.uniqueTimeUUIDinMicros
         def device = new RGBLamp(deviceId, 'my lamp', user)
 
         when:
@@ -38,7 +39,7 @@ class DevicesDaoTest extends AbstractCassandraDaoTest {
     def "create a user with one device with one sensor and retrieve the created device"() {
         given:
         def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
-        def deviceId = new DeviceID(user.getUsername(), 'my lamp')
+        def deviceId = TimeUUIDUtils.uniqueTimeUUIDinMicros
         def device = new RGBLamp(deviceId, 'my lamp', user)
         device.addSensor(new Sensor() {
             @Override

@@ -2,8 +2,8 @@ package com.kalixia.ha.api;
 
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
-import com.kalixia.ha.model.devices.DeviceID;
 import rx.Observable;
+import java.util.UUID;
 
 public interface DevicesService {
 
@@ -17,9 +17,17 @@ public interface DevicesService {
     /**
      * Return the {@link Device} having the specified <tt>id</tt>.
      * @param id the ID of the {@link Device} to search for
-     * @return the device as an {@link Observable}
+     * @return the device
      */
-    Device findDeviceById(DeviceID id);
+    Device findDeviceById(UUID id);
+
+    /**
+     * Return the {@link Device} having the specified <tt>ownerUsername</tt> and <tt>name</tt>.
+     * @param ownerUsername the login of the owner
+     * @param name the name of the device
+     * @return the device
+     */
+    Device findDeviceByName(String ownerUsername, String name);
 
     /**
      * Creates a new device.
@@ -32,5 +40,5 @@ public interface DevicesService {
      * Delete the {@link Device} having the specified <tt>id</tt>.
      * @param id the ID of the {@link Device} to delete
      */
-    void deleteDevice(DeviceID id);
+    void deleteDevice(UUID id);
 }

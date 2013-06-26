@@ -6,7 +6,6 @@ import com.kalixia.ha.dao.DevicesDao
 import com.kalixia.ha.dao.UsersDao
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.Device
-import com.kalixia.ha.model.devices.DeviceID
 import com.kalixia.ha.model.devices.RGBLamp
 import com.kalixia.ha.model.sensors.MutableSensor
 import com.kalixia.ha.model.sensors.Sensor
@@ -20,6 +19,7 @@ import com.netflix.astyanax.model.ColumnList
 import com.netflix.astyanax.model.Equality
 import com.netflix.astyanax.serializers.AnnotatedCompositeSerializer
 import com.netflix.astyanax.serializers.StringSerializer
+import com.netflix.astyanax.serializers.UUIDSerializer
 import groovy.util.logging.Slf4j
 import org.joda.time.DateTime
 import rx.Observable
@@ -27,8 +27,7 @@ import rx.Observer
 
 import javax.measure.unit.Unit
 
-import static com.netflix.astyanax.serializers.ComparatorType.UTF8TYPE
-
+import static com.netflix.astyanax.serializers.ComparatorType.UUIDTYPE
 /**
  * Devices are stored in a CF named <tt>Devices</tt>.
  * This CF is made of composite columns whose names are defined by {@link SensorProperty}.
@@ -41,9 +40,9 @@ import static com.netflix.astyanax.serializers.ComparatorType.UTF8TYPE
  * so that lookup can be done efficiently, like a reversed index.
  */
 @Slf4j("LOGGER")
-public class CassandraDevicesDao extends AbstractCassandraDao<Device, String, SensorProperty> implements DevicesDao {
+public class CassandraDevicesDao extends AbstractCassandraDao<Device, UUID, SensorProperty> implements DevicesDao {
     private final Keyspace keyspace
-    private final ColumnFamily<String, SensorProperty> cfDevices
+    private final ColumnFamily<UUID, SensorProperty> cfDevices
     private final ColumnFamily<String, UserProperty> cfUsers
     private final UsersDao usersDao
     private final AnnotatedCompositeSerializer userPropertySerializer
@@ -57,7 +56,7 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, String, Se
         this.usersDao = usersDao
 
         AnnotatedCompositeSerializer sensorPropertySerializer = new AnnotatedCompositeSerializer(SensorProperty.class)
-        cfDevices = new ColumnFamily<>("Devices", StringSerializer.get(), sensorPropertySerializer)
+        cfDevices = new ColumnFamily<>("Devices", UUIDSerializer.get(), sensorPropertySerializer)
 
         userPropertySerializer = new AnnotatedCompositeSerializer(UserProperty.class)
         cfUsers = new ColumnFamily<>("Users", StringSerializer.get(), userPropertySerializer)
@@ -70,7 +69,7 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, String, Se
             // column family is missing -- create it!
             LOGGER.warn("Creating missing Column Family '{}'", cfDevices.getName())
             keyspace.createColumnFamily(cfDevices, ImmutableMap.<String, Object>builder()
-                    .put("key_validation_class", UTF8TYPE.getTypeName())
+                    .put("key_validation_class", UUIDTYPE.typeName)
                     .put("comparator_type", "CompositeType(UTF8Type,UTF8Type)")
 //                    .put("column_metadata", ImmutableMap.<String, Object>builder()
 //                            .put("name", ImmutableMap.<String, Object>builder()
@@ -93,15 +92,27 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, String, Se
     }
 
     @Override
-    public Device findById(DeviceID id) throws ConnectionException {
+    public Device findById(UUID id) throws ConnectionException {
         ColumnList<SensorProperty> result = keyspace.prepareQuery(cfDevices)
-                .getKey(id.getRowKey())
+                .getKey(id)
                 .execute().getResult()
         try {
-            return buildFromColumnList(id.rowKey, result)
+            return buildFromColumnList(id, result)
         } catch (NullPointerException e) {
             throw new IllegalStateException("User should be found for device $id", e)
         }
+    }
+
+    @Override
+    public Device findByOwnerAndName(String ownerUsername, String name) throws ConnectionException {
+        def startColumn = userPropertySerializer.makeEndpoint("device", Equality.EQUAL).toBytes()
+        def endColumn = userPropertySerializer.makeEndpoint("device", Equality.LESS_THAN_EQUALS).toBytes()
+
+        ColumnList<UserProperty> devicesNames = keyspace.prepareQuery(cfUsers)
+                .getKey(ownerUsername)
+                .withColumnRange(startColumn, endColumn, false, 1)
+                .execute().getResult()
+        return findById(devicesNames.iterator().next().getUUIDValue())
     }
 
     @Override
@@ -116,7 +127,7 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, String, Se
                 .execute().getResult()
         return Observable.create({ Observer<Device> observer ->
             devicesNames.each { Column<UserProperty> col ->
-                Device device = findById(new DeviceID(username, col.name.property))
+                Device device = findById(col.getUUIDValue())
                 observer.onNext(device)
             }
             observer.onCompleted()
@@ -127,8 +138,7 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, String, Se
     public void save(Device device) throws ConnectionException {
         device.setLastUpdateDate(new DateTime())
         MutationBatch m = keyspace.prepareMutationBatch()
-        DeviceID id = new DeviceID(device.owner.username, device.name)
-        def row = m.withRow(cfDevices, id.rowKey)
+        def row = m.withRow(cfDevices, device.id)
         row
                 .putColumn(COL_NAME, device.name)
                 .putColumn(COL_OWNER, device.owner.username)
@@ -140,19 +150,19 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, String, Se
                 .putColumn(new SensorProperty(sensor: sensor.name, property: 'unit'), sensor.unit.toString())
         }
         m.withRow(cfUsers, device.owner.username)
-            .putColumn(new UserProperty(type: "device", property: device.getName()))
+            .putColumn(new UserProperty(type: "device", property: device.getName()), device.id)
         m.execute()
     }
 
     @Override
-    public void delete(DeviceID id) {
+    public void delete(UUID id) {
         MutationBatch m = keyspace.prepareMutationBatch()
-        m.withRow(cfDevices, id.getRowKey()).delete()
+        m.withRow(cfDevices, id).delete()
         m.execute()
     }
 
     @Override
-    protected Device buildFromColumnList(String id, ColumnList<SensorProperty> result) throws ConnectionException {
+    protected Device buildFromColumnList(UUID id, ColumnList<SensorProperty> result) throws ConnectionException {
         if (result.isEmpty()) {
             return null;
         }
@@ -203,7 +213,7 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, String, Se
         if (owner == null) {
             LOGGER.error("Invalid data: device {} is linked to owner {} which can't be found!", deviceName, ownerUsername)
         }
-        def device = new RGBLamp<>(new DeviceID(ownerUsername, deviceName), deviceName, owner, creationDate, lastUpdateDate)
+        def device = new RGBLamp<>(id, deviceName, owner, creationDate, lastUpdateDate)
         sensorsMap.values().each { Sensor sensor ->
             device.addSensor(sensor)
         }

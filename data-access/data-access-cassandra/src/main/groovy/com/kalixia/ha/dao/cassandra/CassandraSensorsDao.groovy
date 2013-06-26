@@ -1,26 +1,16 @@
 package com.kalixia.ha.dao.cassandra
 
 import com.kalixia.ha.dao.SensorsDao
-import com.kalixia.ha.model.User
-import com.kalixia.ha.model.devices.Device
-import com.kalixia.ha.model.devices.DeviceID
-import com.kalixia.ha.model.devices.RGBLamp
 import com.kalixia.ha.model.sensors.DataPoint
-import com.kalixia.ha.model.sensors.Sensor
 import com.netflix.astyanax.Keyspace
-import com.netflix.astyanax.MutationBatch
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException
 import com.netflix.astyanax.ddl.KeyspaceDefinition
 import com.netflix.astyanax.model.ColumnFamily
-import com.netflix.astyanax.model.ColumnList
 import com.netflix.astyanax.serializers.AnnotatedCompositeSerializer
 import com.netflix.astyanax.serializers.StringSerializer
 import groovy.util.logging.Slf4j
 import org.joda.time.DateTime
 import org.joda.time.Period
-
-import static com.google.common.base.Preconditions.checkArgument
-import static com.google.common.base.Preconditions.checkNotNull
 
 @Slf4j("LOGGER")
 public class CassandraSensorsDao implements SensorsDao {

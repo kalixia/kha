@@ -16,18 +16,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Abstract device class easing code a little bit.
  */
 abstract class AbstractDevice extends AbstractAuditable implements Device {
-    private final DeviceID id;
+    private final UUID id;
     private final String name;
     private final User owner;
     private final Set<Class<? extends Capability>> capabilities;
     private final Set<Sensor> sensors;
 
-    protected AbstractDevice(DeviceID id, String name, User owner, Class<? extends Capability>... capabilities) {
+    protected AbstractDevice(UUID id, String name, User owner, Class<? extends Capability>... capabilities) {
         super();
         this.id = id;
         this.name = name;
@@ -36,7 +37,7 @@ abstract class AbstractDevice extends AbstractAuditable implements Device {
         this.sensors = Sets.newHashSet();
     }
 
-    protected AbstractDevice(DeviceID id, String name, User owner, DateTime creationDate, DateTime lastUpdateDate,
+    protected AbstractDevice(UUID id, String name, User owner, DateTime creationDate, DateTime lastUpdateDate,
                              Class<? extends Capability>... capabilities) {
         super(creationDate, lastUpdateDate);
         this.id = id;
@@ -47,7 +48,7 @@ abstract class AbstractDevice extends AbstractAuditable implements Device {
     }
 
     @JsonIgnore
-    public DeviceID getId() {
+    public UUID getId() {
         return id;
     }
 

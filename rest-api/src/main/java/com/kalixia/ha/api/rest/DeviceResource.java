@@ -6,7 +6,6 @@ import com.kalixia.ha.api.DevicesService;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
-import com.kalixia.ha.model.devices.DeviceID;
 import com.kalixia.ha.model.devices.RGBLamp;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -52,7 +51,7 @@ public class DeviceResource {
     @GET
     @Path("{name}")
     public @NotNull Response findDeviceById(@PathParam("username") String username, @PathParam("name") String name) {
-        Device device = devicesService.findDeviceById(new DeviceID(username, name));
+        Device device = devicesService.findDeviceByName(username, name);
         if (device == null)
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         return Response
@@ -121,7 +120,7 @@ public class DeviceResource {
         }
 
         Device device = DevicesFactory.createDevice(newName, owner, RGBLamp.class);
-        Device existingDevice = devicesService.findDeviceById(new DeviceID(username, name));
+        Device existingDevice = devicesService.findDeviceById(device.getId());
         if (existingDevice == null) {
             return Response
                     .status(Response.Status.NOT_FOUND)

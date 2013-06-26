@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
+import java.util.UUID;
 
 /**
  * Devices which controls a RGB lamp or RGB Led Strip.
@@ -23,11 +24,11 @@ public class RGBLamp extends AbstractDevice implements Dimmer, Switch, Temperatu
     private float celsius;
 
     @SuppressWarnings("unchecked")
-    public RGBLamp(DeviceID id, String name, User owner) {
+    public RGBLamp(UUID id, String name, User owner) {
         super(id, name, owner);
     }
 
-    public RGBLamp(DeviceID id, String name, User owner, DateTime creationDate, DateTime lastUpdateDate) {
+    public RGBLamp(UUID id, String name, User owner, DateTime creationDate, DateTime lastUpdateDate) {
         super(id, name, owner, creationDate, lastUpdateDate, Switch.class, Light.class);
     }
 

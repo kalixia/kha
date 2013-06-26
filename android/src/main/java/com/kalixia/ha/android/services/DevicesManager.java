@@ -5,12 +5,10 @@ import com.googlecode.androidannotations.api.Scope;
 import com.kalixia.ha.model.Color;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
-import com.kalixia.ha.model.devices.DeviceID;
 import com.kalixia.ha.model.devices.RGBLamp;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 @EBean(scope = Scope.Singleton)
 public class DevicesManager {

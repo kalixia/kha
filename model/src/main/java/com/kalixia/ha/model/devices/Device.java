@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface Device extends Auditable {
-    DeviceID getId();
+    UUID getId();
     User getOwner();
     String getName();
 

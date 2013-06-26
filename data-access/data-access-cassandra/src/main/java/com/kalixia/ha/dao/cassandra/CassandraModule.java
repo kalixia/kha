@@ -8,16 +8,24 @@ import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.connectionpool.ConnectionPoolConfiguration;
 import com.netflix.astyanax.connectionpool.NodeDiscoveryType;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
+import com.netflix.astyanax.connectionpool.impl.BadHostDetectorImpl;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType;
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
+import com.netflix.astyanax.connectionpool.impl.ExponentialRetryBackoffStrategy;
 import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
+import com.netflix.astyanax.model.ConsistencyLevel;
+import com.netflix.astyanax.retry.BoundedExponentialBackoff;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import dagger.Module;
 import dagger.Provides;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.inject.Singleton;
+
+import static com.netflix.astyanax.connectionpool.NodeDiscoveryType.RING_DESCRIBE;
+import static com.netflix.astyanax.connectionpool.impl.ConnectionPoolType.TOKEN_AWARE;
+import static com.netflix.astyanax.model.ConsistencyLevel.CL_QUORUM;
 
 @Module(library = true)
 public class CassandraModule {
@@ -60,8 +68,10 @@ public class CassandraModule {
                 .forCluster("MyCluster")
                 .forKeyspace("test")
                 .withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
-                        .setDiscoveryType(NodeDiscoveryType.RING_DESCRIBE)
-                        .setConnectionPoolType(ConnectionPoolType.TOKEN_AWARE)
+                        .setDiscoveryType(RING_DESCRIBE)
+                        .setConnectionPoolType(TOKEN_AWARE)
+                        .setDefaultReadConsistencyLevel(CL_QUORUM)
+                        .setDefaultWriteConsistencyLevel(CL_QUORUM)
                         .setTargetCassandraVersion("1.2")
                         .setCqlVersion("3.0.0")
                 )

@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
 
 @Slf4j("LOGGER")
-public class CassandraSensorsDao extends AbstractCassandraDao<Sensor, String, String> implements SensorsDao {
+public class CassandraSensorsDao implements SensorsDao {
     private final Keyspace keyspace
     private final ColumnFamily<String, AnnotatedCompositeSerializer> cfDevices
 
@@ -71,44 +71,6 @@ public class CassandraSensorsDao extends AbstractCassandraDao<Sensor, String, St
     @Override
     List<DataPoint> getHistory(DateTime from, DateTime to, Period period) {
         return null
-    }
-
-    @Override
-    void save(Device device, Sensor... sensors) {
-        checkNotNull(sensors, "At least one sensor should be given")
-        checkArgument(sensors.length > 0, "At least one sensor should be given")
-        device.setLastUpdateDate(new DateTime())
-        MutationBatch m = keyspace.prepareMutationBatch()
-        DeviceID id = new DeviceID(device.owner.username, device.name)
-        def row = m.withRow(cfDevices, id.rowKey)
-        sensors.each { Sensor sensor ->
-            def nameColumn = new SensorProperty(sensor: sensor.name, property: 'name')
-            def unitColumn = new SensorProperty(sensor: sensor.name, property: 'unit')
-            row
-                    .putColumn(nameColumn, sensor.name)
-                    .putColumn(unitColumn, sensor.unit.toString())
-        }
-        m.execute()
-    }
-
-    @Override
-    void delete(Sensor sensor) {
-
-    }
-
-    @Override
-    protected Sensor buildFromColumnList(String id, ColumnList<String> result) throws ConnectionException {
-        if (result.isEmpty()) {
-            return null;
-        }
-        String deviceName = result.getStringValue("name", null);
-        String ownerUsername = result.getStringValue("owner", null);
-        User owner = usersDao.findByUsername(ownerUsername);
-
-        if (owner == null) {
-            LOGGER.error("Invalid data: device {} is linked to owner {} which can't be found!", deviceName, ownerUsername);
-        }
-        return new RGBLamp<>(new DeviceID(ownerUsername, deviceName), deviceName, owner);
     }
 
 }

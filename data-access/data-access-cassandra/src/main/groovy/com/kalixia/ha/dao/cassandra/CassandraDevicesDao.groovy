@@ -29,6 +29,17 @@ import javax.measure.unit.Unit
 
 import static com.netflix.astyanax.serializers.ComparatorType.UTF8TYPE
 
+/**
+ * Devices are stored in a CF named <tt>Devices</tt>.
+ * This CF is made of composite columns whose names are defined by {@link SensorProperty}.
+ * <p>
+ * The device is made of metadata about it (like name, owner, etc.) but also sensors. Those sensors are stored with
+ * the device metadata by the use of composite columns in a wide-row arrangement. This storage enables fast retrieval
+ * of device data along with its sensors.
+ * <p>
+ * On top of that, as we usually need to fetch devices of a user, the CF for the users is enriched with device IDs
+ * so that lookup can be done efficiently, like a reversed index.
+ */
 @Slf4j("LOGGER")
 public class CassandraDevicesDao extends AbstractCassandraDao<Device, String, SensorProperty> implements DevicesDao {
     private final Keyspace keyspace

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.kalixia.ha.api.ServicesModule;
 import com.kalixia.ha.api.rest.GeneratedJaxRsDaggerModule;
+import com.kalixia.ha.api.rest.json.JScienceModule;
 import com.kalixia.ha.model.User;
 import dagger.Module;
 import dagger.Provides;
@@ -50,6 +51,7 @@ public class GatewayModule {
 
         // register Jackson modules
         mapper.registerModule(new JodaModule());
+        mapper.registerModule(new JScienceModule());
 //        mapper.registerModule(new GuavaModule());
         mapper.registerModule(new AfterburnerModule());
 

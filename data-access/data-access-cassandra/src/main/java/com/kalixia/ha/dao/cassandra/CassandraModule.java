@@ -25,6 +25,7 @@ import javax.inject.Singleton;
 
 import static com.netflix.astyanax.connectionpool.NodeDiscoveryType.RING_DESCRIBE;
 import static com.netflix.astyanax.connectionpool.impl.ConnectionPoolType.TOKEN_AWARE;
+import static com.netflix.astyanax.model.ConsistencyLevel.CL_LOCAL_QUORUM;
 import static com.netflix.astyanax.model.ConsistencyLevel.CL_QUORUM;
 
 @Module(library = true)
@@ -70,8 +71,8 @@ public class CassandraModule {
                 .withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
                         .setDiscoveryType(RING_DESCRIBE)
                         .setConnectionPoolType(TOKEN_AWARE)
-//                        .setDefaultReadConsistencyLevel(CL_QUORUM)
-//                        .setDefaultWriteConsistencyLevel(CL_QUORUM)
+                        .setDefaultReadConsistencyLevel(CL_QUORUM)
+                        .setDefaultWriteConsistencyLevel(CL_QUORUM)
                         .setTargetCassandraVersion("1.2")
                         .setCqlVersion("3.0.0")
                 )

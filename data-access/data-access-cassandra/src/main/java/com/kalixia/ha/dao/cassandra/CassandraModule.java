@@ -30,15 +30,9 @@ import static com.netflix.astyanax.model.ConsistencyLevel.CL_QUORUM;
 
 @Module(library = true)
 public class CassandraModule {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraModule.class);
 
-    @Provides @Singleton UsersDao provideUserDao(Keyspace keyspace) {
-//        try {
-            return new CassandraUsersDao(keyspace);
-//        } catch (ConnectionException e) {
-//            LOGGER.error("Can't initialize Users DAO", e);
-//            return null;
-//        }
+    @Provides @Singleton UsersDao provideUserDao(SchemaDefinition schema) {
+        return new CassandraUsersDao(schema);
     }
 
     @Provides @Singleton DevicesDao provideDevicesDao(Keyspace keyspace, UsersDao usersDao) {

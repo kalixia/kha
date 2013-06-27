@@ -27,8 +27,9 @@ abstract class AbstractCassandraDaoTest extends Specification {
         def cassandraPool = cassandraModule.provideConnectionPool()
         def cassandraContext = cassandraModule.provideContext(cassandraPool)
         keyspace = cassandraModule.provideKeyspace(cassandraContext)
+        def schema = new SchemaDefinition(keyspace)
 
-        usersDao = new CassandraUsersDao(keyspace)
+        usersDao = new CassandraUsersDao(schema)
         sensorsDao = new CassandraSensorsDao(keyspace)
         devicesDao = new CassandraDevicesDao(keyspace, usersDao)
     }

@@ -9,3 +9,6 @@ curl -i -H "Accept: application/json" -X POST -d "{name: 'test', type: 'RGBLamp'
 curl -i -H "Accept: application/json" http://localhost:8082/johndoe/devices
 # Check if it can be found via it's name
 curl -i -H "Accept: application/json" http://localhost:8082/johndoe/devices/test
+
+# Create a sensor for this device
+curl -i -H "Accept: application/json" -X POST -d "{name: 'temperature', unit: '℃' }" http://localhost:8082/johndoe/devices/test/sensors

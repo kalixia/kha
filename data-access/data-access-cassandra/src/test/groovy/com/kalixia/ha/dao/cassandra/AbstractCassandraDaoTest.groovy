@@ -17,7 +17,6 @@ abstract class AbstractCassandraDaoTest extends Specification {
     @Shared UsersDao usersDao
     @Shared DevicesDao devicesDao
     @Shared SensorsDao sensorsDao
-    @Shared Keyspace keyspace;
 
     def setupSpec() {
         LOGGER.info("Starting Embedded Cassandra Server...")
@@ -26,12 +25,12 @@ abstract class AbstractCassandraDaoTest extends Specification {
         CassandraModule cassandraModule = new CassandraModule()
         def cassandraPool = cassandraModule.provideConnectionPool()
         def cassandraContext = cassandraModule.provideContext(cassandraPool)
-        keyspace = cassandraModule.provideKeyspace(cassandraContext)
+        def keyspace = cassandraModule.provideKeyspace(cassandraContext)
         def schema = new SchemaDefinition(keyspace)
 
         usersDao = new CassandraUsersDao(schema)
         devicesDao = new CassandraDevicesDao(schema, usersDao)
-        sensorsDao = new CassandraSensorsDao(keyspace)
+        sensorsDao = new CassandraSensorsDao(schema)
     }
 
     def cleanupSpec() {

@@ -6,27 +6,16 @@ import com.kalixia.ha.dao.UsersDao;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.connectionpool.ConnectionPoolConfiguration;
-import com.netflix.astyanax.connectionpool.NodeDiscoveryType;
-import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
-import com.netflix.astyanax.connectionpool.impl.BadHostDetectorImpl;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
-import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType;
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
-import com.netflix.astyanax.connectionpool.impl.ExponentialRetryBackoffStrategy;
 import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
-import com.netflix.astyanax.model.ConsistencyLevel;
-import com.netflix.astyanax.retry.BoundedExponentialBackoff;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import dagger.Module;
 import dagger.Provides;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.inject.Singleton;
 
 import static com.netflix.astyanax.connectionpool.NodeDiscoveryType.RING_DESCRIBE;
 import static com.netflix.astyanax.connectionpool.impl.ConnectionPoolType.TOKEN_AWARE;
-import static com.netflix.astyanax.model.ConsistencyLevel.CL_LOCAL_QUORUM;
-import static com.netflix.astyanax.model.ConsistencyLevel.CL_QUORUM;
 
 @Module(library = true)
 public class CassandraModule {
@@ -39,13 +28,8 @@ public class CassandraModule {
         return new CassandraDevicesDao(schema, usersDao);
     }
 
-    @Provides @Singleton SensorsDao provideSensorsDao(Keyspace keyspace) {
-//        try {
-            return new CassandraSensorsDao(keyspace);
-//        } catch (ConnectionException e) {
-//            LOGGER.error("Can't initialize Sensors DAO", e);
-//            return null;
-//        }
+    @Provides @Singleton SensorsDao provideSensorsDao(SchemaDefinition schema) {
+        return new CassandraSensorsDao(schema);
     }
 
     @Provides @Singleton Keyspace provideKeyspace(AstyanaxContext<Keyspace> ctx) {

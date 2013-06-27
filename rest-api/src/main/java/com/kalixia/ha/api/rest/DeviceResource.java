@@ -58,7 +58,7 @@ public class DeviceResource {
                 .ok(device)
                 .link(UriTemplateUtils.createURI("/{username}", username), "owner")
                 .lastModified(device.getLastUpdateDate().toDate())
-                .tag(EntityTag.valueOf(device.getLastUpdateDate().toString()))
+                .tag(Long.toString(device.getLastUpdateDate().getMillis()))
                 .header(CACHE_CONTROL, "max-age=60, must-revalidate")
                 .build();
     }

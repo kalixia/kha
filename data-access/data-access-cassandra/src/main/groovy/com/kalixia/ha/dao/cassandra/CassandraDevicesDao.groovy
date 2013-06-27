@@ -41,59 +41,21 @@ import static com.netflix.astyanax.serializers.ComparatorType.UUIDTYPE
  */
 @Slf4j("LOGGER")
 public class CassandraDevicesDao extends AbstractCassandraDao<Device, UUID, SensorProperty> implements DevicesDao {
-    private final Keyspace keyspace
-    private final ColumnFamily<UUID, SensorProperty> cfDevices
-    private final ColumnFamily<String, UserProperty> cfUsers
+    private final SchemaDefinition schema
     private final UsersDao usersDao
-    private final AnnotatedCompositeSerializer userPropertySerializer
     private static final SensorProperty COL_NAME = new SensorProperty(property: "name")
     private static final SensorProperty COL_OWNER = new SensorProperty(property: "owner")
     private static final SensorProperty COL_CREATION_DATE = new SensorProperty(property: "creationDate")
     private static final SensorProperty COL_LAST_UPDATE_DATE = new SensorProperty(property: "lastUpdateDate")
 
-    public CassandraDevicesDao(Keyspace keyspace, UsersDao usersDao) throws ConnectionException {
-        this.keyspace = keyspace
+    public CassandraDevicesDao(SchemaDefinition schema, UsersDao usersDao) {
+        this.schema = schema
         this.usersDao = usersDao
-
-        AnnotatedCompositeSerializer sensorPropertySerializer = new AnnotatedCompositeSerializer(SensorProperty.class)
-        cfDevices = new ColumnFamily<>("Devices", UUIDSerializer.get(), sensorPropertySerializer)
-
-        userPropertySerializer = new AnnotatedCompositeSerializer(UserProperty.class)
-        cfUsers = new ColumnFamily<>("Users", StringSerializer.get(), userPropertySerializer)
-
-        // analyze keyspace schema
-        KeyspaceDefinition keyspaceDefinition = CassandraUtils.getOrCreateKeyspace(keyspace)
-
-        // create Devices CF if missing
-        if (keyspaceDefinition.getColumnFamily(cfDevices.getName()) == null) {
-            // column family is missing -- create it!
-            LOGGER.warn("Creating missing Column Family '{}'", cfDevices.getName())
-            keyspace.createColumnFamily(cfDevices, ImmutableMap.<String, Object>builder()
-                    .put("key_validation_class", UUIDTYPE.typeName)
-                    .put("comparator_type", "CompositeType(UTF8Type,UTF8Type)")
-//                    .put("column_metadata", ImmutableMap.<String, Object>builder()
-//                            .put("name", ImmutableMap.<String, Object>builder()
-//                                    .put("validation_class", UTF8TYPE.getTypeName())
-//                                    .build())
-//                            .put(":owner", ImmutableMap.<String, Object>builder()
-//                                    .put("validation_class", UTF8TYPE.getTypeName())
-//                                    .put("index_name", "idx_owner_username")
-//                                    .put("index_type", "KEYS")
-//                                    .build())
-//                            .put("creationDate", ImmutableMap.<String, Object>builder()
-//                                    .put("validation_class", DATETYPE.getTypeName())
-//                                    .build())
-//                            .put("lastUpdateDate", ImmutableMap.<String, Object>builder()
-//                                    .put("validation_class", DATETYPE.getTypeName())
-//                                    .build())
-//                            .build())
-                    .build())
-        }
     }
 
     @Override
     public Device findById(UUID id) throws ConnectionException {
-        ColumnList<SensorProperty> result = keyspace.prepareQuery(cfDevices)
+        ColumnList<SensorProperty> result = schema.keyspace.prepareQuery(schema.devicesCF)
                 .getKey(id)
                 .execute().getResult()
         try {
@@ -105,16 +67,17 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, UUID, Sens
 
     @Override
     public Device findByOwnerAndName(String ownerUsername, String name) throws ConnectionException {
-        def startColumn = userPropertySerializer
+        def userColumnSerializer = (AnnotatedCompositeSerializer<UserProperty>) schema.usersCF.columnSerializer
+        def startColumn = userColumnSerializer
                 .makeEndpoint("device", Equality.EQUAL)
                 .append(name, Equality.EQUAL)
                 .toBytes()
-        def endColumn = userPropertySerializer
+        def endColumn = userColumnSerializer
                 .makeEndpoint("device", Equality.EQUAL)
                 .append(name, Equality.LESS_THAN_EQUALS)
                 .toBytes()
 
-        ColumnList<UserProperty> devicesNames = keyspace.prepareQuery(cfUsers)
+        ColumnList<UserProperty> devicesNames = schema.keyspace.prepareQuery(schema.usersCF)
                 .getKey(ownerUsername)
                 .withColumnRange(startColumn, endColumn, false, 1)
                 .execute().getResult()
@@ -123,10 +86,11 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, UUID, Sens
 
     @Override
     public Observable<? extends Device> findAllDevicesOfUser(String username) throws ConnectionException {
-        def startColumn = userPropertySerializer.makeEndpoint("device", Equality.EQUAL).toBytes()
-        def endColumn = userPropertySerializer.makeEndpoint("device", Equality.LESS_THAN_EQUALS).toBytes()
+        def userColumnSerializer = (AnnotatedCompositeSerializer<UserProperty>) schema.usersCF.columnSerializer
+        def startColumn = userColumnSerializer.makeEndpoint("device", Equality.EQUAL).toBytes()
+        def endColumn = userColumnSerializer.makeEndpoint("device", Equality.LESS_THAN_EQUALS).toBytes()
 
-        ColumnList<UserProperty> devicesNames = keyspace.prepareQuery(cfUsers)
+        ColumnList<UserProperty> devicesNames = schema.keyspace.prepareQuery(schema.usersCF)
                 .getKey(username)
                 .withColumnRange(startColumn, endColumn, false, 10000)
                 .autoPaginate(true)
@@ -143,8 +107,8 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, UUID, Sens
     @Override
     public void save(Device device) throws ConnectionException {
         device.setLastUpdateDate(new DateTime())
-        MutationBatch m = keyspace.prepareMutationBatch()
-        def row = m.withRow(cfDevices, device.id)
+        MutationBatch m = schema.keyspace.prepareMutationBatch()
+        def row = m.withRow(schema.devicesCF, device.id)
         row
                 .putColumn(COL_NAME, device.name)
                 .putColumn(COL_OWNER, device.owner.username)
@@ -155,15 +119,15 @@ public class CassandraDevicesDao extends AbstractCassandraDao<Device, UUID, Sens
                 .putColumn(new SensorProperty(sensor: sensor.name, property: 'name'), sensor.name)
                 .putColumn(new SensorProperty(sensor: sensor.name, property: 'unit'), sensor.unit.toString())
         }
-        m.withRow(cfUsers, device.owner.username)
+        m.withRow(schema.usersCF, device.owner.username)
             .putColumn(new UserProperty(type: "device", property: device.getName()), device.id)
         m.execute()
     }
 
     @Override
     public void delete(UUID id) {
-        MutationBatch m = keyspace.prepareMutationBatch()
-        m.withRow(cfDevices, id).delete()
+        MutationBatch m = schema.keyspace.prepareMutationBatch()
+        m.withRow(schema.devicesCF, id).delete()
         m.execute()
     }
 

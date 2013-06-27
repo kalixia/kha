@@ -15,8 +15,8 @@ import spock.lang.Specification
 @Slf4j("LOGGER")
 abstract class AbstractCassandraDaoTest extends Specification {
     @Shared UsersDao usersDao
-    @Shared SensorsDao sensorsDao
     @Shared DevicesDao devicesDao
+    @Shared SensorsDao sensorsDao
     @Shared Keyspace keyspace;
 
     def setupSpec() {
@@ -30,8 +30,8 @@ abstract class AbstractCassandraDaoTest extends Specification {
         def schema = new SchemaDefinition(keyspace)
 
         usersDao = new CassandraUsersDao(schema)
+        devicesDao = new CassandraDevicesDao(schema, usersDao)
         sensorsDao = new CassandraSensorsDao(keyspace)
-        devicesDao = new CassandraDevicesDao(keyspace, usersDao)
     }
 
     def cleanupSpec() {

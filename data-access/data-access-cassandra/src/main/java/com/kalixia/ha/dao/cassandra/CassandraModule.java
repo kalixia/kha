@@ -35,13 +35,8 @@ public class CassandraModule {
         return new CassandraUsersDao(schema);
     }
 
-    @Provides @Singleton DevicesDao provideDevicesDao(Keyspace keyspace, UsersDao usersDao) {
-//        try {
-            return new CassandraDevicesDao(keyspace, usersDao);
-//        } catch (ConnectionException e) {
-//            LOGGER.error("Can't initialize Devices DAO", e);
-//            return null;
-//        }
+    @Provides @Singleton DevicesDao provideDevicesDao(SchemaDefinition schema, UsersDao usersDao) {
+        return new CassandraDevicesDao(schema, usersDao);
     }
 
     @Provides @Singleton SensorsDao provideSensorsDao(Keyspace keyspace) {

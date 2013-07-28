@@ -1,0 +1,8 @@
+aParameter: one
+andAnotherOne: two
+
+basic:
+  firstname: john
+  lastname: doe
+
+andTheLastOne: three

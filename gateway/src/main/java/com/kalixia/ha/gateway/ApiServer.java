@@ -26,7 +26,8 @@ public class ApiServer {
         apiBootstrap = new ServerBootstrap();
         try {
             // the gateway will only have a few connections, so OIO is likely to be faster than NIO in this case!
-            apiBootstrap.group(new OioEventLoopGroup(), new OioEventLoopGroup())
+            EventLoopGroup commonGroup = new OioEventLoopGroup();
+            apiBootstrap.group(commonGroup, commonGroup)
                     .channel(OioServerSocketChannel.class)
                     .localAddress(port)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)

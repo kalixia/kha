@@ -17,10 +17,11 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.MessageLoggingHandler;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.EventExecutorGroup;
+
 import javax.inject.Inject;
 
 public class ApiServerChannelInitializer extends ChannelInitializer<SocketChannel> {
@@ -29,8 +30,8 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
     private final GeneratedJaxRsModuleHandler jaxRsHandlers;
 //    private final EventExecutorGroup rxJavaGroup;
     private final EventExecutorGroup jaxRsGroup;
-    private static final ChannelHandler debugger = new MessageLoggingHandler(LogLevel.TRACE);
-    private static final ChannelHandler apiRequestLogger = new MessageLoggingHandler(RESTCodec.class, LogLevel.DEBUG);
+    private static final ChannelHandler debugger = new LoggingHandler(LogLevel.TRACE);
+    private static final ChannelHandler apiRequestLogger = new LoggingHandler(RESTCodec.class, LogLevel.DEBUG);
 
     @Inject
     public ApiServerChannelInitializer(ObjectMapper objectMapper,

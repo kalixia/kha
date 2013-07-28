@@ -10,4 +10,7 @@ curl -i -H "Accept: application/json" http://localhost:8082/johndoe/devices
 # Check if it can be found via it's name
 curl -i -H "Accept: application/json" http://localhost:8082/johndoe/devices/test
 
-curl -i -H "Accept: application/json" -X POST -d "{name: 'temperature', unit: '℃' }" http://localhost:8082/johndoe/devices/sensors
+# Create a sensor for the 'test' device of 'johndoe'
+curl -i -H "Accept: application/json" -X POST -d "{name: 'temperature', unit: '℃' }" http://localhost:8082/johndoe/devices/test/sensors
+# List sensors of device 'test'
+curl -i -H "Accept: application/json" http://localhost:8082/johndoe/devices/test/sensors

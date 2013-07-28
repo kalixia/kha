@@ -78,5 +78,4 @@ class DevicesDaoTest extends AbstractCassandraDaoTest {
         deviceFound.sensors[0].unit == SI.SECOND
     }
 
-
 }

@@ -6,7 +6,11 @@ import com.kalixia.ha.dao.UsersDao;
 import com.kalixia.ha.dao.cassandra.CassandraModule;
 import dagger.Module;
 import dagger.Provides;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Singleton;
+import java.io.IOException;
 
 @Module(
         library = true,
@@ -15,9 +19,17 @@ import javax.inject.Singleton;
         }
 )
 public class ServicesModule {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServicesModule.class);
 
     @Provides @Singleton UsersService provideUsersService(UsersDao dao) {
-        return new UsersServiceImpl(dao);
+        try {
+            UsersServiceImpl service = new UsersServiceImpl(dao);
+            service.init();
+            return service;
+        } catch (IOException e) {
+            LOGGER.error("Can' start users service...", e);
+            throw new IllegalStateException("Can' start users service", e);
+        }
     }
 
     @Provides @Singleton DevicesService provideDevicesService(DevicesDao dao) {

@@ -2,10 +2,8 @@ package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.UsersDao
 import com.kalixia.ha.model.User
-import groovy.util.logging.Slf4j
 
-@Slf4j(value = "LOGGER")
-class UsersServiceImpl implements UsersService {
+class UsersServiceImpl extends Service<CassandraConfiguration> implements UsersService {
     final UsersDao dao
 
     UsersServiceImpl(UsersDao dao) {
@@ -21,5 +19,15 @@ class UsersServiceImpl implements UsersService {
     @Override
     void saveUser(User user) {
         dao.save(user)
+    }
+
+    @Override
+    protected String getName() {
+        return "users-service"
+    }
+
+    @Override
+    protected Class<CassandraConfiguration> getConfigurationClass() {
+        return CassandraConfiguration.class
     }
 }

@@ -5,8 +5,11 @@ import spock.lang.Specification
 class DummyServiceTest extends Specification {
 
     def "check configuration of service"() {
-        when: "a dummy service is created"
+        given: "a dummy service"
         def service = new DummyService()
+
+        when: "the service is initialized"
+        service.init()
 
         then: "it's configuration is properly loaded"
         def conf = service.configuration

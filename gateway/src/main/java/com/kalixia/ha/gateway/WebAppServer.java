@@ -49,7 +49,10 @@ public class WebAppServer {
                             pipeline.addLast("http-response-encoder", new HttpResponseEncoder());
 //                            pipeline.addLast("inflater", new HttpContentCompressor());
                             pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
-                            pipeline.addLast("file-handler", new HttpStaticFileServerHandler(true));
+                            String baseDir = getClass().getClassLoader().getResource("devices.html").getPath();
+                            baseDir = baseDir.substring(0, baseDir.lastIndexOf('/'));
+                            pipeline.addLast("file-handler", new HttpStaticFileServerHandler(
+                                    baseDir, true));
                         }
                     });
 

@@ -122,9 +122,11 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
     public static final int HTTP_CACHE_SECONDS = 60;
 
+    private static String baseDir;
     private final boolean useSendFile;
 
-    public HttpStaticFileServerHandler(boolean useSendFile) {
+    public HttpStaticFileServerHandler(String theBaseDir, boolean useSendFile) {
+        baseDir = theBaseDir;
         this.useSendFile = useSendFile;
     }
 
@@ -279,7 +281,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
         }
 
         // Convert to absolute path.
-        return System.getProperty("user.dir") + File.separator + uri;
+        return baseDir + File.separator + uri;
     }
 
     private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[A-Za-z0-9][-_A-Za-z0-9\\.]*");
@@ -408,10 +410,9 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
      *            file to extract content type
      */
     private static void setContentTypeHeader(HttpResponse response, File file) {
-        MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
-        response.headers().set(CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()));
+//        MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
+//        response.headers().set(CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()));
 
-        /*
         String contentType;
         if (file.getPath().endsWith(".html"))
             contentType = "text/html";
@@ -423,7 +424,6 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
             contentType = "application/octet-stream";
 
         response.headers().set(CONTENT_TYPE, contentType);
-        */
     }
 
 }

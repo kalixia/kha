@@ -76,6 +76,12 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
 
+        <!-- Tests dependencies -->
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-core</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

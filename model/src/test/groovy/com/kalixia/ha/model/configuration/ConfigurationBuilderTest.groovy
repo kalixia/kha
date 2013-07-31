@@ -1,4 +1,4 @@
-package com.kalixia.ha.api.environment
+package com.kalixia.ha.model.configuration
 
 import spock.lang.Specification
 

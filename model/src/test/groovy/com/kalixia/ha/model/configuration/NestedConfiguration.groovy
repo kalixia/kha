@@ -1,4 +1,4 @@
-package com.kalixia.ha.api.environment
+package com.kalixia.ha.model.configuration
 
 class NestedConfiguration {
     def String aParameter;

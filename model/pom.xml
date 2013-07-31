@@ -26,6 +26,26 @@
             <version>4.3.1</version>
         </dependency>
 
+        <!-- RxJava dependencies -->
+        <dependency>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-groovy</artifactId>
+        </dependency>
+
+        <!-- Dagger dependencies -->
+        <dependency>
+            <groupId>com.squareup.dagger</groupId>
+            <artifactId>dagger</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.dagger</groupId>
+            <artifactId>dagger-compiler</artifactId>
+        </dependency>
+
         <!-- Guava dependencies -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -41,10 +61,20 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-joda</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>com.fasterxml.jackson.jaxrs</groupId>-->
             <!--<artifactId>jackson-jaxrs-json-provider</artifactId>-->
         <!--</dependency>-->
+
+        <!-- Logging dependencies -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
 
     </dependencies>
 

@@ -38,12 +38,6 @@
             <groupId>com.squareup.dagger</groupId>
             <artifactId>dagger-compiler</artifactId>
         </dependency>
-        
-        <!-- Jackson dependencies -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-        </dependency>
 
         <!-- Groovy dependencies -->
         <dependency>

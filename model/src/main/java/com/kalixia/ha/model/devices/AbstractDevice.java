@@ -8,10 +8,21 @@ import com.google.common.collect.Sets;
 import com.kalixia.ha.model.AbstractAuditable;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Capability;
+import com.kalixia.ha.model.configuration.Configuration;
+import com.kalixia.ha.model.configuration.ConfigurationBuilder;
 import com.kalixia.ha.model.internal.CapabilitiesSerializer;
 import com.kalixia.ha.model.internal.UserReferenceSerializer;
 import com.kalixia.ha.model.sensors.Sensor;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,20 +32,21 @@ import java.util.UUID;
 /**
  * Abstract device class easing code a little bit.
  */
-abstract class AbstractDevice extends AbstractAuditable implements Device {
+public abstract class AbstractDevice<C extends Configuration> extends AbstractAuditable
+        implements Device, ConfigurableDevice<C> {
     private final UUID id;
     private final String name;
     private final User owner;
     private final Set<Class<? extends Capability>> capabilities;
     private final Set<Sensor> sensors;
+    protected C configuration;
+    protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+    protected abstract String getConfigurationFilename();
+    protected abstract Class<C> getConfigurationClass();
 
     protected AbstractDevice(UUID id, String name, User owner, Class<? extends Capability>... capabilities) {
-        super();
-        this.id = id;
-        this.name = name;
-        this.owner = owner;
-        this.capabilities = Collections.unmodifiableSet(Sets.newHashSet(capabilities));
-        this.sensors = Sets.newHashSet();
+        this(id, name, owner, new DateTime(), new DateTime(), capabilities);
     }
 
     protected AbstractDevice(UUID id, String name, User owner, DateTime creationDate, DateTime lastUpdateDate,
@@ -45,6 +57,12 @@ abstract class AbstractDevice extends AbstractAuditable implements Device {
         this.owner = owner;
         this.capabilities = Collections.unmodifiableSet(Sets.newHashSet(capabilities));
         this.sensors = Sets.newHashSet();
+        try {
+            configuration = ConfigurationBuilder.loadConfiguration(name, getConfigurationFilename(), getConfigurationClass());
+            init(configuration);
+        } catch (IOException e) {
+            LOGGER.error("Device '{}' won't start", e);
+        }
     }
 
     @JsonIgnore
@@ -82,6 +100,10 @@ abstract class AbstractDevice extends AbstractAuditable implements Device {
     @Override
     public Set<? extends Sensor> getSensors() {
         return sensors;
+    }
+
+    public C getConfiguration() {
+        return configuration;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.kalixia.ha.api
 
-import com.kalixia.ha.api.environment.Configuration
+import com.kalixia.ha.model.configuration.Configuration
 
 class DummyService extends Service<DummyConfiguration> {
     @Override

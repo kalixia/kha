@@ -1,0 +1,20 @@
+# Base URL of the Eco Device
+url: http://kalixia.com:81
+authentication:
+  username: admin
+  password: test
+
+power1:
+  enabled: true
+
+power2:
+  enabled: false
+
+water:
+  enabled: false
+
+gaz:
+  enabled: false
+
+polling:
+  interval: 15s

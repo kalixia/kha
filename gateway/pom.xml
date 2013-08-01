@@ -20,37 +20,37 @@
         </dependency>
 
         <!-- XBee dependencies -->
-        <dependency>
-            <groupId>com.kalixia.xbee</groupId>
-            <artifactId>xbee-api</artifactId>
-            <version>0.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-handler</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-codec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-codec-http</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-transport-http</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-transport-rxtx</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-metrics-yammer</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.kalixia.xbee</groupId>-->
+            <!--<artifactId>xbee-api</artifactId>-->
+            <!--<version>0.1</version>-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>io.netty</groupId>-->
+                    <!--<artifactId>netty-handler</artifactId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<groupId>io.netty</groupId>-->
+                    <!--<artifactId>netty-codec</artifactId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<groupId>io.netty</groupId>-->
+                    <!--<artifactId>netty-codec-http</artifactId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<groupId>io.netty</groupId>-->
+                    <!--<artifactId>netty-transport-http</artifactId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<groupId>io.netty</groupId>-->
+                    <!--<artifactId>netty-transport-rxtx</artifactId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<groupId>io.netty</groupId>-->
+                    <!--<artifactId>netty-metrics-yammer</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
 
         <!-- Hystrix dependencies -->
         <dependency>

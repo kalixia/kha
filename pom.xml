@@ -20,7 +20,7 @@
     </modules>
 
     <properties>
-        <grapi.version>0.1-SNAPSHOT</grapi.version>
+        <grapi.version>0.1</grapi.version>
         <hystrix.version>1.3.0.RC1-SNAPSHOT</hystrix.version>
         <rxjava.version>0.9.0</rxjava.version>
         <astyanax.version>1.56.42</astyanax.version>
@@ -327,6 +327,16 @@
 
         </dependencies>
     </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>grapi</id>
+            <name>Grapi</name>
+            <url>http://dl.bintray.com/kalixia/Grapi</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+    </repositories>
 
     <build>
         <pluginManagement>

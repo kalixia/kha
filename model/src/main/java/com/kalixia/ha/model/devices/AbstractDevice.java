@@ -98,6 +98,13 @@ public abstract class AbstractDevice<C extends Configuration> extends AbstractAu
     }
 
     @Override
+    public Device addSensors(Sensor... sensors) {
+        for (Sensor sensor : sensors)
+            addSensor(sensor);
+        return this;
+    }
+
+    @Override
     public Set<? extends Sensor> getSensors() {
         return sensors;
     }

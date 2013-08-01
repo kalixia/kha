@@ -17,5 +17,6 @@ public interface Device extends Auditable {
     boolean hasCapability(Class<? extends Capability> capability);
 
     Device addSensor(Sensor sensor);
+    Device addSensors(Sensor... sensors);
     Set<? extends Sensor> getSensors();
 }

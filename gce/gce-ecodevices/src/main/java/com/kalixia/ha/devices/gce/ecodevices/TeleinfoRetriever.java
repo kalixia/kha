@@ -1,11 +1,14 @@
 package com.kalixia.ha.devices.gce.ecodevices;
 
+import com.kalixia.ha.model.quantity.WattsPerHour;
 import rx.Observable;
+
+import javax.measure.Measurable;
 
 public interface TeleinfoRetriever {
     /**
      * Return an observable made of 2 values: one for HP and one for HC.
      * @return the two indexes
      */
-    Observable<Long> retrieveIndexes(Teleinfo teleinfo, EcoDeviceConfiguration configuration);
+    Observable<Measurable<WattsPerHour>> retrieveIndexes(Teleinfo teleinfo, EcoDeviceConfiguration configuration);
 }

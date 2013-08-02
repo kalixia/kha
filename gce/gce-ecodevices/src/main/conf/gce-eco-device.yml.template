@@ -1,0 +1,22 @@
+# Base URL of the Eco Device
+url: http://localhost
+
+# Enable these settings if your EcoDevice is protected with a login & password
+#authentication:
+#  username: admin
+#  password: password
+
+power1:
+  enabled: true
+
+power2:
+  enabled: false
+
+water:
+  enabled: false
+
+gaz:
+  enabled: false
+
+polling:
+  interval: 15s

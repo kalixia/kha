@@ -14,7 +14,7 @@ class EcoDeviceTest extends Specification {
 
         then: "the configuration to be properly loaded"
         device.configuration != null
-        device.configuration.url == 'http://kalixia.com:81'
+        device.configuration.url == 'http://localhost:12345'
         device.configuration.authenticationConfiguration.username == 'admin'
         device.configuration.authenticationConfiguration.password == 'test'
         device.configuration.power1SensorConfiguration.enabled

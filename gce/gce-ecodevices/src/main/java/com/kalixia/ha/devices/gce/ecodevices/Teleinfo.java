@@ -23,16 +23,22 @@ public class Teleinfo {
     }
 
     public enum TeleinfoName {
-        TELEINFO1("Téléinfo 1"), TELEINFO2("Téléinfo 2");
+        TELEINFO1("Téléinfo 1", "teleinfo1.xml"), TELEINFO2("Téléinfo 2", "teleinfo2.xml");
 
         private final String name;
+        private final String slug;
 
-        TeleinfoName(String name) {
+        TeleinfoName(String name, String slug) {
             this.name = name;
+            this.slug = slug;
         }
 
         public String getName() {
             return name;
+        }
+
+        public String getSlug() {
+            return slug;
         }
     }
 }

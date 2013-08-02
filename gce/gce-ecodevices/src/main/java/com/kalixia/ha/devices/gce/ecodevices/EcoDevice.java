@@ -1,6 +1,5 @@
 package com.kalixia.ha.devices.gce.ecodevices;
 
-import com.kalixia.ha.devices.gce.ecodevices.commands.FetchTeleinfoCountersCommand;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Counter;
 import com.kalixia.ha.model.devices.AbstractDevice;
@@ -47,10 +46,9 @@ public class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements
 
     @Override
     public void fetchSensorsData() {
-        FetchTeleinfoCountersCommand teleinfoCommand1 = new FetchTeleinfoCountersCommand(teleinfo1, configuration, retreiver);
-        FetchTeleinfoCountersCommand teleinfoCommand2 = new FetchTeleinfoCountersCommand(teleinfo2, configuration, retreiver);
-        Observable<Long> teleinfo1Values = teleinfoCommand1.observe().dematerialize(); // TODO: make sure dematerialize is what's needed
-        Observable<Long> teleinfo2Values = teleinfoCommand2.observe().dematerialize(); // TODO: make sure dematerialize is what's needed
+        TeleinfoRetriever teleinfoRetriever1 = new EcoDeviceTeleinfoRetriever();
+//        Observable<Long> teleinfo1Values = teleinfoCommand1.observe().dematerialize(); // TODO: make sure dematerialize is what's needed
+//        Observable<Long> teleinfo2Values = teleinfoCommand2.observe().dematerialize(); // TODO: make sure dematerialize is what's needed
     }
 
     @Override

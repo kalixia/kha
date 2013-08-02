@@ -1,5 +1,5 @@
 # Base URL of the Eco Device
-url: http://kalixia.com:81
+url: http://localhost:12345
 authentication:
   username: admin
   password: test

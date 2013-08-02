@@ -1,6 +1,7 @@
 package com.kalixia.ha.model.sensors;
 
 import javax.measure.quantity.Quantity;
+import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -9,5 +10,5 @@ import java.util.SortedSet;
  * @param <Q>
  */
 public interface AggregatedSensor<Q extends Quantity> extends Sensor<Q> {
-    SortedSet<Sensor> getSensors();
+    Set<Sensor<Q>> getSensors();
 }

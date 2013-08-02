@@ -7,7 +7,7 @@ import java.util.Observable;
 /**
  * Sensor based on a simple counter.
  */
-public abstract class CounterSensor<Q extends Quantity> implements Sensor {
+public class CounterSensor<Q extends Quantity> implements Sensor<Q> {
     private final String name;
     private final Unit<Q> unit;
 

@@ -7,16 +7,16 @@ import rx.Observable
 import javax.measure.Measurable
 import javax.measure.Measure
 
-import static com.kalixia.ha.devices.gce.ecodevices.Teleinfo.TeleinfoName.TELEINFO1
-import static com.kalixia.ha.devices.gce.ecodevices.Teleinfo.TeleinfoName.TELEINFO2
+import static TeleinfoSensorSlot.TELEINFO1
+import static TeleinfoSensorSlot.TELEINFO2
 
 @Slf4j("LOGGER")
 class EcoDeviceTeleinfoRetriever implements TeleinfoRetriever {
     private static final Measurable<WattsPerHour> ZERO_WATTS_PER_HOUR = Measure.valueOf(0L, WattsPerHour.UNIT)
 
     @Override
-    Observable<Measurable<WattsPerHour>> retrieveIndexes(Teleinfo teleinfo, EcoDeviceConfiguration configuration) {
-        switch (teleinfo.name) {
+    Observable<Measurable<WattsPerHour>> retrieveIndexes(TeleinfoSensor teleinfo, EcoDeviceConfiguration configuration) {
+        switch (teleinfo.slot) {
             case TELEINFO1:
                 if (!configuration.power1SensorConfiguration.enabled)
                     return Observable.from(ZERO_WATTS_PER_HOUR, ZERO_WATTS_PER_HOUR)

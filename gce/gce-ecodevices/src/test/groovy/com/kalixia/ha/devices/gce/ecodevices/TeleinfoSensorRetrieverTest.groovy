@@ -11,15 +11,15 @@ import spock.lang.Specification
 import javax.measure.Measurable
 import javax.measure.Measure
 
-import static com.kalixia.ha.devices.gce.ecodevices.Teleinfo.TeleinfoName.TELEINFO1
-import static com.kalixia.ha.devices.gce.ecodevices.Teleinfo.TeleinfoName.TELEINFO2
+import static TeleinfoSensorSlot.TELEINFO1
+import static TeleinfoSensorSlot.TELEINFO2
 
 @Slf4j("LOGGER")
-class TeleinfoRetrieverTest extends Specification {
+class TeleinfoSensorRetrieverTest extends Specification {
     @Shared def teleinfoRetriever = new EcoDeviceTeleinfoRetriever()
     @Shared EcoDeviceConfiguration ecoDeviceConfiguration
-    @Shared def teleinfo1 = new Teleinfo(TELEINFO1)
-    @Shared def teleinfo2 = new Teleinfo(TELEINFO2)
+    @Shared def teleinfo1 = new TeleinfoSensor(TELEINFO1)
+    @Shared def teleinfo2 = new TeleinfoSensor(TELEINFO2)
     @Shared MockedEchoDeviceServer fakeServer
 
     def setupSpec() {
@@ -44,7 +44,7 @@ class TeleinfoRetrieverTest extends Specification {
     }
 
     def "test retrieval of teleinfo counter"() {
-        when: "requesting for enabled teleinfo1"
+        when: "requesting for enabled teleinfoSensor1"
         def iterator = teleinfoRetriever.retrieveIndexes(teleinfo1, ecoDeviceConfiguration)
                 .toBlockingObservable().iterator
         def hp = iterator.next()
@@ -56,7 +56,7 @@ class TeleinfoRetrieverTest extends Specification {
     }
 
     def "test retrieval of disabled teleinfo counter"() {
-        when: "requesting for disabled teleinfo2"
+        when: "requesting for disabled teleinfoSensor2"
         def iterator = teleinfoRetriever.retrieveIndexes(teleinfo2, ecoDeviceConfiguration)
                 .toBlockingObservable().iterator
         def hp = iterator.next()
@@ -68,7 +68,7 @@ class TeleinfoRetrieverTest extends Specification {
     }
 
     def "test retrieval of teleinfo counter with no energy meter connected"() {
-        when: "requesting for enabled teleinfo2 with no energy meter connected"
+        when: "requesting for enabled teleinfoSensor2 with no energy meter connected"
         ecoDeviceConfiguration.power2SensorConfiguration.enabled = true
         def iterator = teleinfoRetriever.retrieveIndexes(teleinfo2, ecoDeviceConfiguration)
                         .toBlockingObservable().iterator

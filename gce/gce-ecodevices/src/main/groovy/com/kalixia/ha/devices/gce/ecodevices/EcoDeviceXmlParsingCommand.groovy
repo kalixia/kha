@@ -10,18 +10,18 @@ import groovyx.net.http.HTTPBuilder
 import javax.measure.Measurable
 import javax.measure.Measure
 
-import static com.kalixia.ha.devices.gce.ecodevices.Teleinfo.TeleinfoName.TELEINFO1
-import static com.kalixia.ha.devices.gce.ecodevices.Teleinfo.TeleinfoName.TELEINFO2
+import static TeleinfoSensorSlot.TELEINFO1
+import static TeleinfoSensorSlot.TELEINFO2
 
 @Slf4j("LOGGER")
 class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<WattsPerHour>>> {
-    private final Teleinfo teleinfo
+    private final TeleinfoSensor teleinfo
     private final EcoDeviceConfiguration configuration
 
-    public EcoDeviceXmlParsingCommand(Teleinfo teleinfo, EcoDeviceConfiguration configuration) {
+    public EcoDeviceXmlParsingCommand(TeleinfoSensor teleinfo, EcoDeviceConfiguration configuration) {
         super(HystrixCommand.Setter
                 .withGroupKey(HystrixCommandGroupKey.Factory.asKey("EcoDevice"))
-                .andCommandKey(HystrixCommandKey.Factory.asKey("Teleinfo"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("TeleinfoSensor"))
         )
         super.executionTimeInMilliseconds
         this.teleinfo = teleinfo
@@ -36,11 +36,11 @@ class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<WattsPer
                     configuration.authenticationConfiguration.password
         }
 
-        LOGGER.info("About to make HTTP call to ${configuration.url}/protect/settings/${teleinfo.name.slug}")
+        LOGGER.info("About to make HTTP call to ${configuration.url}/protect/settings/${teleinfo.slot.slug}")
 
         List<Measurable<WattsPerHour>> indexes = []
-        http.get(path: "/protect/settings/${teleinfo.name.slug}") { resp, xml ->
-            switch (teleinfo.name) {
+        http.get(path: "/protect/settings/${teleinfo.slot.slug}") { resp, xml ->
+            switch (teleinfo.slot) {
                 case TELEINFO1:
                     indexes << Measure.valueOf(xml.T1_HCHP.text() as Long, WattsPerHour.UNIT)
                     indexes << Measure.valueOf(xml.T1_HCHC.text() as Long, WattsPerHour.UNIT)

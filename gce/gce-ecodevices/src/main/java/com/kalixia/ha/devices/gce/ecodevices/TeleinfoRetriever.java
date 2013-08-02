@@ -10,5 +10,5 @@ public interface TeleinfoRetriever {
      * Return an observable made of 2 values: one for HP and one for HC.
      * @return the two indexes
      */
-    Observable<Measurable<WattsPerHour>> retrieveIndexes(Teleinfo teleinfo, EcoDeviceConfiguration configuration);
+    Observable<Measurable<WattsPerHour>> retrieveIndexes(TeleinfoSensor teleinfoSensor, EcoDeviceConfiguration configuration);
 }

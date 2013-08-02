@@ -5,7 +5,6 @@ import com.kalixia.ha.model.capabilities.Counter;
 import com.kalixia.ha.model.devices.AbstractDevice;
 import com.kalixia.ha.model.devices.PullBasedDevice;
 import com.kalixia.ha.model.sensors.CounterSensor;
-import rx.Observable;
 
 import javax.measure.unit.NonSI;
 import java.util.UUID;
@@ -22,19 +21,19 @@ import java.util.UUID;
  * TODO: add support for the gaz counter
  */
 public class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements PullBasedDevice {
-    private Teleinfo teleinfo1;
-    private Teleinfo teleinfo2;
+    private TeleinfoSensor teleinfoSensor1;
+    private TeleinfoSensor teleinfoSensor2;
     private CounterSensor<?> water;
     private final TeleinfoRetriever retreiver;
 
     public EcoDevice(UUID id, String name, User owner) {
         super(id, name, owner, Counter.class);
-        teleinfo1 = new Teleinfo(Teleinfo.TeleinfoName.TELEINFO1);
-        teleinfo2 = new Teleinfo(Teleinfo.TeleinfoName.TELEINFO2);
+        teleinfoSensor1 = new TeleinfoSensor(TeleinfoSensorSlot.TELEINFO1);
+        teleinfoSensor2 = new TeleinfoSensor(TeleinfoSensorSlot.TELEINFO2);
         water = new CounterSensor<>("Water", NonSI.LITRE);
         this.retreiver = new EcoDeviceTeleinfoRetriever();
-        addSensors(teleinfo1.getSensors());
-        addSensors(teleinfo2.getSensors());
+        addSensors(teleinfoSensor1);
+        addSensors(teleinfoSensor2);
         addSensor(water);
     }
 

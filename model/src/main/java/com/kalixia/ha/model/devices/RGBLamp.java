@@ -7,6 +7,7 @@ import com.kalixia.ha.model.capabilities.Light;
 import com.kalixia.ha.model.capabilities.Switch;
 import com.kalixia.ha.model.sensors.Temperature;
 import org.joda.time.DateTime;
+import rx.Observable;
 
 import javax.measure.unit.SI;
 import javax.measure.unit.Unit;

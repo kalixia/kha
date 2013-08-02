@@ -4,8 +4,10 @@ import com.kalixia.ha.dao.SensorsDao
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.RGBLamp
 import com.kalixia.ha.model.sensors.DataPoint
-import org.joda.time.Instant
 import spock.lang.Specification
+
+import javax.measure.Measure
+import javax.measure.quantity.LuminousFlux
 
 class SensorsServiceTest extends Specification {
 
@@ -19,16 +21,15 @@ class SensorsServiceTest extends Specification {
         def service = new SensorsServiceImpl(dao)
         def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
         def deviceAndSensor = new RGBLamp(UUID.randomUUID(), 'my lamp', user)
-        dao.getLastValue(deviceAndSensor.id) >> new DataPoint(123L, Instant.now())
+        dao.getLastValue(deviceAndSensor.id) >> new DataPoint<LuminousFlux>(Measure.valueOf(3, LuminousFlux.UNIT))
 
         when: "requesting last sensor value"
         def observable = service.getLastValue(deviceAndSensor.id)
-        def DataPoint<Long> dataPoint
-        observable.subscribe({ dataPoint = it })
+        def DataPoint<LuminousFlux> dataPoint = observable.toBlockingObservable().iterator.next()
 
         then: "expect to get it"
         dataPoint != null
-        dataPoint.value == 123L
+        Measure.valueOf(3, LuminousFlux.UNIT).equals(dataPoint.value)
     }
 
 }

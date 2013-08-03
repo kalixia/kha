@@ -7,23 +7,8 @@ import java.util.Observable;
 /**
  * Sensor based on a simple counter.
  */
-public class CounterSensor<Q extends Quantity> implements Sensor<Q> {
-    private final String name;
-    private final Unit<Q> unit;
-
+public class CounterSensor<Q extends Quantity> extends BasicSensor<Q> {
     public CounterSensor(String name, Unit<Q> unit) {
-        this.name = name;
-        this.unit = unit;
+        super(name, unit);
     }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public Unit<Q> getUnit() {
-        return unit;
-    }
-
 }

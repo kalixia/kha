@@ -3,9 +3,12 @@ package com.kalixia.ha.dao.cassandra
 import com.kalixia.ha.model.User
 
 import com.kalixia.ha.model.devices.RGBLamp
+import com.kalixia.ha.model.sensors.DataPoint
 import com.kalixia.ha.model.sensors.Sensor
 import com.netflix.astyanax.util.TimeUUIDUtils
 
+import javax.measure.Measure
+import javax.measure.quantity.Duration
 import javax.measure.unit.SI
 import javax.measure.unit.Unit
 
@@ -52,7 +55,7 @@ class DevicesDaoTest extends AbstractCassandraDaoTest {
         def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
         def deviceId = TimeUUIDUtils.uniqueTimeUUIDinMicros
         def device = new RGBLamp(deviceId, 'my lamp', user)
-        device.addSensor(new Sensor() {
+        device.addSensor(new Sensor<Duration>() {
             @Override
             String getName() {
                 return "dummy"
@@ -61,6 +64,11 @@ class DevicesDaoTest extends AbstractCassandraDaoTest {
             @Override
             Unit getUnit() {
                 return SI.SECOND
+            }
+
+            @Override
+            DataPoint<Duration> getLastValue() {
+                return new DataPoint<Duration>(Measure.valueOf(123, SI.SECOND));
             }
         })
 

@@ -4,6 +4,7 @@ import com.google.common.collect.Sets
 import com.kalixia.ha.model.quantity.WattsPerHour
 import com.kalixia.ha.model.sensors.AggregatedSensor
 import com.kalixia.ha.model.sensors.CounterSensor
+import com.kalixia.ha.model.sensors.DataPoint
 import com.kalixia.ha.model.sensors.Sensor
 
 import javax.measure.unit.Unit
@@ -33,6 +34,11 @@ class TeleinfoSensor implements AggregatedSensor<WattsPerHour> {
     @Override
     public Unit<WattsPerHour> getUnit() {
         return WattsPerHour.UNIT
+    }
+
+    @Override
+    DataPoint<WattsPerHour> getLastValue() {
+        throw new UnsupportedOperationException("The teleinfo is an aggregate sensor. It has no value in itself!")
     }
 
     public Set<Sensor<WattsPerHour>> getSensors() {

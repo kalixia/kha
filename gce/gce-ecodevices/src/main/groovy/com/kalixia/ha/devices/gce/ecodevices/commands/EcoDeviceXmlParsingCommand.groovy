@@ -23,7 +23,7 @@ class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<WattsPer
     public EcoDeviceXmlParsingCommand(TeleinfoSensor teleinfo, EcoDeviceConfiguration configuration) {
         super(HystrixCommand.Setter
                 .withGroupKey(HystrixCommandGroupKey.Factory.asKey("EcoDevice"))
-                .andCommandKey(HystrixCommandKey.Factory.asKey("TeleinfoSensor"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("Teleinfo"))
         )
         super.executionTimeInMilliseconds
         this.teleinfo = teleinfo

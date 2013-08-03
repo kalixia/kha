@@ -1,5 +1,7 @@
-package com.kalixia.ha.devices.gce.ecodevices
+package com.kalixia.ha.devices.gce.ecodevices.commands
 
+import com.kalixia.ha.devices.gce.ecodevices.EcoDeviceConfiguration
+import com.kalixia.ha.devices.gce.ecodevices.TeleinfoSensor
 import com.kalixia.ha.model.quantity.WattsPerHour
 import com.netflix.hystrix.HystrixCommand
 import com.netflix.hystrix.HystrixCommandGroupKey
@@ -10,8 +12,8 @@ import groovyx.net.http.HTTPBuilder
 import javax.measure.Measurable
 import javax.measure.Measure
 
-import static TeleinfoSensorSlot.TELEINFO1
-import static TeleinfoSensorSlot.TELEINFO2
+import static com.kalixia.ha.devices.gce.ecodevices.TeleinfoSensorSlot.TELEINFO1
+import static com.kalixia.ha.devices.gce.ecodevices.TeleinfoSensorSlot.TELEINFO2
 
 @Slf4j("LOGGER")
 class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<WattsPerHour>>> {

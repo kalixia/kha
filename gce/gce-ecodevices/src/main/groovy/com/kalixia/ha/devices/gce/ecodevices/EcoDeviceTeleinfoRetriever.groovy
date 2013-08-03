@@ -1,5 +1,6 @@
 package com.kalixia.ha.devices.gce.ecodevices
 
+import com.kalixia.ha.devices.gce.ecodevices.commands.EcoDeviceXmlParsingCommand
 import com.kalixia.ha.model.quantity.WattsPerHour
 import groovy.util.logging.Slf4j
 import rx.Observable

@@ -5,15 +5,19 @@ authentication:
   password: test
 
 power1:
+  name: Téléinfo 1
   enabled: true
 
 power2:
+  name: Téléinfo 2
   enabled: false
 
-water:
+counter1:
+  name: Water
   enabled: false
 
-gaz:
+counter2:
+  name: Gas
   enabled: false
 
 polling:

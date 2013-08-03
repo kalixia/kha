@@ -9,15 +9,17 @@ import com.kalixia.ha.model.sensors.Sensor
 import javax.measure.unit.Unit
 
 class TeleinfoSensor implements AggregatedSensor<WattsPerHour> {
+    private final String name
     private final TeleinfoSensorSlot slot
     private final CounterSensor<WattsPerHour> hp
     private final CounterSensor<WattsPerHour> hc
     private final Set<Sensor<WattsPerHour>> sensors
 
-    public TeleinfoSensor(TeleinfoSensorSlot slot) {
+    public TeleinfoSensor(String name, TeleinfoSensorSlot slot) {
+        this.name = name
         this.slot = slot
-        hp = new CounterSensor<>(String.format("%s (HP)", slot.getName()), WattsPerHour.UNIT)
-        hc = new CounterSensor<>(String.format("%s (HC)", slot.getName()), WattsPerHour.UNIT)
+        hp = new CounterSensor<>(String.format("%s (HP)", name), WattsPerHour.UNIT)
+        hc = new CounterSensor<>(String.format("%s (HC)", name), WattsPerHour.UNIT)
         sensors = Sets.newLinkedHashSet()
         sensors.add(hp)
         sensors.add(hc)
@@ -25,7 +27,7 @@ class TeleinfoSensor implements AggregatedSensor<WattsPerHour> {
 
     @Override
     public String getName() {
-        return getSlot().name
+        return name
     }
 
     @Override

@@ -14,19 +14,19 @@ public class EcoDeviceConfiguration extends Configuration {
     private String url
 
     @JsonProperty("authentication")
-    private AuthenticationConfiguration authenticationConfiguration
+    private AuthenticationConfiguration authentication
 
     @JsonProperty("power1")
-    private SensorConfiguration power1SensorConfiguration
+    private SensorConfiguration power1
 
     @JsonProperty("power2")
-    private SensorConfiguration power2SensorConfiguration
+    private SensorConfiguration power2
 
-    @JsonProperty("water")
-    private SensorConfiguration waterSensorConfiguration
+    @JsonProperty("counter1")
+    private SensorConfiguration counter1
 
-    @JsonProperty("gaz")
-    private SensorConfiguration gazSensorConfiguration
+    @JsonProperty("counter2")
+    private SensorConfiguration counter2
 
     @JsonProperty("polling")
     private PullBasedConfiguration polling
@@ -35,28 +35,27 @@ public class EcoDeviceConfiguration extends Configuration {
         return url
     }
 
-    public AuthenticationConfiguration getAuthenticationConfiguration() {
-        return authenticationConfiguration
+    public AuthenticationConfiguration getAuthentication() {
+        return authentication
     }
 
-    public SensorConfiguration getPower1SensorConfiguration() {
-        return power1SensorConfiguration
+    SensorConfiguration getPower1() {
+        return power1
     }
 
-    public SensorConfiguration getPower2SensorConfiguration() {
-        return power2SensorConfiguration
+    SensorConfiguration getPower2() {
+        return power2
     }
 
-    public SensorConfiguration getWaterSensorConfiguration() {
-        return waterSensorConfiguration
+    SensorConfiguration getCounter1() {
+        return counter1
     }
 
-    public SensorConfiguration getGazSensorConfiguration() {
-        return gazSensorConfiguration
+    SensorConfiguration getCounter2() {
+        return counter2
     }
 
-    public PullBasedConfiguration getPolling() {
+    PullBasedConfiguration getPolling() {
         return polling
     }
-
 }

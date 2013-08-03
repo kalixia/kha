@@ -19,11 +19,11 @@ class EcoDeviceTeleinfoRetriever implements TeleinfoRetriever {
     Observable<Measurable<WattsPerHour>> retrieveIndexes(TeleinfoSensor teleinfo, EcoDeviceConfiguration configuration) {
         switch (teleinfo.slot) {
             case TELEINFO1:
-                if (!configuration.power1SensorConfiguration.enabled)
+                if (!configuration.power1.enabled)
                     return Observable.from(ZERO_WATTS_PER_HOUR, ZERO_WATTS_PER_HOUR)
                 break;
             case TELEINFO2:
-                if (!configuration.power2SensorConfiguration.enabled)
+                if (!configuration.power2.enabled)
                     return Observable.from(ZERO_WATTS_PER_HOUR, ZERO_WATTS_PER_HOUR)
                 break;
         }

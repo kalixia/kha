@@ -33,9 +33,9 @@ class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<WattsPer
     @Override
     protected List<Measurable<WattsPerHour>> run() throws Exception {
         def http = new HTTPBuilder(configuration.url)
-        if (configuration.authenticationConfiguration != null) {
-            http.auth.basic configuration.authenticationConfiguration.username,
-                    configuration.authenticationConfiguration.password
+        if (configuration.authentication != null) {
+            http.auth.basic configuration.authentication.username,
+                    configuration.authentication.password
         }
 
         LOGGER.info("About to make HTTP call to ${configuration.url}/protect/settings/${teleinfo.slot.slug}")

@@ -15,12 +15,16 @@ class EcoDeviceTest extends Specification {
         then: "the configuration to be properly loaded"
         device.configuration != null
         device.configuration.url == 'http://localhost:12345'
-        device.configuration.authenticationConfiguration.username == 'admin'
-        device.configuration.authenticationConfiguration.password == 'test'
-        device.configuration.power1SensorConfiguration.enabled
-        !device.configuration.power2SensorConfiguration.enabled
-        !device.configuration.waterSensorConfiguration.enabled
-        !device.configuration.gazSensorConfiguration.enabled
+        device.configuration.authentication.username == 'admin'
+        device.configuration.authentication.password == 'test'
+        device.configuration.power1.name == 'Téléinfo 1'
+        device.configuration.power1.enabled
+        device.configuration.power2.name == 'Téléinfo 2'
+        !device.configuration.power2.enabled
+        device.configuration.counter1.name == 'Water'
+        !device.configuration.counter1.enabled
+        device.configuration.counter2.name == 'Gas'
+        !device.configuration.counter2.enabled
         device.configuration.polling.pollingInterval == '15s'
     }
 

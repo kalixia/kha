@@ -18,8 +18,8 @@ import static TeleinfoSensorSlot.TELEINFO2
 class TeleinfoSensorRetrieverTest extends Specification {
     @Shared def teleinfoRetriever = new EcoDeviceTeleinfoRetriever()
     @Shared EcoDeviceConfiguration ecoDeviceConfiguration
-    @Shared def teleinfo1 = new TeleinfoSensor(TELEINFO1)
-    @Shared def teleinfo2 = new TeleinfoSensor(TELEINFO2)
+    @Shared def teleinfo1
+    @Shared def teleinfo2
     @Shared MockedEchoDeviceServer fakeServer
 
     def setupSpec() {
@@ -28,6 +28,8 @@ class TeleinfoSensorRetrieverTest extends Specification {
 
         ecoDeviceConfiguration = ConfigurationBuilder.loadConfiguration("eco-device", "gce-eco-device",
                 EcoDeviceConfiguration.class)
+        teleinfo1 = new TeleinfoSensor(ecoDeviceConfiguration.power1.name, TELEINFO1)
+        teleinfo2 = new TeleinfoSensor(ecoDeviceConfiguration.power1.name, TELEINFO2)
         HystrixPlugins.getInstance().registerMetricsPublisher(new HystrixYammerMetricsPublisher())
     }
 
@@ -69,7 +71,7 @@ class TeleinfoSensorRetrieverTest extends Specification {
 
     def "test retrieval of teleinfo counter with no energy meter connected"() {
         when: "requesting for enabled teleinfoSensor2 with no energy meter connected"
-        ecoDeviceConfiguration.power2SensorConfiguration.enabled = true
+        ecoDeviceConfiguration.power2.enabled = true
         def iterator = teleinfoRetriever.retrieveIndexes(teleinfo2, ecoDeviceConfiguration)
                         .toBlockingObservable().iterator
         def hp = iterator.next()

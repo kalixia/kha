@@ -18,8 +18,8 @@ import static TeleinfoSensorSlot.TELEINFO2
 class TeleinfoSensorRetrieverTest extends Specification {
     @Shared def teleinfoRetriever = new EcoDeviceTeleinfoRetriever()
     @Shared EcoDeviceConfiguration ecoDeviceConfiguration
-    @Shared def teleinfo1
-    @Shared def teleinfo2
+    @Shared TeleinfoSensor teleinfo1
+    @Shared TeleinfoSensor teleinfo2
     @Shared MockedEchoDeviceServer fakeServer
 
     def setupSpec() {
@@ -71,6 +71,7 @@ class TeleinfoSensorRetrieverTest extends Specification {
 
     def "test retrieval of teleinfo counter with no energy meter connected"() {
         when: "requesting for enabled teleinfoSensor2 with no energy meter connected"
+        //noinspection GroovyAccessibility
         ecoDeviceConfiguration.power2.enabled = true
         def iterator = teleinfoRetriever.retrieveIndexes(teleinfo2, ecoDeviceConfiguration)
                         .toBlockingObservable().iterator

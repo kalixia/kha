@@ -21,9 +21,7 @@ class TeleinfoSensor implements AggregatedSensor<WattsPerHour> {
         this.slot = slot
         hp = new CounterSensor<>(String.format("%s (HP)", name), WattsPerHour.UNIT)
         hc = new CounterSensor<>(String.format("%s (HC)", name), WattsPerHour.UNIT)
-        sensors = Sets.newLinkedHashSet()
-        sensors.add(hp)
-        sensors.add(hc)
+        sensors = Sets.newHashSet(hp, hc)
     }
 
     @Override

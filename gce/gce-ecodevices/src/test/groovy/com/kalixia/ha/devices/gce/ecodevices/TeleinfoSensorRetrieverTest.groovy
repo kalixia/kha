@@ -10,6 +10,7 @@ import spock.lang.Specification
 
 import javax.measure.Measurable
 import javax.measure.Measure
+import javax.measure.unit.SI
 
 import static TeleinfoSensorSlot.TELEINFO1
 import static TeleinfoSensorSlot.TELEINFO2
@@ -37,22 +38,16 @@ class TeleinfoSensorRetrieverTest extends Specification {
         fakeServer.stop()
     }
 
-    def "test measures"() {
-        when:
-        Measurable<WattsPerHour> measure = Measure.valueOf(0L, WattsPerHour.UNIT)
-
-        then:
-        measure.longValue(WattsPerHour.UNIT) == 0L
-    }
-
     def "test retrieval of teleinfo counter"() {
         when: "requesting for enabled teleinfoSensor1"
         def iterator = teleinfoRetriever.retrieveIndexes(teleinfo1, ecoDeviceConfiguration)
                 .toBlockingObservable().iterator
+        def instant = iterator.next()
         def hp = iterator.next()
         def hc = iterator.next()
 
         then: "expect to get non-zero values"
+        instant.doubleValue(SI.WATT) > 0
         hp.doubleValue(WattsPerHour.UNIT) > 0
         hc.doubleValue(WattsPerHour.UNIT) > 0
     }
@@ -61,10 +56,12 @@ class TeleinfoSensorRetrieverTest extends Specification {
         when: "requesting for disabled teleinfoSensor2"
         def iterator = teleinfoRetriever.retrieveIndexes(teleinfo2, ecoDeviceConfiguration)
                 .toBlockingObservable().iterator
+        def instant = iterator.next()
         def hp = iterator.next()
         def hc = iterator.next()
 
         then: "expect zero values"
+        instant == Measure.valueOf(0L, SI.WATT)
         hp == Measure.valueOf(0L, WattsPerHour.UNIT)
         hc == Measure.valueOf(0L, WattsPerHour.UNIT)
     }
@@ -75,10 +72,12 @@ class TeleinfoSensorRetrieverTest extends Specification {
         ecoDeviceConfiguration.power2.enabled = true
         def iterator = teleinfoRetriever.retrieveIndexes(teleinfo2, ecoDeviceConfiguration)
                         .toBlockingObservable().iterator
+        def instant = iterator.next()
         def hp = iterator.next()
         def hc = iterator.next()
 
         then: "expect to get zero values"
+        instant.doubleValue(SI.WATT) == 0
         hp.doubleValue(WattsPerHour.UNIT) == 0
         hc.doubleValue(WattsPerHour.UNIT) == 0
     }

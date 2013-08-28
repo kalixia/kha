@@ -7,31 +7,35 @@ import rx.Observable
 
 import javax.measure.Measurable
 import javax.measure.Measure
+import javax.measure.quantity.Power
+import javax.measure.quantity.Quantity
+import javax.measure.unit.SI
 
 import static TeleinfoSensorSlot.TELEINFO1
 import static TeleinfoSensorSlot.TELEINFO2
 
 @Slf4j("LOGGER")
 class EcoDeviceTeleinfoRetriever implements TeleinfoRetriever {
+    private static final Measurable<Power> ZERO_WATT = Measure.valueOf(0L, SI.WATT)
     private static final Measurable<WattsPerHour> ZERO_WATTS_PER_HOUR = Measure.valueOf(0L, WattsPerHour.UNIT)
 
     @Override
-    Observable<Measurable<WattsPerHour>> retrieveIndexes(TeleinfoSensor teleinfo, EcoDeviceConfiguration configuration) {
+    Observable<Measurable<Quantity>> retrieveIndexes(TeleinfoSensor teleinfo, EcoDeviceConfiguration configuration) {
         switch (teleinfo.slot) {
             case TELEINFO1:
                 if (!configuration.power1.enabled)
-                    return Observable.from(ZERO_WATTS_PER_HOUR, ZERO_WATTS_PER_HOUR)
+                    return Observable.from(ZERO_WATT, ZERO_WATTS_PER_HOUR, ZERO_WATTS_PER_HOUR)
                 break;
             case TELEINFO2:
                 if (!configuration.power2.enabled)
-                    return Observable.from(ZERO_WATTS_PER_HOUR, ZERO_WATTS_PER_HOUR)
+                    return Observable.from(ZERO_WATT, ZERO_WATTS_PER_HOUR, ZERO_WATTS_PER_HOUR)
                 break;
         }
         return new EcoDeviceXmlParsingCommand(teleinfo, configuration)
             .observe()
             .mapMany({ List<Measurable<WattsPerHour>> values ->
                 LOGGER.info("Got value ${values}")
-                if (values.size() != 2) {
+                if (values.size() != 3) {
                     return Observable.error(
                             new IllegalStateException("Should only have 2 values but got ${values.size()} instead"))
                 }

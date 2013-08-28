@@ -11,12 +11,14 @@ import groovyx.net.http.HTTPBuilder
 
 import javax.measure.Measurable
 import javax.measure.Measure
+import javax.measure.quantity.Quantity
+import javax.measure.unit.SI
 
 import static com.kalixia.ha.devices.gce.ecodevices.TeleinfoSensorSlot.TELEINFO1
 import static com.kalixia.ha.devices.gce.ecodevices.TeleinfoSensorSlot.TELEINFO2
 
 @Slf4j("LOGGER")
-class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<WattsPerHour>>> {
+class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<Quantity>>> {
     private final TeleinfoSensor teleinfo
     private final EcoDeviceConfiguration configuration
 
@@ -31,7 +33,7 @@ class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<WattsPer
     }
 
     @Override
-    protected List<Measurable<WattsPerHour>> run() throws Exception {
+    protected List<Measurable<Quantity>> run() throws Exception {
         def http = new HTTPBuilder(configuration.url)
         if (configuration.authentication != null) {
             http.auth.basic configuration.authentication.username,
@@ -40,23 +42,25 @@ class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<WattsPer
 
         LOGGER.info("About to make HTTP call to ${configuration.url}/protect/settings/${teleinfo.slot.slug}")
 
-        List<Measurable<WattsPerHour>> indexes = []
+        List<Measurable<Quantity>> values = []
         http.get(path: "/protect/settings/${teleinfo.slot.slug}") { resp, xml ->
             switch (teleinfo.slot) {
                 case TELEINFO1:
-                    indexes << Measure.valueOf(xml.T1_HCHP.text() as Long, WattsPerHour.UNIT)
-                    indexes << Measure.valueOf(xml.T1_HCHC.text() as Long, WattsPerHour.UNIT)
+                    values << Measure.valueOf(xml.T1_PPAP.text() as Long, SI.WATT)
+                    values << Measure.valueOf(xml.T1_HCHP.text() as Long, WattsPerHour.UNIT)
+                    values << Measure.valueOf(xml.T1_HCHC.text() as Long, WattsPerHour.UNIT)
                     break
                 case TELEINFO2:
-                    indexes << Measure.valueOf(xml.T2_HCHP.text() as Long, WattsPerHour.UNIT)
-                    indexes << Measure.valueOf(xml.T2_HCHC.text() as Long, WattsPerHour.UNIT)
+                    values << Measure.valueOf(xml.T2_PPAP.text() as Long, SI.WATT)
+                    values << Measure.valueOf(xml.T2_HCHP.text() as Long, WattsPerHour.UNIT)
+                    values << Measure.valueOf(xml.T2_HCHC.text() as Long, WattsPerHour.UNIT)
                     break
             }
         }
 
         http.shutdown()
 
-        LOGGER.info("Indexes: HP=${indexes[0]}, HC=${indexes[1]}")
-        return indexes
+        LOGGER.info("Indexes: instant power=${values[0]}, HP=${values[1]}, HC=${values[2]}")
+        return values
     }
 }

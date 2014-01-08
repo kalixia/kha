@@ -50,7 +50,7 @@ public class WebAppServer {
                             pipeline.addLast("http-response-encoder", new HttpResponseEncoder());
 //                            pipeline.addLast("inflater", new HttpContentCompressor());
                             pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
-                            pipeline.addLast("file-handler", new HttpStaticFileServerHandler(true));
+                            pipeline.addLast("file-handler", new HttpStaticFileServerHandler(System.getProperty("user.dir"), true));
                         }
                     });
 

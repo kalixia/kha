@@ -1,4 +1,11 @@
-keyspace:
-  strategy_class: SimpleStrategy
-  strategy_options:
-    replication_factor: 3
+storage:
+  strategy: lucene
+
+  lucene:
+    directory: /tmp/kalixia-ha
+
+  cassandra:
+    keyspace:
+      strategy_class: SimpleStrategy
+      strategy_options:
+        replication_factor: 3

@@ -1,9 +1,10 @@
 package com.kalixia.ha.api
 
+import com.kalixia.ha.api.configuration.UsersServiceConfiguration
 import com.kalixia.ha.dao.UsersDao
 import com.kalixia.ha.model.User
 
-class UsersServiceImpl extends Service<CassandraConfiguration> implements UsersService {
+class UsersServiceImpl extends Service<UsersServiceConfiguration> implements UsersService {
     final UsersDao dao
 
     UsersServiceImpl(UsersDao dao) {
@@ -27,7 +28,7 @@ class UsersServiceImpl extends Service<CassandraConfiguration> implements UsersS
     }
 
     @Override
-    protected Class<CassandraConfiguration> getConfigurationClass() {
-        return CassandraConfiguration.class
+    protected Class<UsersServiceConfiguration> getConfigurationClass() {
+        return UsersServiceConfiguration.class
     }
 }

@@ -41,8 +41,7 @@ abstract class AbstractDevicesDaoTest extends Specification {
 
         then:
         devices.size() == 2
-        devices[0].name == 'another lamp'  // this is inverted from insertion order as the name of the device matters!
-        devices[0].owner == user
+        devices.any { device -> device.name == 'another lamp' && device.owner == user }
 
         when:
         deviceFound = devicesDao.findByOwnerAndName(user.username, device1.name)

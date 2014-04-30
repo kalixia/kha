@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Abstract device class easing code a little bit.
  */
@@ -91,6 +93,7 @@ public abstract class AbstractDevice<C extends Configuration> extends AbstractAu
 
     @Override
     public Device addSensors(Sensor... sensors) {
+        checkNotNull(sensors);
         for (Sensor sensor : sensors)
             addSensor(sensor);
         return this;

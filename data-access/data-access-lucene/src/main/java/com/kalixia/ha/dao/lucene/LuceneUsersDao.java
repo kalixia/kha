@@ -2,7 +2,6 @@ package com.kalixia.ha.dao.lucene;
 
 import com.kalixia.ha.dao.UsersDao;
 import com.kalixia.ha.model.User;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
@@ -12,7 +11,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
@@ -30,7 +28,6 @@ import static org.apache.lucene.document.Field.Store;
  */
 public class LuceneUsersDao implements UsersDao {
     private final IndexWriter indexWriter;
-    private final Analyzer analyzer;
     private static final String FIELD_USERNAME = "username";
     private static final String FIELD_EMAIL = "email";
     private static final String FIELD_FIRST_NAME = "firstName";
@@ -42,9 +39,8 @@ public class LuceneUsersDao implements UsersDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(LuceneUsersDao.class);
 
     @Inject
-    public LuceneUsersDao(IndexWriter indexWriter, Analyzer analyzer) {
+    public LuceneUsersDao(IndexWriter indexWriter) {
         this.indexWriter = indexWriter;
-        this.analyzer = analyzer;
     }
 
     @Override
@@ -63,7 +59,7 @@ public class LuceneUsersDao implements UsersDao {
         }
         ScoreDoc[] scoreDocs = hits.scoreDocs;
         ScoreDoc scoreDoc = scoreDocs[0];
-        Document doc = indexSearcher.getIndexReader().document(scoreDoc.doc);
+        Document doc = indexSearcher.doc(scoreDoc.doc);
         String email = doc.get(FIELD_EMAIL);
         String firstName = doc.get(FIELD_FIRST_NAME);
         String lastName = doc.get(FIELD_LAST_NAME);
@@ -83,7 +79,7 @@ public class LuceneUsersDao implements UsersDao {
         doc.add(new StoredField(FIELD_CREATION_DATE, user.getCreationDate().toString()));
         doc.add(new StoredField(FIELD_LAST_UPDATE_DATE, DateTime.now().toString()));
         doc.add(new StringField(FIELD_TYPE, "user", Store.NO));
-        Term term = new Term("username", user.getUsername());
+        Term term = new Term(FIELD_USERNAME, user.getUsername());
         indexWriter.updateDocument(term, doc);
         indexWriter.commit();
     }

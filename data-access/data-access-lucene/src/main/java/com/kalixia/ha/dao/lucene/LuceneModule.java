@@ -1,5 +1,6 @@
 package com.kalixia.ha.dao.lucene;
 
+import com.kalixia.ha.dao.DevicesDao;
 import com.kalixia.ha.dao.UsersDao;
 import dagger.Module;
 import dagger.Provides;
@@ -30,8 +31,12 @@ public class LuceneModule {
     public static final Version LUCENE_VERSION = Version.LUCENE_47;
     public static final Logger LOGGER = LoggerFactory.getLogger(LuceneModule.class);
 
-    @Singleton @Provides UsersDao provideUsersDao(IndexWriter indexWriter, Analyzer analyzer) {
-        return new LuceneUsersDao(indexWriter, analyzer);
+    @Singleton @Provides UsersDao provideUsersDao(IndexWriter indexWriter) {
+        return new LuceneUsersDao(indexWriter);
+    }
+
+    @Singleton @Provides DevicesDao provideDevicesDao(IndexWriter indexWriter, UsersDao usersDao) {
+        return new LuceneDevicesDao(indexWriter, usersDao);
     }
 
     @Singleton @Provides IndexWriter provideIndexWriter(File indexDir, Analyzer analyzer) {

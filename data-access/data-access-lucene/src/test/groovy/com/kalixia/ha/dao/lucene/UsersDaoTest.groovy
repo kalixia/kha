@@ -1,18 +1,16 @@
 package com.kalixia.ha.dao.lucene
 
-import com.kalixia.ha.model.User
+import com.kalixia.ha.dao.AbstractUsersDaoTest
+import com.kalixia.ha.dao.UsersDao
 
-class UsersDaoTest extends AbstractLuceneDaoTest {
+class UsersDaoTest extends AbstractUsersDaoTest {
+    @Override
+    UsersDao getUsersDao() {
+        return LuceneDaoTests.usersDao
+    }
 
-    def "test storing and retrieving user"() {
-        given:
-        def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
-
-        when:
-        usersDao.save(user)
-
-        then:
-        user == usersDao.findByUsername(user.getUsername())
+    def setupSpec() {
+        LuceneDaoTests.indexWriter.deleteAll()
     }
 
 }

@@ -1,26 +1,25 @@
 package com.kalixia.ha.dao.lucene;
 
-import org.apache.lucene.analysis.Analyzer;
+import com.kalixia.ha.dao.UsersDao;
 import org.apache.lucene.index.IndexWriter;
 
 import javax.inject.Inject;
 
 public class DataHolder {
+    private final UsersDao usersDao;
     private final IndexWriter indexWriter;
-    private final Analyzer analyzer;
 
     @Inject
-    public DataHolder(IndexWriter indexWriter, Analyzer analyzer) {
+    public DataHolder(UsersDao usersDao, IndexWriter indexWriter) {
+        this.usersDao = usersDao;
         this.indexWriter = indexWriter;
-        this.analyzer = analyzer;
+    }
+
+    public UsersDao getUsersDao() {
+        return usersDao;
     }
 
     public IndexWriter getIndexWriter() {
         return indexWriter;
     }
-
-    public Analyzer getAnalyzer() {
-        return analyzer;
-    }
-
 }

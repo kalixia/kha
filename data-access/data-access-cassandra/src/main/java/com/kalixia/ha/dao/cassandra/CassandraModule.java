@@ -11,7 +11,6 @@ import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
 import com.netflix.astyanax.connectionpool.impl.ExponentialRetryBackoffStrategy;
 import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
-import com.netflix.astyanax.model.ConsistencyLevel;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import dagger.Module;
 import dagger.Provides;
@@ -20,8 +19,7 @@ import javax.inject.Singleton;
 
 import static com.netflix.astyanax.connectionpool.NodeDiscoveryType.RING_DESCRIBE;
 import static com.netflix.astyanax.connectionpool.impl.ConnectionPoolType.TOKEN_AWARE;
-import static com.netflix.astyanax.model.ConsistencyLevel.CL_ALL;
-import static com.netflix.astyanax.model.ConsistencyLevel.CL_QUORUM;
+import static com.netflix.astyanax.model.ConsistencyLevel.CL_ONE;
 
 @Module(library = true)
 public class CassandraModule {
@@ -50,8 +48,8 @@ public class CassandraModule {
                 .withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
                         .setDiscoveryType(RING_DESCRIBE)
                         .setConnectionPoolType(TOKEN_AWARE)
-                        .setDefaultReadConsistencyLevel(ConsistencyLevel.CL_ONE)
-                        .setDefaultWriteConsistencyLevel(ConsistencyLevel.CL_ONE)
+                        .setDefaultReadConsistencyLevel(CL_ONE)
+                        .setDefaultWriteConsistencyLevel(CL_ONE)
                         .setTargetCassandraVersion("1.2")
                         .setCqlVersion("3.0.0")
                 )

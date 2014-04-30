@@ -22,7 +22,7 @@ import javax.inject.Singleton;
 import static com.netflix.astyanax.model.ConsistencyLevel.*;
 
 @Module(library = true)
-public class CassandraModule {
+public class CassandraTestModule {
 
     @Provides @Singleton UsersDao provideUserDao(SchemaDefinition schema) {
         return new CassandraUsersDao(schema);

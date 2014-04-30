@@ -1,18 +1,19 @@
 package com.kalixia.ha.dao.cassandra
 
-import com.kalixia.ha.model.User
+import com.kalixia.ha.dao.AbstractUsersDaoTest
+import com.kalixia.ha.dao.UsersDao
 
-class UsersDaoTest extends AbstractCassandraDaoTest {
-
-    def "test storing and retrieving user"() {
-        given:
-        def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
-
-        when:
-        usersDao.save(user)
-
-        then:
-        user == usersDao.findByUsername(user.getUsername())
+class UsersDaoTest extends AbstractUsersDaoTest {
+    @Override
+    UsersDao getUsersDao() {
+        return CassandraDaoTests.usersDao
     }
 
+    def setupSpec() {
+        EmbeddedCassandraUtils.setupRepository()
+    }
+
+    def cleanupSpec() {
+        EmbeddedCassandraUtils.cleanupRepository()
+    }
 }

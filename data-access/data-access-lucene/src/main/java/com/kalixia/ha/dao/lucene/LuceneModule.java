@@ -1,5 +1,6 @@
 package com.kalixia.ha.dao.lucene;
 
+import com.kalixia.ha.dao.UsersDao;
 import dagger.Module;
 import dagger.Provides;
 import org.apache.lucene.analysis.Analyzer;
@@ -29,20 +30,8 @@ public class LuceneModule {
     public static final Version LUCENE_VERSION = Version.LUCENE_47;
     public static final Logger LOGGER = LoggerFactory.getLogger(LuceneModule.class);
 
-    @Singleton @Provides File provideIndexDirectory() {
-        try {
-            Path indexPath = Files.createTempDirectory("kalixia-ha");
-//            String userHome = System.getProperty("user.home");
-//            Path indexPath = Paths.get((userHome + "/lucene-test"));
-            if (Files.isDirectory(indexPath))
-                return indexPath.toFile();
-            else
-                return Files.createDirectory(indexPath).toFile();
-        } catch (IOException e) {
-            LOGGER.error("Can't create Lucene directory", e);
-            System.exit(-1);        // TODO: handle this in a nicer way!!!
-            return null;
-        }
+    @Singleton @Provides UsersDao provideUsersDao(IndexWriter indexWriter, Analyzer analyzer) {
+        return new LuceneUsersDao(indexWriter, analyzer);
     }
 
     @Singleton @Provides IndexWriter provideIndexWriter(File indexDir, Analyzer analyzer) {
@@ -63,6 +52,20 @@ public class LuceneModule {
 
     @Provides Analyzer provideAnalyzer() {
         return new StandardAnalyzer(LUCENE_VERSION);
+    }
+
+    @Singleton @Provides File provideIndexDirectory() {
+        try {
+            Path indexPath = Paths.get("/tmp", "kalixia-ha");   // TODO: retreive tmpDir properly!
+            if (Files.isDirectory(indexPath))
+                return indexPath.toFile();
+            else
+                return Files.createDirectory(indexPath).toFile();
+        } catch (IOException e) {
+            LOGGER.error("Can't create Lucene directory", e);
+            System.exit(-1);        // TODO: handle this in a nicer way!!!
+            return null;
+        }
     }
 
 }

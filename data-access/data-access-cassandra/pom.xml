@@ -85,11 +85,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.jacoco</groupId>-->
-            <!--<artifactId>org.jacoco.agent</artifactId>-->
-            <!--<classifier>runtime</classifier>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.agent</artifactId>
+            <classifier>runtime</classifier>
+        </dependency>
 
     </dependencies>
 
@@ -117,10 +117,10 @@
                     <forkMode>pertest</forkMode>
                 </configuration>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.jacoco</groupId>-->
-                <!--<artifactId>jacoco-maven-plugin</artifactId>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 

@@ -1,4 +1,4 @@
-package com.kalixia.ha.dao.cassandra
+package com.kalixia.ha.dao.lucene
 
 import com.kalixia.ha.dao.AbstractUsersDaoTest
 import com.kalixia.ha.dao.UsersDao
@@ -6,14 +6,11 @@ import com.kalixia.ha.dao.UsersDao
 class UsersDaoTest extends AbstractUsersDaoTest {
     @Override
     UsersDao getUsersDao() {
-        return CassandraDaoTests.usersDao
+        return LuceneDaoTests.usersDao
     }
 
     def setupSpec() {
-        EmbeddedCassandraUtils.setupRepository()
+        LuceneDaoTests.indexWriter.deleteAll()
     }
 
-    def cleanupSpec() {
-        EmbeddedCassandraUtils.cleanupRepository()
-    }
 }

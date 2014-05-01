@@ -35,7 +35,7 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
 
     @Override
     public void save(User user) throws ConnectionException {
-        user.setLastUpdateDate(new DateTime())
+        user.setLastUpdateDate(DateTime.now())
         MutationBatch m = schema.keyspace.prepareMutationBatch()
         m.withRow(schema.usersCF, user.username)
                 .putColumn(COL_EMAIL, user.email)

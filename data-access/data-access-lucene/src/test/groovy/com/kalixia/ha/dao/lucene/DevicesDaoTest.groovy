@@ -1,33 +1,27 @@
-package com.kalixia.ha.dao.cassandra
+package com.kalixia.ha.dao.lucene
 
 import com.kalixia.ha.dao.AbstractDevicesDaoTest
 import com.kalixia.ha.dao.DevicesDao
 import com.kalixia.ha.dao.UsersDao
-import com.netflix.astyanax.util.TimeUUIDUtils
 
 class DevicesDaoTest extends AbstractDevicesDaoTest {
-
     @Override
     UsersDao getUsersDao() {
-        return CassandraDaoTests.usersDao
+        return LuceneDaoTests.usersDao
     }
 
     @Override
     DevicesDao getDevicesDao() {
-        return CassandraDaoTests.devicesDao
+        return LuceneDaoTests.devicesDao
     }
 
     @Override
     UUID createUUID() {
-        return TimeUUIDUtils.uniqueTimeUUIDinMicros
+        return UUID.randomUUID()
     }
 
     def setupSpec() {
-        EmbeddedCassandraUtils.setupRepository()
-    }
-
-    def cleanupSpec() {
-        EmbeddedCassandraUtils.cleanupRepository()
+        LuceneDaoTests.indexWriter.deleteAll()
     }
 
 }

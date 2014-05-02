@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
-import rx.util.Exceptions;
+import rx.exceptions.Exceptions;
 
 import javax.inject.Inject;
 import javax.measure.unit.Unit;
@@ -107,7 +107,7 @@ public class LuceneDevicesDao implements DevicesDao {
         IndexSearcher indexSearcher = buildIndexSearcher();
 
         return Observable.just(username)
-                .mapMany(user -> {
+                .flatMap(user -> {
                     Term term = new Term(FIELD_OWNER, user);
                     BooleanQuery q = new BooleanQuery();
                     q.add(new TermQuery(term), BooleanClause.Occur.MUST);

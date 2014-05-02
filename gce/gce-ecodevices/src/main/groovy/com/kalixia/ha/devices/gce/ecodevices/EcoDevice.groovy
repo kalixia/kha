@@ -14,14 +14,14 @@ import javax.measure.unit.NonSI
 import javax.measure.unit.SI
 
 /**
- * An EcoDeviceOld is made of 4 counters.
+ * An EcoDevice is made of 4 counters.
  * The first two ones are usually W/h counters
  * -- they are in facts two counters in one (if you have different prices during the day).
- * The third one is usually metering counter1 usage (L).
- * The last one is usually metering gaz.
- * The last two counters (counter1 and gaz) can easily be used for anything else as they only meter impulsions.
+ * The third one is usually metering water usage (L).
+ * The last one is usually metering gaz usage (m3).
+ * The last two counters (water and gaz) can easily be used for anything else as they only meter impulses.
  *
- * The gaz counter is not yet implemented.
+ * The gaz and water counters are not yet implemented.
  */
 class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements PullBasedDevice {
     private final TeleinfoSensor teleinfoSensor1

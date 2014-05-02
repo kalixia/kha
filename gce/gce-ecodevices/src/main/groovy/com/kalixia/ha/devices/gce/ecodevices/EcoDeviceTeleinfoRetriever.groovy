@@ -33,7 +33,7 @@ class EcoDeviceTeleinfoRetriever implements TeleinfoRetriever {
         }
         return new EcoDeviceXmlParsingCommand(teleinfo, configuration)
             .observe()
-            .mapMany({ List<Measurable<WattsPerHour>> values ->
+            .flatMap({ List<Measurable<WattsPerHour>> values ->
                 LOGGER.info("Got value ${values}")
                 if (values.size() != 3) {
                     return Observable.error(

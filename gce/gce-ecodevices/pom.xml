@@ -11,10 +11,6 @@
 
     <artifactId>gce-ecodevices</artifactId>
 
-    <properties>
-        <vertx.version>2.0.0-final</vertx.version>
-    </properties>
-
     <dependencies>
 
         <dependency>
@@ -44,10 +40,10 @@
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-yammer-metrics-publisher</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.netflix.hystrix</groupId>
-            <artifactId>hystrix-metrics-event-stream</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.netflix.hystrix</groupId>-->
+            <!--<artifactId>hystrix-metrics-event-stream</artifactId>-->
+        <!--</dependency>-->
 
         <!-- Groovy dependencies -->
         <dependency>
@@ -72,29 +68,22 @@
             <artifactId>spock-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.netflix.rxnetty</groupId>
+            <artifactId>rx-netty</artifactId>
+            <version>0.3.3</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.netflix.numerus</groupId>
+                    <artifactId>numerus</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>org.jacoco.agent</artifactId>
             <classifier>runtime</classifier>
         </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>lang-groovy</artifactId>
-            <version>${vertx.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>${vertx.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
     </dependencies>
 
     <build>

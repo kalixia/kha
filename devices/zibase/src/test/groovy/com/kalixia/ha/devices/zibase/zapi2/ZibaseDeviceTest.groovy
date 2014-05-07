@@ -11,12 +11,14 @@ class ZibaseDeviceTest extends Specification {
     def "test configuration"() {
         when: "creating a test Zibase"
         ZibaseDevice device = new ZibaseDevice(UUID.randomUUID(), "test device", new User("test"))
+        def configuration = device.configuration
 
         then: "the configuration to be properly loaded"
-        device.configuration != null
-        device.configuration.url == 'https://zibase.net/api/get/ZAPI.php'
-        device.configuration.authentication.username == 'demo'
-        device.configuration.authentication.password == 'demo'
+        configuration != null
+        configuration.zibaseID == 'ZiBASE005748'
+        configuration.authentication.username == 'demo'
+        configuration.authentication.password == 'demo'
+        configuration.url == 'https://zibase.net/api/get/ZAPI.php'
     }
 
 }

@@ -23,12 +23,14 @@
         <dependency>
             <groupId>com.netflix.rxjava</groupId>
             <artifactId>rxjava-core</artifactId>
-            <version>${rxjava.version}</version>
         </dependency>
         <dependency>
             <groupId>com.netflix.rxjava</groupId>
             <artifactId>rxjava-groovy</artifactId>
-            <version>${rxjava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-apache-http</artifactId>
         </dependency>
 
         <!-- Hystrix dependencies -->
@@ -60,6 +62,13 @@
                     <artifactId>groovy</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- Logging dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.7.7</version>
         </dependency>
 
         <!-- Tests dependencies -->

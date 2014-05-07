@@ -8,11 +8,18 @@ public class ZibaseDeviceConfiguration extends Configuration {
     @JsonProperty("url")
     private String url;
 
+    @JsonProperty("zibaseID")
+    private String zibaseID;
+
     @JsonProperty("authentication")
     private AuthenticationConfiguration authentication;
 
     public String getUrl() {
         return url;
+    }
+
+    public String getZibaseID() {
+        return zibaseID;
     }
 
     public AuthenticationConfiguration getAuthentication() {

@@ -11,7 +11,8 @@ appender("STDOUT", ConsoleAppender) {
 }
 
 logger "com.kalixia.ha", INFO
-logger "com.kalixia.ha.api.rest", DEBUG
+logger "com.kalixia.ha.devices.zibase", DEBUG
 logger "com.netflix.hystrix", INFO
+logger "org.apache.http", INFO
 
 root(WARN, ["STDOUT"])

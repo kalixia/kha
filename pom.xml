@@ -66,6 +66,11 @@
                 <artifactId>rxjava-groovy</artifactId>
                 <version>${rxjava.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.netflix.rxjava</groupId>
+                <artifactId>rxjava-apache-http</artifactId>
+                <version>${rxjava.version}</version>
+            </dependency>
 
             <!-- Hystrix dependencies -->
             <dependency>

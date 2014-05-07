@@ -1,6 +1,8 @@
-# Base URL for the ZAPI2
-url: https://zibase.net/api/get/ZAPI.php
+zibaseID: 'ZiBASE005748'
 
 authentication:
   username: demo
   password: demo
+
+# Base URL for the ZAPI2
+url: https://zibase.net/api/get/ZAPI.php

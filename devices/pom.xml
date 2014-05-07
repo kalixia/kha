@@ -14,7 +14,7 @@
 
     <modules>
         <module>gce</module>
-        <!--module>zibase</module-->
+        <module>zibase</module>
     </modules>
 
 </project>

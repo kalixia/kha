@@ -1,0 +1,6 @@
+# Base URL for the ZAPI2
+url: https://zibase.net/api/get/ZAPI.php
+
+authentication:
+  username: demo
+  password: demo

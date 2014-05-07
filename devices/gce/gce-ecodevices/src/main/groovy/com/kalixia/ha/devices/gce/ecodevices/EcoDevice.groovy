@@ -31,7 +31,7 @@ class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements PullBa
     private final TeleinfoRetriever retriever
 
     def EcoDevice(UUID id, String name, User owner) {
-        super(id, name, owner, Counter.class);
+        super(id, name, owner, Counter.class)
         teleinfoSensor1 = new TeleinfoSensor(configuration.power1.name, TeleinfoSensorSlot.TELEINFO1)
         teleinfoSensor2 = new TeleinfoSensor(configuration.power2.name, TeleinfoSensorSlot.TELEINFO2)
         counter1 = new CounterSensor<>(configuration.counter1.name, NonSI.LITRE)

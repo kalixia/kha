@@ -17,7 +17,7 @@
         <module>gateway</module>
         <module>cloud-platform</module>
         <!--<module>android</module>-->
-        <module>gce</module>
+        <module>devices</module>
     </modules>
 
     <properties>

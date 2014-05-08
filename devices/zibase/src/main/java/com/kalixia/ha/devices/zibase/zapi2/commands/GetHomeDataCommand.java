@@ -4,23 +4,30 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kalixia.ha.devices.zibase.zapi2.ZibaseDeviceConfiguration;
 import com.kalixia.ha.model.configuration.AuthenticationConfiguration;
+import com.kalixia.ha.model.quantity.WattsPerHour;
 import com.kalixia.ha.model.sensors.BasicSensor;
+import com.kalixia.ha.model.sensors.DataPoint;
 import com.kalixia.ha.model.sensors.Sensor;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.apache.http.ObservableHttp;
 import rx.exceptions.Exceptions;
 
+import javax.measure.Measure;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Temperature;
+import javax.measure.unit.NonSI;
+import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Fetch token from login and password in order to be able to make ZAPI2 calls.
@@ -41,7 +48,7 @@ public class GetHomeDataCommand extends HystrixCommand<List<Sensor>> {
         );
         AuthenticationConfiguration authentication = configuration.getAuthentication();
         this.requestURL = String.format("%s?zibase=%s&token=%s&service=get&target=home",
-                configuration.getUrl(), token, configuration.getZibaseID());
+                configuration.getUrl(), configuration.getZibaseID(), token);
         this.httpClient = httpClient;
         this.mapper = mapper;
     }
@@ -55,6 +62,7 @@ public class GetHomeDataCommand extends HystrixCommand<List<Sensor>> {
                 .flatMap((response) -> response.getContent().map(String::new))
                 .flatMap(this::extractSensorsFromJson)
                 .toList().toBlockingObservable().single();
+        logger.info("Found {} sensors", sensors.size());
         return sensors;
     }
 
@@ -85,11 +93,44 @@ public class GetHomeDataCommand extends HystrixCommand<List<Sensor>> {
     private Observable<Sensor> extractSensorsFromJson(String json) {
         try {
             JsonNode rootNode = mapper.readTree(json);
-            JsonNode sensorsNode = rootNode.get("body").get("sensors");
-            return Observable.from(sensorsNode)
-                    .map(node -> {
-                        String sensorName = node.get("name").asText();
-                        return new BasicSensor(sensorName, Unit.ONE);
+            JsonNode probesNode = rootNode.get("body").get("probes");
+            return Observable.from(probesNode)
+                    .flatMap(probe -> {
+                        logger.debug("Found probe {}", probe);
+
+                        String sensorName = probe.get("name").asText();
+                        String sensorType = probe.get("type").asText();
+
+                        // skip probe if not active
+                        if (!probe.get("status").asBoolean()) {
+                            logger.warn("Probe '{}' of type '{}' is not active, skipping it...", sensorName, sensorType);
+                            return Observable.empty();
+                        }
+
+                        Instant instant;
+                        if (probe.has("time"))
+                            instant = new Instant(probe.get("time").asLong() * 1000);
+                        else
+                            instant = DateTime.now().toInstant();
+
+                        DataPoint dataPoint;
+                        switch (sensorType) {
+                            case "power":
+                                double wph = probe.get("val1").asDouble();
+                                dataPoint = new DataPoint<>(Measure.valueOf(wph, WattsPerHour.UNIT), instant);
+                                return Observable.just(new BasicSensor<>(sensorName, WattsPerHour.UNIT, dataPoint));
+                            case "temperature":
+                                double tempInCelsius = probe.get("val1").asDouble();
+                                double humidityValue = probe.get("val2").asDouble();
+                                dataPoint = new DataPoint<>(Measure.valueOf(tempInCelsius, SI.CELSIUS), instant);
+                                BasicSensor<Temperature> tempSensor = new BasicSensor<>(sensorName, SI.CELSIUS, dataPoint);
+                                dataPoint = new DataPoint<>(Measure.valueOf(humidityValue, NonSI.PERCENT), instant);
+                                BasicSensor<Dimensionless> humiditySensor = new BasicSensor<>(sensorName, NonSI.PERCENT, dataPoint);
+                                return Observable.from(tempSensor, humiditySensor);
+                            default:
+                                logger.warn("Don't know what to do of sensor with type '{}'", sensorType);
+                                return Observable.just(new BasicSensor(sensorName, Unit.ONE));
+                        }
                     });
         } catch (IOException e) {
             throw Exceptions.propagate(e);

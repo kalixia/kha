@@ -14,7 +14,7 @@
         <module>data-access</module>
         <module>services</module>
         <module>rest-api</module>
-        <module>gateway</module>
+        <module>hub</module>
         <module>cloud-platform</module>
         <!--<module>android</module>-->
         <module>devices</module>

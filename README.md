@@ -1,8 +1,6 @@
 kha
 ===
 
-# Home
-
 ## What is Kha?
 Kha is *yet another* Home Automation solution.
 

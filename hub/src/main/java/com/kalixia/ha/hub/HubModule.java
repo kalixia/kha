@@ -10,6 +10,7 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.kalixia.ha.api.ServicesModule;
 import com.kalixia.ha.api.rest.GeneratedJaxRsDaggerModule;
 import com.kalixia.ha.api.rest.json.JScienceModule;
+import com.kalixia.ha.dao.lucene.LuceneModule;
 import dagger.Module;
 import dagger.Provides;
 import javax.inject.Singleton;
@@ -18,13 +19,13 @@ import javax.inject.Singleton;
         injects = Main.class,
         includes = {
                 GeneratedJaxRsDaggerModule.class,
-                ServicesModule.class
+                ServicesModule.class,
+                LuceneModule.class
         }
 )
 public class HubModule {
 
-    @Provides @Singleton
-    Hub provideGateway(ApiServer apiServer, WebAppServer webAppServer, JmxReporter reporter) {
+    @Provides @Singleton Hub provideGateway(ApiServer apiServer, WebAppServer webAppServer, JmxReporter reporter) {
         return new HubImpl(apiServer, webAppServer, reporter);
     }
 

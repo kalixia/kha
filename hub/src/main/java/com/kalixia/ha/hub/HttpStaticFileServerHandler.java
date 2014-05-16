@@ -34,6 +34,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
@@ -124,6 +126,8 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
 
     private static String baseDir;
     private final boolean useSendFile;
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpStaticFileServerHandler.class);
 
     public HttpStaticFileServerHandler(String theBaseDir, boolean useSendFile) {
         baseDir = theBaseDir;
@@ -220,15 +224,15 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
             @Override
             public void operationProgressed(ChannelProgressiveFuture future, long progress, long total) {
                 if (total < 0) { // total unknown
-                    System.err.println("Transfer progress: " + progress);
+                    logger.debug("Transfer progress: " + progress);
                 } else {
-                    System.err.println("Transfer progress: " + progress + " / " + total);
+                    logger.debug("Transfer progress: " + progress + " / " + total);
                 }
             }
 
             @Override
             public void operationComplete(ChannelProgressiveFuture future) throws Exception {
-                System.err.println("Transfer complete.");
+                logger.debug("Transfer complete.");
             }
         });
 
@@ -279,6 +283,9 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
             INSECURE_URI.matcher(uri).matches()) {
             return null;
         }
+
+        if ("/".equals(uri))
+            uri = "/index.html";
 
         // Convert to absolute path.
         return baseDir + File.separator + uri;

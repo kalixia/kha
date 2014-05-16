@@ -97,7 +97,7 @@
                     <programs>
                         <program>
                             <mainClass>com.kalixia.ha.hub.Main</mainClass>
-                            <name>ha-hub</name>
+                            <name>hub</name>
                         </program>
                     </programs>
                     <repositoryLayout>flat</repositoryLayout>
@@ -126,18 +126,18 @@
                             <deb>${project.build.directory}/ha-${project.artifactId}_${project.version}_all.deb</deb>
                             <dataSet>
                                 <data>
-                                    <src>${project.build.directory}/appassembler/bin/ha-hub</src>
+                                    <src>${project.build.directory}/appassembler/bin/hub</src>
                                     <type>file</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <prefix>/usr/share/ha-hub/bin</prefix>
+                                        <prefix>/usr/share/kha/bin</prefix>
                                         <filemode>744</filemode>
                                     </mapper>
                                 </data>
                                 <data>
                                     <type>link</type>
-                                    <linkName>/usr/bin/ha-hub</linkName>
-                                    <linkTarget>/usr/share/ha-hub/bin/ha-hub</linkTarget>
+                                    <linkName>/usr/bin/hub</linkName>
+                                    <linkTarget>/usr/share/kha/bin/hub</linkTarget>
                                     <symlink>true</symlink>
                                 </data>
                                 <data>
@@ -145,7 +145,7 @@
                                     <type>directory</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <prefix>/usr/share/ha-hub/lib</prefix>
+                                        <prefix>/usr/share/kha/lib</prefix>
                                     </mapper>
                                 </data>
                             </dataSet>

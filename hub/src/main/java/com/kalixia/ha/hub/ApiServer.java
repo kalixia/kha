@@ -9,6 +9,7 @@ import io.netty.channel.socket.oio.OioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
 import java.util.concurrent.TimeUnit;
 
 public class ApiServer {
@@ -35,7 +36,7 @@ public class ApiServer {
 
             apiBootstrap.bind();
 //            ChannelFuture f = apiBootstrap.bind().sync();
-            LOGGER.info("WebSockets API available on port {}.", port);
+            LOGGER.info("WebSockets API available on ws://{}:{}", InetAddress.getLocalHost().getCanonicalHostName(), port);
 //            f.channel().closeFuture().sync();
         } catch (Exception e) {
             LOGGER.error("Can't start API server", e);

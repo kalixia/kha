@@ -1,7 +1,9 @@
 package com.kalixia.ha.dao.lucene;
 
 import com.kalixia.ha.dao.DevicesDao;
+import com.kalixia.ha.dao.SensorsDao;
 import com.kalixia.ha.dao.UsersDao;
+import com.kalixia.ha.model.sensors.DataPoint;
 import dagger.Module;
 import dagger.Provides;
 import org.apache.lucene.analysis.Analyzer;
@@ -14,6 +16,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +27,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
 
 import static org.apache.lucene.index.IndexWriterConfig.OpenMode;
 
@@ -37,6 +43,20 @@ public class LuceneModule {
 
     @Singleton @Provides DevicesDao provideDevicesDao(IndexWriter indexWriter, UsersDao usersDao) {
         return new LuceneDevicesDao(indexWriter, usersDao);
+    }
+
+    @Singleton @Provides SensorsDao provideSensorsDao() {
+        return new SensorsDao() {
+            @Override
+            public DataPoint getLastValue(UUID sensorID) {
+                return null;
+            }
+
+            @Override
+            public List<DataPoint> getHistory(DateTime from, DateTime to, Period period) {
+                return null;
+            }
+        };
     }
 
     @Singleton @Provides IndexWriter provideIndexWriter(File indexDir, Analyzer analyzer) {

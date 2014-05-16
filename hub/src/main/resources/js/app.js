@@ -1,4 +1,4 @@
-var app = angular.module('hub', ['hubServices']);
+var app = angular.module('hub', ['hubServices', 'ngRoute', 'restangular']);
 
 // Set up our mappings between URLs, templates, and controllers
 function hubRouteConfig($routeProvider) {

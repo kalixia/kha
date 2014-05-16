@@ -1,3 +1,7 @@
+function WelcomeController($scope) {
+
+}
+
 //function UserDetailController($scope, $routeParams, User, Device) {
 function UserDetailController($scope, $routeParams, Restangular) {
     $scope.user = Restangular.one('', $routeParams.username).get();

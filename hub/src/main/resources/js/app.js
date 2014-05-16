@@ -3,6 +3,10 @@ var app = angular.module('hub', ['hubServices']);
 // Set up our mappings between URLs, templates, and controllers
 function hubRouteConfig($routeProvider) {
     $routeProvider.
+        when('/', {
+            controller: WelcomeController,
+            templateUrl: 'welcome.html'
+        }).
 //        when('/', {
 //            controller: DeviceListController,
 //            templateUrl: 'devices.html'

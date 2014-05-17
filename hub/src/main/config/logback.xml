@@ -8,6 +8,21 @@
         </encoder>
     </appender>
 
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%X{CLIENT_ADDR}/%X{REQUEST_ID}] [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <!--<immediateFlush>false</immediateFlush>-->
+        </encoder>
+        <append>true</append>
+        <file>../logs/hub.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>hub.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
     <!--<appender name="metrics" class="com.yammer.metrics.logback.InstrumentedAppender"/>-->
 
     <logger name="com.kalixia.ha" level="INFO"/>
@@ -18,6 +33,7 @@
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
         <!--<appender-ref ref="metrics" />-->
     </root>
 

@@ -27,7 +27,7 @@ public class WebAppServer {
 
     public WebAppServer(int port) {
         this.port = port;
-        System.setProperty("hub.dir", "../../src/main/resources");
+        System.setProperty("hub.dir", "../../src/main/webapp");
     }
 
     public void start() {

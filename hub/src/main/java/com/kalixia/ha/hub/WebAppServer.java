@@ -21,13 +21,20 @@ import java.util.concurrent.TimeUnit;
 public class WebAppServer {
     private ServerBootstrap apiBootstrap;
     private final int port;
+    private final String hubSiteDirectory;
     private OioEventLoopGroup parentGroup;
     private OioEventLoopGroup childGroup;
     private static final Logger LOGGER = LoggerFactory.getLogger(WebAppServer.class);
 
     public WebAppServer(int port) {
         this.port = port;
-        System.setProperty("hub.dir", "../../src/main/webapp");
+        String hubHomeDirectory = System.getProperty("app.home");
+        if (hubHomeDirectory.isEmpty()) {
+            this.hubSiteDirectory = "src/main/webapp";
+        } else {
+            this.hubSiteDirectory = hubHomeDirectory + "/site";
+        }
+        LOGGER.debug("Website content served from '{}'", hubSiteDirectory);
     }
 
     public void start() {
@@ -51,9 +58,7 @@ public class WebAppServer {
                             pipeline.addLast("http-response-encoder", new HttpResponseEncoder());
 //                            pipeline.addLast("inflater", new HttpContentCompressor());
                             pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
-                            String baseDir = getClass().getClassLoader().getResource("devices.html").getPath();
-                            baseDir = baseDir.substring(0, baseDir.lastIndexOf('/'));
-                            pipeline.addLast("file-handler", new HttpStaticFileServerHandler(baseDir, true));
+                            pipeline.addLast("file-handler", new HttpStaticFileServerHandler(hubSiteDirectory, true));
                         }
                     });
 

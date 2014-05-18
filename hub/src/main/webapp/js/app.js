@@ -1,4 +1,4 @@
-var app = angular.module('hub', ['hubServices', 'ngRoute', 'restangular']);
+var app = angular.module('hub', ['hubServices', 'ngRoute', 'restangular', 'ui.bootstrap']);
 
 // Set up our mappings between URLs, templates, and controllers
 function hubRouteConfig($routeProvider) {
@@ -6,6 +6,10 @@ function hubRouteConfig($routeProvider) {
         when('/', {
             controller: WelcomeController,
             templateUrl: 'welcome.html'
+        }).
+        when ('/login', {
+            controller: LoginController,
+            templateUrl: 'login.html',
         }).
 //        when('/', {
 //            controller: DeviceListController,

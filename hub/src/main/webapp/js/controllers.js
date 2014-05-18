@@ -1,5 +1,7 @@
 function WelcomeController($scope) {
+}
 
+function LoginController($scope) {
 }
 
 //function UserDetailController($scope, $routeParams, User, Device) {

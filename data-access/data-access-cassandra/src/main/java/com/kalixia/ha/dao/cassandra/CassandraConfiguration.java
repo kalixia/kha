@@ -24,4 +24,8 @@ class KeyspaceConfiguration extends Configuration {
     public String getStrategyClass() {
         return strategyClass;
     }
+
+    public Map<String, String> getStrategyOptions() {
+        return strategyOptions;
+    }
 }

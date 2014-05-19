@@ -23,7 +23,7 @@ public class ConfigurationBuilder {
                                                                 Class<C> configurationClass)
             throws IOException {
         File serviceConfigurationFile = new File(
-                System.getProperty("HA_HOME") + "/conf/", configurationFilenameWithoutExt + ".yml");
+                System.getProperty("app.home") + "/etc/", configurationFilenameWithoutExt + ".yml");
         if (serviceConfigurationFile.exists()) {
             return loadConfigurationFromStream(configurationClass, new FileInputStream(serviceConfigurationFile));
         } else {

@@ -8,11 +8,8 @@ import dagger.Module;
 import dagger.Provides;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -32,7 +29,7 @@ import java.util.UUID;
 
 import static org.apache.lucene.index.IndexWriterConfig.OpenMode;
 
-@Module(library = true)
+@Module(library = true, complete = false)
 public class LuceneModule {
     public static final Version LUCENE_VERSION = Version.LUCENE_47;
     public static final Logger LOGGER = LoggerFactory.getLogger(LuceneModule.class);
@@ -61,7 +58,7 @@ public class LuceneModule {
 
     @Singleton @Provides IndexWriter provideIndexWriter(File indexDir, Analyzer analyzer) {
         try {
-            LOGGER.info("Storing Lucene indexes in {}", indexDir.toString());
+            LOGGER.info("Storing Lucene indexes in '{}'", indexDir.getAbsolutePath());
             Directory fsDir = FSDirectory.open(indexDir);
             IndexWriterConfig indexWriterConfig = new IndexWriterConfig(LUCENE_VERSION, analyzer);
             indexWriterConfig.setOpenMode(OpenMode.CREATE_OR_APPEND);
@@ -79,9 +76,9 @@ public class LuceneModule {
         return new StandardAnalyzer(LUCENE_VERSION);
     }
 
-    @Singleton @Provides File provideIndexDirectory() {
+    @Singleton @Provides File provideIndexDirectory(LuceneConfiguration config) {
         try {
-            Path indexPath = Paths.get("/tmp", "kalixia-ha");   // TODO: retreive tmpDir properly!
+            Path indexPath = Paths.get(System.getProperty("app.home", ""), config.getDirectory());
             if (Files.isDirectory(indexPath))
                 return indexPath.toFile();
             else

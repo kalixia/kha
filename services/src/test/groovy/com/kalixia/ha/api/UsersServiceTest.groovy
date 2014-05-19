@@ -7,7 +7,7 @@ import spock.lang.Specification
 class UsersServiceTest extends Specification {
 
     def setupSpec() {
-        System.setProperty("HA_HOME", new File("src/main").getAbsolutePath())
+        System.setProperty("app.home", new File("src/main").getAbsolutePath())
     }
 
     def "test service configuration"() {

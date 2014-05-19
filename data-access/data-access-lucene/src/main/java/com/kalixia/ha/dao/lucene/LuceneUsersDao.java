@@ -17,6 +17,8 @@ import org.apache.lucene.search.TopDocs;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rx.Observable;
+import rx.exceptions.Exceptions;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -60,12 +62,7 @@ public class LuceneUsersDao implements UsersDao {
         ScoreDoc[] scoreDocs = hits.scoreDocs;
         ScoreDoc scoreDoc = scoreDocs[0];
         Document doc = indexSearcher.doc(scoreDoc.doc);
-        String email = doc.get(FIELD_EMAIL);
-        String firstName = doc.get(FIELD_FIRST_NAME);
-        String lastName = doc.get(FIELD_LAST_NAME);
-        DateTime creationDate = DateTime.parse(doc.get(FIELD_CREATION_DATE));
-        DateTime lastUpdateDate = DateTime.parse(doc.get(FIELD_LAST_UPDATE_DATE));
-        return new User(username, email, firstName, lastName, creationDate, lastUpdateDate);
+        return extractUserFromDoc(doc);
     }
 
     @Override
@@ -82,6 +79,46 @@ public class LuceneUsersDao implements UsersDao {
         Term term = new Term(FIELD_USERNAME, user.getUsername());
         indexWriter.updateDocument(term, doc);
         indexWriter.commit();
+    }
+
+    @Override
+    public Observable<User> findUsers() throws Exception {
+        LOGGER.info("Searching for all users...");
+
+        IndexSearcher indexSearcher = buildIndexSearcher();
+        TermQuery q = new TermQuery(termType);
+        TopDocs hits = indexSearcher.search(q, Integer.MAX_VALUE);
+        if (hits.totalHits == 0) {
+            LOGGER.warn("No user found");
+            return Observable.empty();
+        }
+        return Observable.from(hits.scoreDocs)
+                .map(scoreDoc -> {
+                    try {
+                        return indexSearcher.doc(scoreDoc.doc);
+                    } catch (IOException e) {
+                        throw Exceptions.propagate(e);
+                    }
+                })
+                .map(this::extractUserFromDoc);
+    }
+
+    @Override
+    public Long getGetUsersCount() throws Exception {
+        IndexSearcher indexSearcher = buildIndexSearcher();
+        TermQuery q = new TermQuery(termType);
+        TopDocs hits = indexSearcher.search(q, Integer.MAX_VALUE);
+        return (long) hits.totalHits;
+    }
+
+    private User extractUserFromDoc(Document doc) {
+        String username = doc.get(FIELD_USERNAME);
+        String email = doc.get(FIELD_EMAIL);
+        String firstName = doc.get(FIELD_FIRST_NAME);
+        String lastName = doc.get(FIELD_LAST_NAME);
+        DateTime creationDate = DateTime.parse(doc.get(FIELD_CREATION_DATE));
+        DateTime lastUpdateDate = DateTime.parse(doc.get(FIELD_LAST_UPDATE_DATE));
+        return new User(username, email, firstName, lastName, creationDate, lastUpdateDate);
     }
 
     private IndexSearcher buildIndexSearcher() throws IOException {

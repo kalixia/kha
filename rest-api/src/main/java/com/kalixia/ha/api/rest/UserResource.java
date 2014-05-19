@@ -3,8 +3,7 @@ package com.kalixia.ha.api.rest;
 import com.kalixia.grapi.codecs.jaxrs.UriTemplateUtils;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -15,7 +14,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;

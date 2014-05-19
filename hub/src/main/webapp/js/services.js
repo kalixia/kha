@@ -1,6 +1,6 @@
 var hubServices = angular.module('hubServices', ['ngResource', 'restangular'])
     .config(function(RestangularProvider) {
-        RestangularProvider.setBaseUrl("http://localhost\\:8082");
+        RestangularProvider.setBaseUrl("http://localhost:8082");
     });
 
 //hubServices.factory('User', function($resource) {

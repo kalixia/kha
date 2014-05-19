@@ -21,7 +21,7 @@
     </modules>
 
     <properties>
-        <grapi.version>0.4</grapi.version>
+        <grapi.version>0.4.1</grapi.version>
         <hystrix.version>1.4.0-RC4</hystrix.version>
         <rxjava.version>0.18.2</rxjava.version>
         <astyanax.version>1.56.48</astyanax.version>

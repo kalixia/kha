@@ -1,6 +1,9 @@
-<div class="row-fluid">
 <h1>Welcome to Kha</h1>
 
-<div>
+<div ng-hide="!hasUser">
     <a href="#login">Login</a>
+</div>
+
+<div ng-hide="hasUser">
+    Oops. No user found. Create one first!
 </div>

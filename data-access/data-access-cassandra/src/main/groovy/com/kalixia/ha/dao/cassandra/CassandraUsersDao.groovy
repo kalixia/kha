@@ -47,6 +47,18 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
     }
 
     @Override
+    rx.Observable<User> findUsers() throws Exception {
+        // TODO: implement this!
+        return rx.Observable.empty()
+    }
+
+    @Override
+    Long getGetUsersCount() throws Exception {
+        // TODO: implement this!
+        throw new UnsupportedOperationException()
+    }
+
+    @Override
     protected User buildFromColumnList(String username, ColumnList<UserProperty> result) throws ConnectionException {
         if (result.isEmpty()) {
             return null;

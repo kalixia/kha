@@ -36,6 +36,7 @@ public class ApiServer {
 
             apiBootstrap.bind();
 //            ChannelFuture f = apiBootstrap.bind().sync();
+            LOGGER.info("REST API available on http://{}:{}", InetAddress.getLocalHost().getCanonicalHostName(), port);
             LOGGER.info("WebSockets API available on ws://{}:{}", InetAddress.getLocalHost().getCanonicalHostName(), port);
 //            f.channel().closeFuture().sync();
         } catch (Exception e) {

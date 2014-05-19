@@ -23,6 +23,16 @@ class UsersServiceImpl extends Service<UsersServiceConfiguration> implements Use
     }
 
     @Override
+    rx.Observable<User> findUsers() {
+        return dao.findUsers()
+    }
+
+    @Override
+    Long getUsersCount() {
+        return dao.getUsersCount()
+    }
+
+    @Override
     protected String getName() {
         return "users-service"
     }

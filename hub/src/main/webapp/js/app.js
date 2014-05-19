@@ -9,7 +9,7 @@ function hubRouteConfig($routeProvider) {
         }).
         when ('/login', {
             controller: LoginController,
-            templateUrl: 'login.html',
+            templateUrl: 'login.html'
         }).
 //        when('/', {
 //            controller: DeviceListController,
@@ -40,5 +40,4 @@ function guid() {
 app.config(function($routeProvider, $httpProvider) {
     hubRouteConfig($routeProvider);
     $httpProvider.defaults.headers.common['X-Api-Request-ID'] = guid();
-    console.log($httpProvider.defaults.headers);
 });

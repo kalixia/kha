@@ -36,7 +36,7 @@ class UsersServiceTest extends Specification {
         given:
         def dao = Mock(UsersDao)
         def service = new UsersServiceImpl(dao)
-        def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe')
         dao.findByUsername(user.username) >> user
 
         when: "creating a user"

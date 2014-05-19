@@ -19,7 +19,7 @@ class SensorsServiceTest extends Specification {
         given: "a user who has one device with one sensor"
         def dao = Mock(SensorsDao)
         def service = new SensorsServiceImpl(dao)
-        def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe')
         def deviceAndSensor = new RGBLamp(UUID.randomUUID(), 'my lamp', user)
         dao.getLastValue(deviceAndSensor.id) >> new DataPoint<LuminousFlux>(Measure.valueOf(3, LuminousFlux.UNIT))
 

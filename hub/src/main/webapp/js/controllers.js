@@ -1,10 +1,17 @@
 function WelcomeController($scope, Restangular) {
     Restangular.one('admin/users', 'count').get().then(function(value) {
         $scope.hasUser = value != 0;
-    })
+    });
 }
 
 function LoginController($scope) {
+}
+
+function CreateUserController($scope, Restangular) {
+    $scope.user = {};
+    $scope.create = function() {
+        Restangular.all('').post($scope.user);
+    };
 }
 
 //function UserDetailController($scope, $routeParams, User, Device) {

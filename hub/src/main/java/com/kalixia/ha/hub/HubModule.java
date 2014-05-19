@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.kalixia.ha.api.ServicesModule;
-import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.api.rest.GeneratedJaxRsDaggerModule;
 import com.kalixia.ha.api.rest.json.JScienceModule;
 import com.kalixia.ha.dao.lucene.LuceneConfiguration;

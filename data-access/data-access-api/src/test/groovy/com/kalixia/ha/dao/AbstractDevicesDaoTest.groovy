@@ -19,7 +19,7 @@ abstract class AbstractDevicesDaoTest extends Specification {
 
     def "create a user with one device without sensors and retrieve the created device by its ID"() {
         given:
-        def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe')
         def deviceId1 = createUUID()
         def deviceId2 = createUUID()
         def device1 = new RGBLamp(deviceId1, 'my lamp', user)
@@ -54,7 +54,7 @@ abstract class AbstractDevicesDaoTest extends Specification {
 
     def "create a user with one device with one sensor and retrieve the created device"() {
         given:
-        def user = new User('johndoe', 'john@doe.com', 'John', 'Doe')
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe')
         def deviceId = createUUID()
         def device = new RGBLamp(deviceId, 'my lamp', user)
         device.addSensor(new Sensor<Duration>() {

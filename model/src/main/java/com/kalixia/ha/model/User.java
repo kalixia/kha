@@ -12,6 +12,7 @@ public class User extends AbstractAuditable {
     private String email;
     private String firstName;
     private String lastName;
+    private String password;
 
     @JsonCreator
     public User(@JsonProperty("username") String username) {
@@ -19,22 +20,24 @@ public class User extends AbstractAuditable {
         this.username = username;
     }
 
-    public User(String username, DateTime creationDate, DateTime lastUpdateDate) {
-        this(username, null, null, null, creationDate, lastUpdateDate);
+    public User(String username, String password, DateTime creationDate, DateTime lastUpdateDate) {
+        this(username, password, null, null, null, creationDate, lastUpdateDate);
     }
 
-    public User(String username, String email, String firstName, String lastName) {
-        this(username, email, firstName, lastName, new DateTime(), new DateTime());
+    public User(String username, String password, String email, String firstName, String lastName) {
+        this(username, password, email, firstName, lastName, new DateTime(), new DateTime());
     }
 
-    public User(String username, String email, String firstName, String lastName,
+    public User(String username, String password, String email, String firstName, String lastName,
                 DateTime creationDate, DateTime lastUpdateDate) {
         super(creationDate, lastUpdateDate);
         checkNotNull(username, "The username can't be null");
+        checkNotNull(password, "The password can't be null");
         checkNotNull(email, "The email can't be null");
         checkNotNull(firstName, "The first name can't be null");
         checkNotNull(lastName, "The last name can't be null");
         this.username = username;
+        this.password = password;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -42,6 +45,14 @@ public class User extends AbstractAuditable {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {

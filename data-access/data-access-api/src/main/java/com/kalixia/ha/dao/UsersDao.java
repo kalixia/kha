@@ -8,5 +8,5 @@ public interface UsersDao {
     User findByUsername(String username) throws Exception;
     void save(User user) throws Exception;
     Observable<User> findUsers() throws Exception;
-    Long getGetUsersCount() throws Exception;
+    Long getUsersCount() throws Exception;
 }

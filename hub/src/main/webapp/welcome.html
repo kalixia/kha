@@ -1,9 +1,94 @@
 <h1>Welcome to Kha</h1>
 
+<!-- content displayed if the Hub has already been configured properly -->
 <div ng-hide="!hasUser">
     <a href="#login">Login</a>
 </div>
 
-<div ng-hide="hasUser">
-    Oops. No user found. Create one first!
+<!-- content displayed if this is a fresh installation of the Hub -->
+<div ng-hide="hasUser" class="container">
+
+    <!--<div class="row bs-wizard" style="border-bottom:0;">
+
+        <div class="col-xs-3 bs-wizard-step complete">
+          <div class="text-center bs-wizard-stepnum">Step 1 - Create Account</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a href="#" class="bs-wizard-dot"></a>
+          <div class="bs-wizard-info text-center">Setup your account for secured access.</div>
+        </div>
+
+        <div class="col-xs-3 bs-wizard-step complete">&lt;!&ndash; complete &ndash;&gt;
+          <div class="text-center bs-wizard-stepnum">Step 2 - Add device / sensor</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a href="#" class="bs-wizard-dot"></a>
+          <div class="bs-wizard-info text-center">Add your first device or sensor.</div>
+        </div>
+
+        <div class="col-xs-3 bs-wizard-step active">&lt;!&ndash; complete &ndash;&gt;
+          <div class="text-center bs-wizard-stepnum">Step 3</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a href="#" class="bs-wizard-dot"></a>
+          <div class="bs-wizard-info text-center">Integer semper dolor ac auctor rutrum. Duis porta ipsum vitae mi bibendum bibendum</div>
+        </div>
+
+        <div class="col-xs-3 bs-wizard-step disabled">&lt;!&ndash; active &ndash;&gt;
+          <div class="text-center bs-wizard-stepnum">Step 4</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a href="#" class="bs-wizard-dot"></a>
+          <div class="bs-wizard-info text-center"> Curabitur mollis magna at blandit vestibulum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae</div>
+        </div>
+
+    </div>-->
+
+    <div class="row bs-wizard" style="border-bottom:0;">
+
+        <div class="col-xs-6 bs-wizard-step active">
+          <div class="text-center bs-wizard-stepnum">Step 1 - Create Account</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a href="#" class="bs-wizard-dot"></a>
+          <div class="bs-wizard-info text-center">Setup your account for secured access.</div>
+        </div>
+
+        <div class="col-xs-6 bs-wizard-step disabled">
+          <div class="text-center bs-wizard-stepnum">Step 2 - Add device / sensor</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a href="#" class="bs-wizard-dot"></a>
+          <div class="bs-wizard-info text-center">Add your first device or sensor.</div>
+        </div>
+
+    </div>
+
+    <div ng-controller="CreateUserController">
+        <form novalidate role="form">
+            <div class="form-group">
+                <label for="firstName">Firstname:</label>
+                <input id="firstName" type="text" ng-model="user.firstName" class="form-control"/><br/>
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Lastname:</label>
+                <input id="lastName" type="text" ng-model="user.lastName" class="form-control"/><br/>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input id="username" type="text" ng-model="user.username" required class="form-control"/><br/>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input id="password" type="password" ng-model="user.password" required class="form-control"/><br/>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input id="email" type="email" ng-model="user.email" required class="form-control"/><br/>
+            </div>
+
+            <button ng-click="create()" type="submit" class="btn btn-primary">Setup Account</button>
+
+            <pre>user = {{user | json}}</pre>
+        </form>
+    </div>
+
 </div>

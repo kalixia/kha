@@ -129,7 +129,7 @@
                     <repositoryName>lib</repositoryName>
                     <copyConfigurationDirectory>true</copyConfigurationDirectory>
                     <!--<licenseHeaderFile>${basedir}/../LICENSE.txt</licenseHeaderFile>-->
-                    <logsDirectory>logs</logsDirectory>
+                    <!--<logsDirectory>logs</logsDirectory>-->
                 </configuration>
                 <executions>
                     <execution>

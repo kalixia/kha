@@ -31,6 +31,7 @@ import static org.apache.lucene.document.Field.Store;
 public class LuceneUsersDao implements UsersDao {
     private final IndexWriter indexWriter;
     private static final String FIELD_USERNAME = "username";
+    private static final String FIELD_PASSWORD = "password";
     private static final String FIELD_EMAIL = "email";
     private static final String FIELD_FIRST_NAME = "firstName";
     private static final String FIELD_LAST_NAME = "lastName";
@@ -70,6 +71,7 @@ public class LuceneUsersDao implements UsersDao {
         LOGGER.info("Saving user '{}' to Lucene indexes", user.getUsername());
         Document doc = new Document();
         doc.add(new StringField(FIELD_USERNAME, user.getUsername(), Store.YES));
+        doc.add(new StringField(FIELD_PASSWORD, user.getPassword(), Store.YES));
         doc.add(new StringField(FIELD_EMAIL, user.getEmail(), Store.YES));
         doc.add(new StringField(FIELD_FIRST_NAME, user.getFirstName(), Store.YES));
         doc.add(new StringField(FIELD_LAST_NAME, user.getLastName(), Store.YES));
@@ -104,7 +106,7 @@ public class LuceneUsersDao implements UsersDao {
     }
 
     @Override
-    public Long getGetUsersCount() throws Exception {
+    public Long getUsersCount() throws Exception {
         IndexSearcher indexSearcher = buildIndexSearcher();
         TermQuery q = new TermQuery(termType);
         TopDocs hits = indexSearcher.search(q, Integer.MAX_VALUE);
@@ -113,12 +115,13 @@ public class LuceneUsersDao implements UsersDao {
 
     private User extractUserFromDoc(Document doc) {
         String username = doc.get(FIELD_USERNAME);
+        String password = doc.get(FIELD_PASSWORD);
         String email = doc.get(FIELD_EMAIL);
         String firstName = doc.get(FIELD_FIRST_NAME);
         String lastName = doc.get(FIELD_LAST_NAME);
         DateTime creationDate = DateTime.parse(doc.get(FIELD_CREATION_DATE));
         DateTime lastUpdateDate = DateTime.parse(doc.get(FIELD_LAST_UPDATE_DATE));
-        return new User(username, email, firstName, lastName, creationDate, lastUpdateDate);
+        return new User(username, password, email, firstName, lastName, creationDate, lastUpdateDate);
     }
 
     private IndexSearcher buildIndexSearcher() throws IOException {

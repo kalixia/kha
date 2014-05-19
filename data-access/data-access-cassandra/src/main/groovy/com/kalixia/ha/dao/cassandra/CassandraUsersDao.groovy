@@ -14,6 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull
 @Slf4j("LOGGER")
 public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserProperty> implements UsersDao {
     private final SchemaDefinition schema
+    private static final UserProperty COL_PASSWORD = new UserProperty(property: "password")
     private static final UserProperty COL_EMAIL = new UserProperty(property: "email")
     private static final UserProperty COL_FIRST_NAME = new UserProperty(property: "firstName")
     private static final UserProperty COL_LAST_NAME = new UserProperty(property: "lastName")
@@ -38,6 +39,7 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
         user.setLastUpdateDate(DateTime.now())
         MutationBatch m = schema.keyspace.prepareMutationBatch()
         m.withRow(schema.usersCF, user.username)
+                .putColumn(COL_PASSWORD, user.password)
                 .putColumn(COL_EMAIL, user.email)
                 .putColumn(COL_FIRST_NAME, user.firstName)
                 .putColumn(COL_LAST_NAME, user.lastName)
@@ -53,7 +55,7 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
     }
 
     @Override
-    Long getGetUsersCount() throws Exception {
+    Long getUsersCount() throws Exception {
         // TODO: implement this!
         throw new UnsupportedOperationException()
     }
@@ -64,29 +66,32 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
             return null;
         }
 
-        String email, firstName, lastName
+        String password, email, firstName, lastName
         DateTime creationDate, lastUpdateDate
         result.each { Column<SensorProperty> col ->
             switch (col.name) {
+                case COL_PASSWORD:
+                    password = col.stringValue
+                    break
                 case COL_EMAIL:
                     email = col.stringValue
-                    break;
+                    break
                 case COL_FIRST_NAME:
                     firstName = col.stringValue
-                    break;
+                    break
                 case COL_LAST_NAME:
                     lastName = col.stringValue
-                    break;
+                    break
                 case COL_CREATION_DATE:
                     creationDate = new DateTime(col.dateValue)
-                    break;
+                    break
                 case COL_LAST_UPDATE_DATE:
                     lastUpdateDate = new DateTime(col.dateValue)
-                    break;
+                    break
                 default:
-                    break;
+                    break
             }
         }
-        return new User(username, email, firstName, lastName, creationDate, lastUpdateDate)
+        return new User(username, password, email, firstName, lastName, creationDate, lastUpdateDate)
     }
 }

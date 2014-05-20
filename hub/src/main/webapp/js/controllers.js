@@ -18,8 +18,8 @@ function CreateUserController($scope, $location, Restangular) {
 
 //function UserDetailController($scope, $routeParams, User, Device) {
 function UserDetailController($scope, $routeParams, Restangular) {
-    $scope.user = Restangular.one('', $routeParams.username).get();
-    $scope.devices = Restangular.one('', $routeParams.username).getList('devices')
+    Restangular.one('', $routeParams.username).get().then(function(user) { $scope.user = user; });
+    Restangular.one('', $routeParams.username).getList('devices').then(function(devices) { $scope.devices = devices; });
 }
 
 function DeviceListController($scope, Device, DeviceWS) {

@@ -11,10 +11,6 @@ function hubRouteConfig($routeProvider) {
             controller: LoginController,
             templateUrl: 'login.html'
         }).
-//        when('/', {
-//            controller: DeviceListController,
-//            templateUrl: 'devices.html'
-//        }).
         when('/:username', {
             controller: UserDetailController,
             templateUrl: 'user.html'

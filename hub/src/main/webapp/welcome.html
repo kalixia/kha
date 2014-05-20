@@ -59,33 +59,37 @@
     </div>
 
     <div ng-controller="CreateUserController">
-        <form novalidate role="form">
+        <form name="createUserForm" novalidate role="form">
             <div class="form-group">
                 <label for="firstName">Firstname:</label>
-                <input id="firstName" type="text" ng-model="user.firstName" class="form-control"/><br/>
+                <input id="firstName" name="firstName" type="text" ng-model="user.firstName" class="form-control"/><br/>
             </div>
 
             <div class="form-group">
                 <label for="lastName">Lastname:</label>
-                <input id="lastName" type="text" ng-model="user.lastName" class="form-control"/><br/>
+                <input id="lastName" name="lastName" type="text" ng-model="user.lastName" class="form-control"/><br/>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback" ng-class="{ 'has-error': !createUserForm.username.$valid }">
                 <label for="username">Username:</label>
-                <input id="username" type="text" ng-model="user.username" required class="form-control"/><br/>
+                <input id="username" name="username" type="text" ng-model="user.username" required class="form-control"/><br/>
+                <span class="glyphicon glyphicon-remove form-control-feedback" ng-hide="createUserForm.username.$valid"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback" ng-class="{ 'has-error': !createUserForm.password.$valid }">
                 <label for="password">Password:</label>
-                <input id="password" type="password" ng-model="user.password" required class="form-control"/><br/>
+                <input id="password" name="password" type="password" ng-model="user.password" required class="form-control"/><br/>
+                <span class="glyphicon glyphicon-remove form-control-feedback" ng-hide="createUserForm.password.$valid"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group has-feedback" ng-class="{ 'has-error': !createUserForm.email.$valid }">
                 <label for="email">Email:</label>
-                <input id="email" type="email" ng-model="user.email" required class="form-control"/><br/>
+                <input id="email" name="email" type="email" ng-model="user.email" class="form-control"/><br/>
+                <span class="glyphicon glyphicon-remove form-control-feedback" ng-hide="createUserForm.email.$valid"></span>
             </div>
 
-            <button ng-click="create()" type="submit" class="btn btn-primary">Setup Account</button>
+            <button ng-click="create()" ng-disabled="createUserForm.$invalid"
+                    type="submit" class="btn btn-primary">Setup Account</button>
 
             <pre>user = {{user | json}}</pre>
         </form>

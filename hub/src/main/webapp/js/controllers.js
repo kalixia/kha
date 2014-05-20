@@ -7,10 +7,12 @@ function WelcomeController($scope, Restangular) {
 function LoginController($scope) {
 }
 
-function CreateUserController($scope, Restangular) {
+function CreateUserController($scope, $location, Restangular) {
     $scope.user = {};
     $scope.create = function() {
-        Restangular.all('').post($scope.user);
+        Restangular.all('').post($scope.user).then(function() {
+            $location.path("/" + $scope.user.username);
+        });
     };
 }
 

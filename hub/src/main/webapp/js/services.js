@@ -3,10 +3,13 @@ var hubServices = angular.module('hubServices', ['ngResource', 'restangular'])
         RestangularProvider.setBaseUrl("http://localhost:8082");
     });
 
-hubServices.factory('User', ['Restangular', function userFactory(Restangular) {
+hubServices.factory('UserService', ['Restangular', function userServiceFactory(Restangular) {
     return {
         createUser: function(user) {
             return Restangular.all('').post(user);
+        },
+        installDone: function() {
+            Restangular.one('admin/users', 'count').get();
         }
     }
 }]);

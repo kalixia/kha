@@ -1,16 +1,17 @@
-function WelcomeController($scope, Restangular) {
-    Restangular.one('admin/users', 'count').get().then(function(value) {
-        $scope.hasUser = value != 0;
-    });
+function InstallController($scope, UserService) {
+//    UserService.installDone().then(function (value) {
+//        $scope.hasUser = value != 0;
+//    });
+    $scope.hasUser = UserService.installDone();
 }
 
 function LoginController($scope) {
 }
 
-function CreateUserController($scope, $location, User) {
+function CreateUserController($scope, $location, UserService) {
     $scope.user = {};
     $scope.create = function() {
-        User.createUser($scope.user).then(function() {
+        UserService.createUser($scope.user).then(function() {
             $location.path("/" + $scope.user.username + "/devices/new");
         });
     };

@@ -5,12 +5,16 @@
         <tr>
             <th>Device #ID</th>
             <th>Name</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         <tr ng-repeat="device in devices">
             <td>{{ device.id }}</td>
             <td><a href='#/device/{{device.id}}'>{{ device.name }}</a></td>
+            <td>
+                <a href="#/device/{{device.id}}/edit"><span class="glyphicon-edit"></span>Edit</a>
+            </td>
         </tr>
     </tbody>
 </table>

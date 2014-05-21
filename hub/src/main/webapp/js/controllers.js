@@ -7,11 +7,11 @@ function WelcomeController($scope, Restangular) {
 function LoginController($scope) {
 }
 
-function CreateUserController($scope, $location, Restangular) {
+function CreateUserController($scope, $location, User) {
     $scope.user = {};
     $scope.create = function() {
-        Restangular.all('').post($scope.user).then(function() {
-            $location.path("/" + $scope.user.username);
+        User.createUser($scope.user).then(function() {
+            $location.path("/" + $scope.user.username + "/devices/new");
         });
     };
 }
@@ -22,6 +22,14 @@ function UserDetailController($scope, $routeParams, Restangular) {
     Restangular.one('', $routeParams.username).getList('devices').then(function(devices) { $scope.devices = devices; });
 }
 
+function CreateDeviceController($scope, $routeParams, $location, Restangular) {
+    $scope.device = {};
+//    $scope.create = function() {
+//        Restangular.one('', $sc).post($scope.user).then(function() {
+//            $location.path("/" + $scope.user.username + "/devices/new");
+//        });
+//    };
+}
 function DeviceListController($scope, Device, DeviceWS) {
     $scope.devices = Device.query();
 //    $scope.devices = DeviceWS.getDevices();

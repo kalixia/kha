@@ -9,10 +9,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class User extends AbstractAuditable {
     private final String username;
+    private String password;
     private String email;
     private String firstName;
     private String lastName;
-    private String password;
 
     @JsonCreator
     public User(@JsonProperty("username") String username) {
@@ -32,6 +32,7 @@ public class User extends AbstractAuditable {
                 DateTime creationDate, DateTime lastUpdateDate) {
         super(creationDate, lastUpdateDate);
         checkNotNull(username, "The username can't be null");
+        checkNotNull(password, "The password can't be null");
         checkNotNull(password, "The password can't be null");
         checkNotNull(email, "The email can't be null");
         checkNotNull(firstName, "The first name can't be null");

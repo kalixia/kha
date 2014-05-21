@@ -1,0 +1,37 @@
+<h1>Welcome to Kha</h1>
+
+<div class="container">
+
+    <div class="row bs-wizard" style="border-bottom:0;">
+
+        <div class="col-xs-6 bs-wizard-step complete">
+          <div class="text-center bs-wizard-stepnum">Step 1 - Create Account</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a href="#" class="bs-wizard-dot"></a>
+          <div class="bs-wizard-info text-center">Setup your account for secured access.</div>
+        </div>
+
+        <div class="col-xs-6 bs-wizard-step active">
+          <div class="text-center bs-wizard-stepnum">Step 2 - Add device / sensor</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a href="#" class="bs-wizard-dot"></a>
+          <div class="bs-wizard-info text-center">Add your first device or sensor.</div>
+        </div>
+
+    </div>
+
+    <div ng-controller="CreateDeviceController">
+        <form name="createDeviceForm" novalidate role="form">
+            <div class="form-group has-feedback" ng-class="{ 'has-error': !createDeviceForm.name.$valid }">
+                <label for="name">Name:</label>
+                <input id="name" name="name" type="text" ng-model="device.name" required class="form-control"/><br/>
+            </div>
+
+            <button ng-click="add()" ng-disabled="createDeviceForm.$invalid"
+                    type="submit" class="btn btn-primary">Add Device</button>
+
+            <pre>device = {{device | json}}</pre>
+        </form>
+    </div>
+
+</div>

@@ -2,26 +2,31 @@ var app = angular.module('hub', ['hubServices', 'ngRoute', 'restangular', 'ui.bo
 
 // Set up our mappings between URLs, templates, and controllers
 function hubRouteConfig($routeProvider) {
-    $routeProvider.
-        when('/', {
+    $routeProvider
+        .when('/', {
             controller: WelcomeController,
-            templateUrl: 'welcome.html'
-        }).
-        when ('/login', {
+            templateUrl: 'views/welcome.html'
+        })
+        .when('/login', {
             controller: LoginController,
-            templateUrl: 'login.html'
-        }).
-        when('/:username', {
+            templateUrl: 'views/login.html'
+        })
+        .when('/:username', {
             controller: UserDetailController,
-            templateUrl: 'user.html'
-        }).
-        when('/:username/device/:id', {
+            templateUrl: 'views/user.html'
+        })
+        .when('/:username/devices/new', {
+            controller: CreateDeviceController,
+            templateUrl: 'views/devices/create.html'
+        })
+        .when('/:username/devices/:id', {
             controller: DeviceDetailController,
-            templateUrl: 'device.html'
+            templateUrl: 'views/devices/device.html'
         }).
         otherwise({
             redirectTo: '/'
-        });
+        })
+    ;
 }
 
 // Generates a random UUID

@@ -1,8 +1,44 @@
-function InstallController($scope, UserService) {
-//    UserService.installDone().then(function (value) {
-//        $scope.hasUser = value != 0;
-//    });
+function WelcomeController($scope, UserService) {
     $scope.hasUser = UserService.installDone();
+    $scope.steps = [
+        {
+            number: 1,
+            description: 'Welcome to Kha',
+            complete: false,
+            disabled: false
+        },
+        {
+            number: 2,
+            description: 'Setup your account for secured access',
+            complete: false,
+            disabled: true
+        },
+        {
+            number: 3,
+            description: 'Add your first device or sensor',
+            complete: false,
+            disabled: true
+        }
+    ];
+    $scope.currentStep = $scope.steps[0];
+    $scope.validForm = false;
+
+    // beware of 0 index-based array but step numbers 1 index-based.
+    $scope.nextStep = function() {
+        $scope.currentStep = $scope.steps[$scope.currentStep.number];
+    };
+    $scope.previousStep = function() {
+        $scope.currentStep = $scope.steps[$scope.currentStep.number - 2];
+    };
+
+    $scope.createUser = function() {
+        $scope.create();
+        $scope.nextStep();
+    };
+
+    $scope.$on('user.create.form.valid', function(event, valid) {
+        $scope.validForm = valid;
+    });
 }
 
 function LoginController($scope) {
@@ -15,6 +51,9 @@ function CreateUserController($scope, $location, UserService) {
             $location.path("/" + $scope.user.username + "/devices/new");
         });
     };
+    $scope.$watch('createUserForm.$valid', function(val) {
+        $scope.$emit('user.create.form.valid', val);
+    });
 }
 
 //function UserDetailController($scope, $routeParams, User, Device) {

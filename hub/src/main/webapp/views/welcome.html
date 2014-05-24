@@ -18,6 +18,10 @@
         </div>
     </div>
 
+    <div class="alert alert-danger" ng-show="errorMessage">
+        {{errorMessage}}
+    </div>
+
     <div class="animate-switch-container" ng-switch on="currentStep.number">
         <div class="animate-switch" ng-switch-when="1">
             Welcome screen...
@@ -31,15 +35,22 @@
                 <button ng-click="previousStep()" class="btn"><span class="glyphicon glyphicon-chevron-left"></span> Previous</button>
                 <button ng-click="createUser()"
                         ng-disabled="!validForm"
+                        type="submit"
                         class="btn btn-primary">
                     Next <span class="glyphicon glyphicon-chevron-right"></span>
                 </button>
             </div>
         </div>
         <div class="animate-switch" ng-switch-when="3">
-            Setup first device/sensor screen...
+            <div ng-include="'partials/devices/create.html'"></div>
             <div>
                 <button ng-click="previousStep()" class="btn"><span class="glyphicon glyphicon-chevron-left"></span> Previous</button>
+                <button ng-click="createDevice()"
+                        ng-disabled="!validForm"
+                        type="submit"
+                        class="btn btn-primary">
+                    Setup my first device
+                </button>
             </div>
         </div>
     </div>

@@ -1,0 +1,14 @@
+<form name="createDeviceForm" novalidate role="form" ng-controller="CreateDeviceController">
+    <div class="form-group has-feedback" ng-class="{ 'has-error': !createDeviceForm.name.$valid }">
+        <label for="name">Name:</label>
+        <input id="name" name="name" type="text" ng-model="device.name" required class="form-control"/><br/>
+    </div>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error': !createDeviceForm.name.$valid }">
+        <label for="type">Type:</label>
+        <input id="type" name="type" type="text" ng-model="device.type" required class="form-control"/><br/>
+    </div>
+
+    <pre>owner = {{owner | json}}</pre>
+    <pre>device = {{device | json}}</pre>
+</form>

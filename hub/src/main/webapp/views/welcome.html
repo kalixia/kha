@@ -24,9 +24,14 @@
 
     <div class="animate-switch-container" ng-switch on="currentStep.number">
         <div class="animate-switch" ng-switch-when="1">
-            Welcome screen...
-            <div>
-                <button ng-click="nextStep()" class="btn btn-primary">Next <span class="glyphicon glyphicon-chevron-right"></span></button>
+            <div class="jumbotron">
+                <h1>Welcome to Kha!</h1>
+                <p>
+                    You're almost done. Just a few most setup steps to go through and you'll be able to use your Home Automation solution.
+                </p>
+                <p>
+                    <a class="btn btn-primary btn-lg" role="button" autofocus ng-click="nextStep()">Next <span class="glyphicon glyphicon-chevron-right"></span></a>
+                </p>
             </div>
         </div>
         <div class="animate-switch" ng-switch-when="2">

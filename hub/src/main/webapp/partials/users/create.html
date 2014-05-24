@@ -1,7 +1,7 @@
 <form name="createUserForm" novalidate role="form" ng-controller="CreateUserController">
     <div class="form-group has-feedback" ng-class="{ 'has-error': !createUserForm.username.$valid }">
         <label for="username">Username:</label>
-        <input id="username" name="username" type="text" ng-model="user.username" required class="form-control"/><br/>
+        <input id="username" name="username" type="text" ng-model="user.username" required autofocus class="form-control"/><br/>
         <span class="glyphicon glyphicon-remove form-control-feedback" ng-hide="createUserForm.username.$valid"></span>
     </div>
 

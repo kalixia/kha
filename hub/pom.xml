@@ -136,6 +136,52 @@
                             </filesets>
                         </configuration>
                     </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>appassembler-maven-plugin</artifactId>
+                        <configuration>
+                            <programs>
+                                <program>
+                                    <mainClass>com.kalixia.ha.hub.Main</mainClass>
+                                    <name>hub</name>
+                                </program>
+                            </programs>
+                            <!--<defaultJvmSettings>-->
+                                <!--<initialMemorySize>256M</initialMemorySize>-->
+                                <!--<maxMemorySize>256M</maxMemorySize>-->
+                            <!--</defaultJvmSettings>-->
+                            <repositoryLayout>flat</repositoryLayout>
+                            <repositoryName>lib</repositoryName>
+                            <copyConfigurationDirectory>true</copyConfigurationDirectory>
+                            <!--<licenseHeaderFile>${basedir}/../LICENSE.txt</licenseHeaderFile>-->
+                            <!--<logsDirectory>logs</logsDirectory>-->
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>assemble</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.4</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${basedir}/src/assemble/distribution.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <!--<plugin>-->
                         <!--<artifactId>jdeb</artifactId>-->
                         <!--<groupId>org.vafer</groupId>-->
@@ -217,52 +263,6 @@
                     <execution>
                         <goals>
                             <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>appassembler-maven-plugin</artifactId>
-                <configuration>
-                    <programs>
-                        <program>
-                            <mainClass>com.kalixia.ha.hub.Main</mainClass>
-                            <name>hub</name>
-                        </program>
-                    </programs>
-                    <!--<defaultJvmSettings>-->
-                        <!--<initialMemorySize>256M</initialMemorySize>-->
-                        <!--<maxMemorySize>256M</maxMemorySize>-->
-                    <!--</defaultJvmSettings>-->
-                    <repositoryLayout>flat</repositoryLayout>
-                    <repositoryName>lib</repositoryName>
-                    <copyConfigurationDirectory>true</copyConfigurationDirectory>
-                    <!--<licenseHeaderFile>${basedir}/../LICENSE.txt</licenseHeaderFile>-->
-                    <!--<logsDirectory>logs</logsDirectory>-->
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>assemble</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>${basedir}/src/assemble/distribution.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>

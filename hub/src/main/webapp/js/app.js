@@ -1,3 +1,5 @@
+'use strict';
+
 var app = angular.module('hub', ['hubServices', 'ngRoute', 'restangular', 'ui.bootstrap']);
 
 // Set up our mappings between URLs, templates, and controllers

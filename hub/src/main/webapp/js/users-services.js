@@ -6,9 +6,7 @@ hubServices.factory('UserService', ['Restangular', function userServiceFactory(R
             return Restangular.all('').post(user);
         },
         installDone: function() {
-            return Restangular.one('admin/users', 'count').then(function(count) {
-                return count > 0;
-            });
+            return Restangular.one('admin/users', 'count').get() > 0;
         }
     }
 }]);

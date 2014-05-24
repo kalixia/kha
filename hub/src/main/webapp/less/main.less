@@ -1,6 +1,7 @@
-@import "bootstrap/bootstrap.less";
+@import "../bower_components/bootstrap-less/less/bootstrap.less";
 
 @footerHeight: 60px;
+@footerColor: #f5f5f5;
 
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
 
@@ -163,7 +164,7 @@ footer {
   width: 100%;
   /* Set the fixed height of the footer here */
   height: @footerHeight;
-  background-color: #f5f5f5;
+  background-color: @footerColor;
 
   .container .text-muted { margin: 20px 0; }
 }

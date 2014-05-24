@@ -1,4 +1,3 @@
-// Generated on 2014-05-23 using generator-jhipster 0.14.0
 'use strict';
 
 // # Globbing
@@ -20,6 +19,10 @@ module.exports = function (grunt) {
       dist: 'src/main/webapp/dist'
     },
     watch: {
+      less: {
+        files: ['src/main/webapp/less/{,*/}*.less'],
+        tasks: ['less']
+      },
       css: {
         files: ['src/main/webapp/css/{,*/}*.css'],
         tasks: ['copy:css', 'autoprefixer']
@@ -173,6 +176,26 @@ module.exports = function (grunt) {
           dest: '.tmp/spec',
           ext: '.js'
         }]
+      }
+    },
+    less: {
+      development: {
+//        options: {
+//          paths: ["src/main/webapp/less/{,*/}*.less"],
+//          yuicompress: true
+//        },
+        files: {
+          "src/main/webapp/css/hub.css": "src/main/webapp/less/main.less"
+        }
+      },
+      production: {
+        options: {
+          cleancss: true,
+          yuicompress: true
+        },
+        files: {
+          "src/main/webapp/css/hub.css": "src/main/webapp/less/main.less"
+        }
       }
     },
     // not used since Uglify task does concat,
@@ -372,6 +395,7 @@ module.exports = function (grunt) {
     'clean:dist',
     'useminPrepare',
     'concurrent:dist',
+    'less',
     'autoprefixer',
     'concat',
     'copy:dist',

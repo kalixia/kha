@@ -23,7 +23,7 @@
     <properties>
         <grapi.version>0.4.1</grapi.version>
         <hystrix.version>1.4.0-RC4</hystrix.version>
-        <rxjava.version>0.18.2</rxjava.version>
+        <rxjava.version>0.18.3</rxjava.version>
         <astyanax.version>1.56.48</astyanax.version>
         <metrics.version>3.0.1</metrics.version>
         <jackson.version>2.2.2</jackson.version>

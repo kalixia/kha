@@ -1,9 +1,14 @@
 'use strict';
 
+angular.module('hub.users.controllers', ['hub.users.services', 'hub.devices.services', 'ngRoute'])
+    .controller('LoginController', ['$scope', LoginController])
+    .controller('CreateUserController', ['$scope', 'UserService', CreateUserController])
+    .controller('UserDetailController', ['$scope', '$routeParams', 'UserService', 'DeviceService', UserDetailController]);
+
 function LoginController($scope) {
 }
 
-function CreateUserController($scope, $location, UserService) {
+function CreateUserController($scope, UserService) {
     $scope.create = function() {
         return UserService.createUser($scope.user);
     };
@@ -12,8 +17,11 @@ function CreateUserController($scope, $location, UserService) {
     });
 }
 
-//function UserDetailController($scope, $routeParams, User, Device) {
-function UserDetailController($scope, $routeParams, Restangular) {
-    Restangular.one('', $routeParams.username).get().then(function(user) { $scope.user = user; });
-    Restangular.one('', $routeParams.username).getList('devices').then(function(devices) { $scope.devices = devices; });
+function UserDetailController($scope, $routeParams, UserService, DeviceService) {
+    UserService.getUser($routeParams.username).then(function(user) {
+        $scope.user = user;
+    });
+    DeviceService.getUserDevices($routeParams.username).then(function(devices) {
+        $scope.devices = devices;
+    })
 }

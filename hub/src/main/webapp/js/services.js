@@ -1,6 +1,6 @@
 'use strict';
 
-var hubServices = angular.module('hubServices', ['ngResource', 'restangular'])
+angular.module('hub.services', ['hub.users.services', 'hub.devices.services', 'ngResource', 'restangular'])
     .config(function(RestangularProvider) {
         RestangularProvider.setBaseUrl("http://localhost:8082");
     });

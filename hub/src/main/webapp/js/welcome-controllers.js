@@ -1,5 +1,8 @@
 'use strict';
 
+angular.module('hub.welcome.controllers', ['hub.users.services'])
+    .controller('WelcomeController', ['$scope', 'UserService', '$log', WelcomeController]);
+
 function WelcomeController($scope, UserService, $log) {
     $scope.user = {};
     $scope.hasUser = UserService.installDone();

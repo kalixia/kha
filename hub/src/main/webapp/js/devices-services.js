@@ -1,7 +1,12 @@
 'use strict';
 
-hubServices.factory('DeviceService', ['Restangular', function deviceServiceFactory(Restangular) {
+var devicesServices = angular.module('hub.devices.services', []);
+
+devicesServices.factory('DeviceService', ['Restangular', function deviceServiceFactory(Restangular) {
     return {
+        getUserDevices: function(username) {
+            return Restangular.one('', username).getList('devices');
+        },
         createDevice: function(owner, device) {
             return Restangular.one('', owner.username).all('devices').post(device);
         }

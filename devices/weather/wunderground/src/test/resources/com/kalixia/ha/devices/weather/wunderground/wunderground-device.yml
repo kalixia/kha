@@ -1,0 +1,9 @@
+apiKey: 8ad077feebe28cb8
+station: IMOUYSUR2
+
+polling:
+  interval: 5mn
+
+# Settings for Wunderground API
+host: api.wunderground.com
+port: 80

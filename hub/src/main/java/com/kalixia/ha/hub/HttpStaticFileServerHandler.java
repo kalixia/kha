@@ -42,6 +42,7 @@ import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -420,12 +421,21 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
 //        response.headers().set(CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()));
 
         String contentType;
-        if (file.getPath().endsWith(".html"))
+        String path = file.getPath();
+        if (path.endsWith(".html"))
             contentType = "text/html";
-        else if (file.getPath().endsWith(".css"))
+        else if (path.endsWith(".css"))
             contentType = "text/css";
-        else if (file.getPath().endsWith(".js"))
+        else if (path.endsWith(".js"))
             contentType = "application/javascript";
+        else if (path.endsWith(".ttf"))
+            contentType = "application/x-font-ttf";
+        else if (path.endsWith(".woff"))
+            contentType = "application/font-woff";
+        else if (path.endsWith(".eot"))
+            contentType = "application/vnd.ms-fontobject";
+        else if (path.endsWith(".svg"))
+            contentType = "image/svg+xml";
         else
             contentType = "application/octet-stream";
 

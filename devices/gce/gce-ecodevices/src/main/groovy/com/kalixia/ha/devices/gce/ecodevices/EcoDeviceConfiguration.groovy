@@ -10,8 +10,11 @@ import com.kalixia.ha.model.configuration.SensorConfiguration
  * Configuration for the Eco Device.
  */
 public class EcoDeviceConfiguration extends Configuration {
-    @JsonProperty("url")
-    private String url
+    @JsonProperty("host")
+    private String host
+
+    @JsonProperty("port")
+    private int port
 
     @JsonProperty("authentication")
     private AuthenticationConfiguration authentication
@@ -31,11 +34,15 @@ public class EcoDeviceConfiguration extends Configuration {
     @JsonProperty("polling")
     private PullBasedConfiguration polling
 
-    public String getUrl() {
-        return url
+    String getHost() {
+        return host
     }
 
-    public AuthenticationConfiguration getAuthentication() {
+    int getPort() {
+        return port
+    }
+
+    AuthenticationConfiguration getAuthentication() {
         return authentication
     }
 

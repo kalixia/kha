@@ -25,9 +25,11 @@ public class ConfigurationBuilder {
         File serviceConfigurationFile = new File(
                 System.getProperty("app.home") + "/etc/", configurationFilenameWithoutExt + ".yml");
         if (serviceConfigurationFile.exists()) {
+            LOGGER.debug("Using configuration file '{}'", serviceConfigurationFile.getAbsolutePath());
             return loadConfigurationFromStream(configurationClass, new FileInputStream(serviceConfigurationFile));
         } else {
             String serviceConfigurationFilename = configurationClass.getPackage().getName().replace('.', '/') + '/' + configurationFilenameWithoutExt + ".yml";
+            LOGGER.debug("Using configuration file '{}'", serviceConfigurationFilename);
             InputStream serviceConfigurationStream = configurationClass.getClassLoader().getResourceAsStream(serviceConfigurationFilename);
             C conf = loadConfigurationFromStream(configurationClass, serviceConfigurationStream);
             if (conf == null)
@@ -43,7 +45,7 @@ public class ConfigurationBuilder {
             if (stream == null) {
                 return null;
             } else {
-                Reader serviceConfigurationReader = new InputStreamReader(stream);
+                Reader serviceConfigurationReader = new InputStreamReader(stream, "UTF-8");
                 return ConfigurationBuilder.fromStream(serviceConfigurationReader, configurationClass);
             }
         } finally {

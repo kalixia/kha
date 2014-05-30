@@ -14,7 +14,8 @@ class EcoDeviceTest extends Specification {
 
         then: "the configuration to be properly loaded"
         device.configuration != null
-        device.configuration.url == 'http://localhost:12345'
+        device.configuration.host == 'localhost'
+        device.configuration.port == 12345
         device.configuration.authentication.username == 'admin'
         device.configuration.authentication.password == 'test'
         device.configuration.power1.name == 'Téléinfo 1'

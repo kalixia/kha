@@ -3,6 +3,7 @@ package com.kalixia.ha.devices.gce.ecodevices
 import com.kalixia.ha.devices.gce.ecodevices.commands.EcoDeviceXmlParsingCommand
 import com.kalixia.ha.model.quantity.WattsPerHour
 import groovy.util.logging.Slf4j
+import io.reactivex.netty.protocol.http.client.HttpClient
 import rx.Observable
 
 import javax.measure.Measurable
@@ -18,6 +19,11 @@ import static TeleinfoSensorSlot.TELEINFO2
 class EcoDeviceTeleinfoRetriever implements TeleinfoRetriever {
     private static final Measurable<Power> ZERO_WATT = Measure.valueOf(0L, SI.WATT)
     private static final Measurable<WattsPerHour> ZERO_WATTS_PER_HOUR = Measure.valueOf(0L, WattsPerHour.UNIT)
+    private final HttpClient httpClient
+
+    EcoDeviceTeleinfoRetriever(HttpClient httpClient) {
+        this.httpClient = httpClient
+    }
 
     @Override
     Observable<Measurable<Quantity>> retrieveIndexes(TeleinfoSensor teleinfo, EcoDeviceConfiguration configuration) {
@@ -31,7 +37,7 @@ class EcoDeviceTeleinfoRetriever implements TeleinfoRetriever {
                     return Observable.from(ZERO_WATT, ZERO_WATTS_PER_HOUR, ZERO_WATTS_PER_HOUR)
                 break;
         }
-        return new EcoDeviceXmlParsingCommand(teleinfo, configuration)
+        return new EcoDeviceXmlParsingCommand(teleinfo, configuration, httpClient)
             .observe()
             .flatMap({ List<Measurable<WattsPerHour>> values ->
                 LOGGER.info("Got value ${values}")

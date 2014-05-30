@@ -5,13 +5,12 @@ import static ch.qos.logback.classic.Level.*
 
 appender("STDOUT", ConsoleAppender) {
     encoder(PatternLayoutEncoder) {
-        pattern = "%d{HH:mm:ss.SSS} [%X{user} %thread] %-5level %logger{36} - %msg%n"
+        pattern = "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
     }
     withJansi = true
 }
 
-logger "com.kalixia.ha", INFO
-logger "com.kalixia.ha.api.rest", DEBUG
+logger "com.kalixia.ha", DEBUG
 logger "com.netflix.hystrix", INFO
 
 root(WARN, ["STDOUT"])

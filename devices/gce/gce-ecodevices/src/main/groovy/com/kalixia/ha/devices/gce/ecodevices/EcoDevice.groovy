@@ -6,6 +6,8 @@ import com.kalixia.ha.model.devices.AbstractDevice
 import com.kalixia.ha.model.devices.PullBasedDevice
 import com.kalixia.ha.model.quantity.WattsPerHour
 import com.kalixia.ha.model.sensors.CounterSensor
+import io.reactivex.netty.RxNetty
+import io.reactivex.netty.protocol.http.client.HttpClient
 import rx.Observable
 
 import javax.measure.Measurable
@@ -28,7 +30,8 @@ class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements PullBa
     private final TeleinfoSensor teleinfoSensor2
     private final CounterSensor<Volume> counter1
     private final CounterSensor<Volume> counter2
-    private final TeleinfoRetriever retriever
+    private TeleinfoRetriever retriever
+    private HttpClient httpClient
 
     def EcoDevice(UUID id, String name, User owner) {
         super(id, name, owner, Counter.class)
@@ -36,13 +39,14 @@ class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements PullBa
         teleinfoSensor2 = new TeleinfoSensor(configuration.power2.name, TeleinfoSensorSlot.TELEINFO2)
         counter1 = new CounterSensor<>(configuration.counter1.name, NonSI.LITRE)
         counter2 = new CounterSensor<>(configuration.counter2.name, SI.CUBIC_METRE)
-        this.retriever = new EcoDeviceTeleinfoRetriever()
         addSensors(teleinfoSensor1, teleinfoSensor2, counter1)
     }
 
     @Override
     void init(EcoDeviceConfiguration configuration) {
         this.configuration = configuration
+        this.httpClient = RxNetty.createHttpClient(configuration.getHost(), configuration.getPort())
+        this.retriever = new EcoDeviceTeleinfoRetriever(httpClient)
         LOGGER.info("Eco Device initialized")
     }
 

@@ -5,6 +5,7 @@ import com.kalixia.ha.model.quantity.WattsPerHour
 import com.netflix.hystrix.contrib.yammermetricspublisher.HystrixYammerMetricsPublisher
 import com.netflix.hystrix.strategy.HystrixPlugins
 import groovy.util.logging.Slf4j
+import io.reactivex.netty.RxNetty
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -17,7 +18,7 @@ import static TeleinfoSensorSlot.TELEINFO2
 
 @Slf4j("LOGGER")
 class TeleinfoSensorRetrieverTest extends Specification {
-    @Shared def teleinfoRetriever = new EcoDeviceTeleinfoRetriever()
+    @Shared def teleinfoRetriever
     @Shared EcoDeviceConfiguration ecoDeviceConfiguration
     @Shared TeleinfoSensor teleinfo1
     @Shared TeleinfoSensor teleinfo2
@@ -31,6 +32,10 @@ class TeleinfoSensorRetrieverTest extends Specification {
                 EcoDeviceConfiguration.class)
         teleinfo1 = new TeleinfoSensor(ecoDeviceConfiguration.power1.name, TELEINFO1)
         teleinfo2 = new TeleinfoSensor(ecoDeviceConfiguration.power1.name, TELEINFO2)
+
+        def httpClient = RxNetty.createHttpClient(ecoDeviceConfiguration.getHost(), ecoDeviceConfiguration.getPort())
+        teleinfoRetriever = new EcoDeviceTeleinfoRetriever(httpClient)
+
         HystrixPlugins.getInstance().registerMetricsPublisher(new HystrixYammerMetricsPublisher())
     }
 

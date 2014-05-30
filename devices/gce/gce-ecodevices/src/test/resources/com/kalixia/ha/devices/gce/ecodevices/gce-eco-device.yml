@@ -1,5 +1,7 @@
 # Base URL of the Eco Device
-url: http://localhost:12345
+host: localhost
+port: 12345
+
 authentication:
   username: admin
   password: test

@@ -30,6 +30,11 @@
             <artifactId>rxjava-groovy</artifactId>
             <version>${rxjava.version}</version>
         </dependency>
+        <!-- RxNetty dependencies -->
+        <dependency>
+            <groupId>com.netflix.rxnetty</groupId>
+            <artifactId>rx-netty</artifactId>
+        </dependency>
 
         <!-- Hystrix dependencies -->
         <dependency>
@@ -66,18 +71,6 @@
         <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.netflix.rxnetty</groupId>
-            <artifactId>rx-netty</artifactId>
-            <version>0.3.3</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.netflix.numerus</groupId>
-                    <artifactId>numerus</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jacoco</groupId>

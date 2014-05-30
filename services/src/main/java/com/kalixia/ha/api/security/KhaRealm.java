@@ -10,6 +10,8 @@ import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.SimpleAccount;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.authz.permission.WildcardPermission;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 
@@ -55,9 +57,13 @@ public class KhaRealm extends AuthorizingRealm {
             return null;
 
         Set<String> roles = user.getRoles().stream()
-                .map(role -> role.name())
+                .map(Enum::name)
                 .collect(toSet());
-        return new SimpleAccount(user.getUsername(), user.getPassword(), user.getName(), roles, null);
+        Set<Permission> permissions = user.getRoles().stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .map(WildcardPermission::new)
+                .collect(toSet());
+        return new SimpleAccount(user.getUsername(), user.getPassword(), user.getName(), roles, permissions);
     }
 
 }

@@ -19,7 +19,8 @@ class KhaRealmTest extends Specification {
     def "test Shiro realm"() {
         given: "a user service having only John Doe as an administrator"
         def dao = Mock(UsersDao)
-        dao.findByUsername('john') >> new User("john", "doe", "john@doe.com", "John", "Doe", [Role.ADMINISTRATOR] as Set<Role>, DateTime.now(), DateTime.now())
+        dao.findByUsername('john') >> new User("john", "doe", "john@doe.com", "John", "Doe",
+                [Role.ADMINISTRATOR] as Set<Role>, DateTime.now(), DateTime.now())
         dao.findByUsername(_) >> null
         def service = new UsersServiceImpl(dao)
 
@@ -53,6 +54,8 @@ class KhaRealmTest extends Specification {
         currentUser.principal != null
         currentUser.hasRole(Role.ADMINISTRATOR.name())
         !currentUser.hasRole(Role.ANONYMOUS.name())
+        currentUser.isPermitted("users:create")
+        !currentUser.isPermitted("nothing:create")
 
         when: "logging in as an unknow user"
         token = new UsernamePasswordToken("foo", "bar")

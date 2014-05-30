@@ -34,6 +34,12 @@
             <groupId>com.netflix.rxjava</groupId>
             <artifactId>rxjava-groovy</artifactId>
         </dependency>
+
+        <!-- Security dependencies -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+        </dependency>
         
         <!-- Dagger dependencies -->
         <dependency>

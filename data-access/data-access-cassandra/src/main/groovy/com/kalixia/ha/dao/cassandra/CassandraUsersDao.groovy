@@ -1,6 +1,7 @@
 package com.kalixia.ha.dao.cassandra
 
 import com.kalixia.ha.dao.UsersDao
+import com.kalixia.ha.model.Role
 import com.kalixia.ha.model.User
 import com.netflix.astyanax.MutationBatch
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException
@@ -38,13 +39,15 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
     public void save(User user) throws ConnectionException {
         user.setLastUpdateDate(DateTime.now())
         MutationBatch m = schema.keyspace.prepareMutationBatch()
-        m.withRow(schema.usersCF, user.username)
+        def row = m.withRow(schema.usersCF, user.username)
+        row
                 .putColumn(COL_PASSWORD, user.password)
                 .putColumn(COL_EMAIL, user.email)
                 .putColumn(COL_FIRST_NAME, user.firstName)
                 .putColumn(COL_LAST_NAME, user.lastName)
                 .putColumn(COL_CREATION_DATE, user.creationDate.toDate())
                 .putColumn(COL_LAST_UPDATE_DATE, user.lastUpdateDate.toDate())
+        user.roles.each { role -> row.putColumn(new UserProperty(type: 'role', property: role.name()), role.name()) }
         m.execute()
     }
 
@@ -67,8 +70,9 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
         }
 
         String password, email, firstName, lastName
+        Set<Role> roles = []
         DateTime creationDate, lastUpdateDate
-        result.each { Column<SensorProperty> col ->
+        result.each { Column<UserProperty> col ->
             switch (col.name) {
                 case COL_PASSWORD:
                     password = col.stringValue
@@ -89,9 +93,17 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
                     lastUpdateDate = new DateTime(col.dateValue)
                     break
                 default:
+                    switch (col.name.type) {
+                        case 'role':
+                            roles << Role.valueOf(col.stringValue)
+                            break;
+                        default:
+                            LOGGER.error("Unexpected column {}", col.name);
+                            break;
+                    }
                     break
             }
         }
-        return new User(username, password, email, firstName, lastName, creationDate, lastUpdateDate)
+        return new User(username, password, email, firstName, lastName, roles, creationDate, lastUpdateDate)
     }
 }

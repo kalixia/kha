@@ -1,6 +1,7 @@
 package com.kalixia.ha.dao.lucene;
 
 import com.kalixia.ha.dao.UsersDao;
+import com.kalixia.ha.model.Role;
 import com.kalixia.ha.model.User;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StoredField;
@@ -22,7 +23,10 @@ import rx.exceptions.Exceptions;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Set;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toSet;
 import static org.apache.lucene.document.Field.Store;
 
 /**
@@ -35,6 +39,7 @@ public class LuceneUsersDao implements UsersDao {
     private static final String FIELD_EMAIL = "email";
     private static final String FIELD_FIRST_NAME = "firstName";
     private static final String FIELD_LAST_NAME = "lastName";
+    private static final String FIELD_ROLE = "role";
     private static final String FIELD_CREATION_DATE = "creationDate";
     private static final String FIELD_LAST_UPDATE_DATE = "lastUpdateDate";
     private static final String FIELD_TYPE = "type";
@@ -75,6 +80,7 @@ public class LuceneUsersDao implements UsersDao {
         doc.add(new StringField(FIELD_EMAIL, user.getEmail(), Store.YES));
         doc.add(new StringField(FIELD_FIRST_NAME, user.getFirstName(), Store.YES));
         doc.add(new StringField(FIELD_LAST_NAME, user.getLastName(), Store.YES));
+        user.getRoles().stream().forEach(role -> doc.add(new StringField(FIELD_ROLE, role.name(), Store.YES)));
         doc.add(new StoredField(FIELD_CREATION_DATE, user.getCreationDate().toString()));
         doc.add(new StoredField(FIELD_LAST_UPDATE_DATE, DateTime.now().toString()));
         doc.add(new StringField(FIELD_TYPE, "user", Store.NO));
@@ -119,9 +125,12 @@ public class LuceneUsersDao implements UsersDao {
         String email = doc.get(FIELD_EMAIL);
         String firstName = doc.get(FIELD_FIRST_NAME);
         String lastName = doc.get(FIELD_LAST_NAME);
+        Set<Role> roles = Stream.of(doc.getFields(FIELD_ROLE))
+                .map(field -> Role.valueOf(field.stringValue()))
+                .collect(toSet());
         DateTime creationDate = DateTime.parse(doc.get(FIELD_CREATION_DATE));
         DateTime lastUpdateDate = DateTime.parse(doc.get(FIELD_LAST_UPDATE_DATE));
-        return new User(username, password, email, firstName, lastName, creationDate, lastUpdateDate);
+        return new User(username, password, email, firstName, lastName, roles, creationDate, lastUpdateDate);
     }
 
     private IndexSearcher buildIndexSearcher() throws IOException {

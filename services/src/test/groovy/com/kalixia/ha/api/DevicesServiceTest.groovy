@@ -1,6 +1,7 @@
 package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.DevicesDao
+import com.kalixia.ha.model.Role
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.devices.RGBLamp
@@ -16,7 +17,7 @@ class DevicesServiceTest extends Specification {
         given: "a user"
         def dao = Mock(DevicesDao)
         def service = new DevicesServiceImpl(dao)
-        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe')
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>)
         dao.findAllDevicesOfUser(user.username) >> rx.Observable.create({ rx.Observer<Device> observer ->
             observer.onCompleted()
         })
@@ -33,7 +34,7 @@ class DevicesServiceTest extends Specification {
         given: "a user"
         def dao = Mock(DevicesDao)
         def service = new DevicesServiceImpl(dao)
-        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe')
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>)
         def device1 = new RGBLamp(UUID.randomUUID(), 'lamp1', user)
         def device2 = new RGBLamp(UUID.randomUUID(), 'lamp2', user)
         dao.findById(device1.id) >> device1
@@ -77,7 +78,7 @@ class DevicesServiceTest extends Specification {
         given: "a user"
         def dao = Mock(DevicesDao)
         def service = new DevicesServiceImpl(dao)
-        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe')
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>)
         def device1 = new RGBLamp(UUID.randomUUID(), 'lamp1', user)
         def device2 = new RGBLamp(UUID.randomUUID(), 'lamp2', user)
 

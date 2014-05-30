@@ -3,8 +3,13 @@ package com.kalixia.ha.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 
+import java.util.Collections;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class User extends AbstractAuditable {
@@ -13,6 +18,7 @@ public class User extends AbstractAuditable {
     private String email;
     private String firstName;
     private String lastName;
+    private Set<Role> roles;
 
     @JsonCreator
     public User(@JsonProperty("username") String username) {
@@ -21,14 +27,14 @@ public class User extends AbstractAuditable {
     }
 
     public User(String username, String password, DateTime creationDate, DateTime lastUpdateDate) {
-        this(username, password, null, null, null, creationDate, lastUpdateDate);
+        this(username, password, null, null, null, Collections.singleton(Role.ANONYMOUS), creationDate, lastUpdateDate);
     }
 
-    public User(String username, String password, String email, String firstName, String lastName) {
-        this(username, password, email, firstName, lastName, new DateTime(), new DateTime());
+    public User(String username, String password, String email, String firstName, String lastName, Set<Role> roles) {
+        this(username, password, email, firstName, lastName, roles, new DateTime(), new DateTime());
     }
 
-    public User(String username, String password, String email, String firstName, String lastName,
+    public User(String username, String password, String email, String firstName, String lastName, Set<Role> roles,
                 DateTime creationDate, DateTime lastUpdateDate) {
         super(creationDate, lastUpdateDate);
         checkNotNull(username, "The username can't be null");
@@ -37,11 +43,14 @@ public class User extends AbstractAuditable {
         checkNotNull(email, "The email can't be null");
         checkNotNull(firstName, "The first name can't be null");
         checkNotNull(lastName, "The last name can't be null");
+        checkNotNull(roles, "The user roles can't be null");
+        checkArgument(roles.size() > 0, "The user must have at least one role");
         this.username = username;
         this.password = password;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.roles = roles;
     }
 
     public String getUsername() {
@@ -80,16 +89,30 @@ public class User extends AbstractAuditable {
         this.lastName = lastName;
     }
 
+    public String getName() {
+        return getFirstName() + ' ' + getLastName();
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof User)) return false;
 
         User user = (User) o;
 
         if (email != null ? !email.equals(user.email) : user.email != null) return false;
         if (firstName != null ? !firstName.equals(user.firstName) : user.firstName != null) return false;
         if (lastName != null ? !lastName.equals(user.lastName) : user.lastName != null) return false;
+        if (!password.equals(user.password)) return false;
+        if (!roles.equals(user.roles)) return false;
         if (!username.equals(user.username)) return false;
 
         return true;
@@ -111,6 +134,7 @@ public class User extends AbstractAuditable {
                 .add("email", email)
                 .add("firstName", firstName)
                 .add("lastName", lastName)
+                .add("roles", roles)
                 .toString();
     }
 }

@@ -1,5 +1,6 @@
 package com.kalixia.ha.dao
 
+import com.kalixia.ha.model.Role
 import com.kalixia.ha.model.User
 import spock.lang.Specification
 
@@ -9,7 +10,7 @@ abstract class AbstractUsersDaoTest extends Specification {
 
     def "test storing and retrieving user"() {
         given:
-        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe')
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.ADMINISTRATOR] as Set<Role>)
 
         when:
         usersDao.save(user)

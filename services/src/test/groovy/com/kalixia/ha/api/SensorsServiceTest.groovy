@@ -1,6 +1,7 @@
 package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.SensorsDao
+import com.kalixia.ha.model.Role
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.RGBLamp
 import com.kalixia.ha.model.sensors.DataPoint
@@ -19,7 +20,7 @@ class SensorsServiceTest extends Specification {
         given: "a user who has one device with one sensor"
         def dao = Mock(SensorsDao)
         def service = new SensorsServiceImpl(dao)
-        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe')
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>)
         def deviceAndSensor = new RGBLamp(UUID.randomUUID(), 'my lamp', user)
         dao.getLastValue(deviceAndSensor.id) >> new DataPoint<LuminousFlux>(Measure.valueOf(3, LuminousFlux.UNIT))
 

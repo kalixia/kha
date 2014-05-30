@@ -1,6 +1,7 @@
 package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.UsersDao
+import com.kalixia.ha.model.Role
 import com.kalixia.ha.model.User
 import spock.lang.Specification
 
@@ -36,7 +37,7 @@ class UsersServiceTest extends Specification {
         given:
         def dao = Mock(UsersDao)
         def service = new UsersServiceImpl(dao)
-        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe')
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>)
         dao.findByUsername(user.username) >> user
 
         when: "creating a user"

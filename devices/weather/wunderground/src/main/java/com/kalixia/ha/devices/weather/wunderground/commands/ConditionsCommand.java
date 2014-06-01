@@ -23,6 +23,7 @@ import javax.measure.unit.SI;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.util.Locale;
 
 import static javax.measure.unit.SI.PASCAL;
 
@@ -54,6 +55,11 @@ public class ConditionsCommand extends HystrixCommand<WeatherConditions> {
     @Override
     protected WeatherConditions run() throws Exception {
         String requestURL = "";
+        String requestPrefix;
+        if (request.getLocale() != null)
+            requestPrefix = String.format("/api/%s/conditions/lang:%s/q", apiKey, request.getLocale().getCountry());
+        else
+            requestPrefix = String.format("/api/%s/conditions/q", apiKey);
 
         // build request URL depending on the location type chosen
         switch (request.getLocationType()) {
@@ -61,7 +67,7 @@ public class ConditionsCommand extends HystrixCommand<WeatherConditions> {
                 throw new IllegalArgumentException("COORDINATES is not a valid LocationType for Conditions requests");
             case ZIPCODE:
                 String zipCode = request.getZipCode();
-                requestURL = String.format("/api/%s/conditions/q/%s.json", apiKey, zipCode);
+                requestURL = String.format("%s/%s.json", requestPrefix, zipCode);
                 logger.info("Fetching Wunderground conditions for '{}'...", zipCode);
                 break;
             case AUTO_IP:
@@ -69,13 +75,13 @@ public class ConditionsCommand extends HystrixCommand<WeatherConditions> {
             case CITY_STATE:
                 String state = request.getState();
                 String city = URLEncoder.encode(request.getCity(), "UTF-8");
-                requestURL = String.format("/api/%s/conditions/q/%s/%s.json", apiKey, state, city);
+                requestURL = String.format("%s/%s/%s.json", requestPrefix, state, city);
                 logger.info("Fetching Wunderground conditions for '{}', '{}'...", city, state);
                 break;
             case CITY_COUNTRY:
                 String country = URLEncoder.encode(request.getCountry(), "UTF-8");
                 city = URLEncoder.encode(request.getCity(), "UTF-8");
-                requestURL = String.format("/api/%s/conditions/q/%s/%s.json", apiKey, country, city);
+                requestURL = String.format("%s/%s/%s.json", requestPrefix, country, city);
                 logger.info("Fetching Wunderground conditions for '{}', '{}'...", city, country);
                 break;
         }
@@ -208,6 +214,7 @@ public class ConditionsCommand extends HystrixCommand<WeatherConditions> {
             JsonNode windGust = current.get("wind_gust_kph");
             JsonNode windDirection = current.get("wind_degrees");
             JsonNode icon = current.get("icon");
+            JsonNode weather = current.get("weather");
             if (temperature != null)
                 conditions.setTemperature(Measure.valueOf(temperature.asDouble(), SI.CELSIUS));
             if (feelsLikeTemperature != null)
@@ -231,6 +238,8 @@ public class ConditionsCommand extends HystrixCommand<WeatherConditions> {
                 conditions.setWindDirection(Measure.valueOf(windDirection.asDouble(), NonSI.DEGREE_ANGLE));
             if (icon != null)
                 conditions.setIcon(getFromIconString(icon.asText()));
+            if (weather != null)
+                conditions.setDescription(weather.asText());
             return conditions;
         } catch (IOException e) {
             throw Exceptions.propagate(e);

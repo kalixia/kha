@@ -1,5 +1,7 @@
 package com.kalixia.ha.devices.weather;
 
+import java.util.Locale;
+
 public class WeatherRequest {
     private LocationType locationType;
     private Float[] coordinates;
@@ -7,6 +9,7 @@ public class WeatherRequest {
     private String city;
     private String state;
     private String country;
+    private Locale locale;
 
     public WeatherRequest forCoordinates(Float coordinateX, Float coordinateY) {
         this.coordinates = new Float[]{coordinateX, coordinateY};
@@ -39,6 +42,11 @@ public class WeatherRequest {
         return this;
     }
 
+    public WeatherRequest withLocale(Locale locale) {
+        this.locale = locale;
+        return this;
+    }
+
     public LocationType getLocationType() {
         return locationType;
     }
@@ -61,5 +69,9 @@ public class WeatherRequest {
 
     public String getCountry() {
         return country;
+    }
+
+    public Locale getLocale() {
+        return locale;
     }
 }

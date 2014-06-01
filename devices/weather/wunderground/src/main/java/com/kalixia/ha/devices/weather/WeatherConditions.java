@@ -1,7 +1,5 @@
 package com.kalixia.ha.devices.weather;
 
-import org.joda.time.DateTime;
-
 import javax.measure.Measurable;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
@@ -19,6 +17,7 @@ public class WeatherConditions {
     private Measurable<Velocity> windGust;
     private Measurable<Angle> windDirection;
     private WeatherIcon icon;
+    private String description;
 
     public Measurable<Temperature> getTemperature() {
         return temperature;
@@ -92,6 +91,14 @@ public class WeatherConditions {
         this.icon = icon;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WeatherConditions{");
@@ -104,6 +111,7 @@ public class WeatherConditions {
         sb.append(", windGust=").append(windGust);
         sb.append(", windDirection=").append(windDirection);
         sb.append(", icon=").append(icon);
+        sb.append(", description=").append(description);
         sb.append('}');
         return sb.toString();
     }

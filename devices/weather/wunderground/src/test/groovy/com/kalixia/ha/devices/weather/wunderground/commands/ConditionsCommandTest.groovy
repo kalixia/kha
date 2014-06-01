@@ -6,6 +6,7 @@ import spock.lang.Unroll
 
 import javax.measure.unit.SI
 
+import static java.util.Locale.FRANCE
 import static junit.framework.Assert.*
 
 class ConditionsCommandTest extends AbstractWundergroundCommandTest {
@@ -18,6 +19,7 @@ class ConditionsCommandTest extends AbstractWundergroundCommandTest {
         where:
         request << [
                 new WeatherRequest().forCityInCountry("Paris", "France"),
+                new WeatherRequest().forCityInCountry("Paris", "France").withLocale(FRANCE),
                 new WeatherRequest().forCityInState("New York", "NY"),
                 new WeatherRequest().forZipCode("10001")
         ]

@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.stream.ChunkedWriteHandler;
 
 import javax.inject.Inject;
 
@@ -49,10 +50,11 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
         ChannelPipeline pipeline = ch.pipeline();
 
         pipeline.addLast("http-request-decoder", new HttpRequestDecoder());
-        pipeline.addLast("deflater", new HttpContentDecompressor());
-        pipeline.addLast("http-object-aggregator", new HttpObjectAggregator(1048576));
         pipeline.addLast("http-response-encoder", new HttpResponseEncoder());
-        pipeline.addLast("inflater", new HttpContentCompressor());
+        pipeline.addLast("http-object-aggregator", new HttpObjectAggregator(1048576));
+        pipeline.addLast("chunked-writer", new ChunkedWriteHandler());
+//        pipeline.addLast("deflater", new HttpContentDecompressor());
+//        pipeline.addLast("inflater", new HttpContentCompressor());
 
         // Alters the pipeline depending on either REST or WebSockets requests
         pipeline.addLast("api-protocol-switcher", apiProtocolSwitcher);

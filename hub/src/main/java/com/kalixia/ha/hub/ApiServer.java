@@ -6,10 +6,13 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.oio.OioServerSocketChannel;
+import org.apache.lucene.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 public class ApiServer {
@@ -27,7 +30,8 @@ public class ApiServer {
         apiBootstrap = new ServerBootstrap();
         try {
             // the hub will only have a few connections, so OIO is likely to be faster than NIO in this case!
-            EventLoopGroup commonGroup = new OioEventLoopGroup();
+            ThreadFactory threadFactory = new NamedThreadFactory("kha-rest-api");
+            EventLoopGroup commonGroup = new OioEventLoopGroup(0, threadFactory);
             apiBootstrap.group(commonGroup, commonGroup)
                     .channel(OioServerSocketChannel.class)
                     .localAddress(port)

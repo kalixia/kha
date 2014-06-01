@@ -5,6 +5,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.oio.OioServerSocketChannel;
@@ -12,10 +13,12 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import org.apache.lucene.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 public class WebAppServer {
@@ -39,11 +42,11 @@ public class WebAppServer {
 
     public void start() {
         apiBootstrap = new ServerBootstrap();
-        parentGroup = new OioEventLoopGroup();
-        childGroup = new OioEventLoopGroup();
+        ThreadFactory threadFactory = new NamedThreadFactory("kha-webapp");
+        EventLoopGroup commonGroup = new OioEventLoopGroup(0, threadFactory);
         try {
             // the hub will only have a few connections, so OIO is likely to be faster than NIO in this case!
-            apiBootstrap.group(parentGroup, childGroup)
+            apiBootstrap.group(commonGroup, commonGroup)
                     .channel(OioServerSocketChannel.class)
                     .localAddress(port)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
@@ -71,9 +74,12 @@ public class WebAppServer {
     }
 
     public void stop() throws InterruptedException {
-        parentGroup.shutdownGracefully();
-        childGroup.shutdownGracefully();
-        parentGroup.awaitTermination(1, TimeUnit.MINUTES);
-        childGroup.awaitTermination(1, TimeUnit.MINUTES);
+        EventLoopGroup bossGroup = apiBootstrap.group();
+        EventLoopGroup workersGroup = apiBootstrap.childGroup();
+
+        bossGroup.shutdownGracefully();
+        workersGroup.shutdownGracefully();
+        bossGroup.awaitTermination(1, TimeUnit.MINUTES);
+        workersGroup.awaitTermination(1, TimeUnit.MINUTES);
     }
 }

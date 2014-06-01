@@ -10,7 +10,7 @@ abstract class AbstractUsersDaoTest extends Specification {
 
     def "test storing and retrieving user"() {
         given:
-        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.ADMINISTRATOR] as Set<Role>)
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.ADMINISTRATOR, Role.USER] as Set<Role>)
 
         when:
         usersDao.save(user)

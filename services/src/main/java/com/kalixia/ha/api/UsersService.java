@@ -7,7 +7,8 @@ import rx.Observable;
 
 public interface UsersService extends ConfigurableService<UsersServiceConfiguration> {
     User findByUsername(String username);
+    User createUser(User user);
     void saveUser(User user);
     Observable<User> findUsers();
-    Long getUsersCount();
+    long getUsersCount();
 }

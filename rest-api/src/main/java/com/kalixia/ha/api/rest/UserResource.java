@@ -46,7 +46,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUser(@Valid User user) throws URISyntaxException {
         if (service.findByUsername(user.getUsername()) == null) {
-            service.saveUser(user);
+            service.createUser(user);
             URI userURI = new URI(UriTemplateUtils.createURI("/{username}", user.getUsername()));
             return Response
                     .created(userURI).build();

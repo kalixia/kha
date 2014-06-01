@@ -1,11 +1,4 @@
-
-<!-- content displayed if the Hub has already been configured properly -->
-<div ng-hide="!hasUser">
-    <a href="#login">Login</a>
-</div>
-
-<!-- content displayed if this is a fresh installation of the Hub -->
-<div ng-hide="hasUser" class="container">
+<div class="container">
 
     <div class="row bs-wizard" style="border-bottom:0;">
         <div ng-repeat="step in steps"

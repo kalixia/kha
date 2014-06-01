@@ -13,6 +13,7 @@
         <module>model</module>
         <module>data-access</module>
         <module>services</module>
+        <module>security</module>
         <module>rest-api</module>
         <module>hub</module>
         <module>cloud-platform</module>
@@ -22,10 +23,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <grapi.version>0.4.2</grapi.version>
+        <grapi.version>0.4.2-SNAPSHOT</grapi.version>
         <hystrix.version>1.4.0-RC4</hystrix.version>
         <rxjava.version>0.18.3</rxjava.version>
         <rxnetty.version>0.3.5</rxnetty.version>
+        <netty.version>4.0.19.Final</netty.version>
         <astyanax.version>1.56.48</astyanax.version>
         <metrics.version>3.0.1</metrics.version>
         <jackson.version>2.2.2</jackson.version>
@@ -79,6 +81,12 @@
                 <groupId>com.netflix.rxnetty</groupId>
                 <artifactId>rx-netty</artifactId>
                 <version>${rxnetty.version}</version>
+            </dependency>
+            <!-- Netty dependencies -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http</artifactId>
+                <version>${netty.version}</version>
             </dependency>
 
             <!-- Hystrix dependencies -->
@@ -411,8 +419,12 @@
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco.version}</version>
                     <configuration>
+                        <!-- Dagger configuration -->
                         <excludes>
+                            <exclude>**/*Module</exclude>
+                            <exclude>**/*Module*</exclude>
                             <exclude>**/*$ModuleAdapter*</exclude>
+                            <exclude>**/*$InjectAdapter*</exclude>
                         </excludes>
                     </configuration>
                     <executions>

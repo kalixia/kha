@@ -1,11 +1,14 @@
 'use strict';
 
-angular.module('hub.welcome.controllers', ['hub.users.services'])
-    .controller('WelcomeController', ['$scope', 'UserService', '$log', WelcomeController]);
+angular.module('hub.welcome.controllers', ['hub.welcome.services', 'hub.security.services'])
+    .controller('WelcomeController', ['$scope', 'WelcomeService', 'SecurityService', '$location', '$log', WelcomeController]);
 
-function WelcomeController($scope, UserService, $log) {
-    $scope.user = {};
-    $scope.hasUser = UserService.installDone();
+function WelcomeController($scope, WelcomeService, SecurityService, $location, $log) {
+    $scope.user = { roles: [ 'ADMINISTRATOR']};
+    WelcomeService.installDone().then(function(done) {
+        if (done == true)
+            $location.path('login');
+    });
     $scope.steps = [
         {
             number: 1,
@@ -40,17 +43,17 @@ function WelcomeController($scope, UserService, $log) {
     };
 
     $scope.createUser = function() {
-        $scope.currentStepScope.create().then(function() { $scope.nextStep() }, function(error) {
+        var user = $scope.currentStepScope.user;
+        $log.debug(user);
+        WelcomeService.installFor(user).then(function (createdUser) {
+            $scope.user = createdUser;
+            $scope.nextStep()
+        }, function (error) {
             $log.error(error);
-            switch (error.status) {
-                case 409:
-                    $scope.errorMessage = "User already exists!";
-                    break;
-            }
         });
     };
     $scope.createDevice = function() {
-        $scope.currentStepScope.create().then(function() { $scope.nextStep() }, function(error) {
+        $scope.currentStepScope.create(SecurityService.getCurrentUser()).then(function() { $scope.nextStep() }, function(error) {
             $log.error(error);
             switch (error.status) {
                 case 400:

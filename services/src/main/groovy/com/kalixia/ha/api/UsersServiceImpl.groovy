@@ -3,18 +3,35 @@ package com.kalixia.ha.api
 import com.kalixia.ha.api.configuration.UsersServiceConfiguration
 import com.kalixia.ha.dao.UsersDao
 import com.kalixia.ha.model.User
+import com.kalixia.ha.model.security.OAuthTokens
+import org.apache.shiro.authc.credential.PasswordService
+
+import static com.google.common.base.Preconditions.checkNotNull
 
 class UsersServiceImpl extends Service<UsersServiceConfiguration> implements UsersService {
     final UsersDao dao
+    final PasswordService passwordService
 
-    UsersServiceImpl(UsersDao dao) {
-        this.dao = dao;
+    UsersServiceImpl(UsersDao dao, PasswordService passwordService) {
+        checkNotNull(dao, "Users DAO can't be null")
+        checkNotNull(passwordService, "Password Service can't be null")
+        this.dao = dao
+        this.passwordService = passwordService
     }
 
     @Override
     User findByUsername(String username) {
         LOGGER.info("Searching for user '{}'...", username)
         return dao.findByUsername(username)
+    }
+
+    @Override
+    User createUser(User user) {
+        String hash = passwordService.encryptPassword(user.getPassword())
+        user.setPassword(hash)
+        user.addOAuthAccessToken(new OAuthTokens())
+        saveUser(user)
+        return user
     }
 
     @Override
@@ -28,7 +45,7 @@ class UsersServiceImpl extends Service<UsersServiceConfiguration> implements Use
     }
 
     @Override
-    Long getUsersCount() {
+    long getUsersCount() {
         return dao.getUsersCount()
     }
 

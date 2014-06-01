@@ -6,7 +6,8 @@ import rx.Observable;
 
 public interface UsersDao {
     User findByUsername(String username) throws Exception;
+    User findByOAuthAccessToken(String token) throws Exception;
     void save(User user) throws Exception;
     Observable<User> findUsers() throws Exception;
-    Long getUsersCount() throws Exception;
+    long getUsersCount() throws Exception;
 }

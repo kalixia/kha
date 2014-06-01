@@ -7,6 +7,9 @@ import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.devices.RGBLamp;
+import com.kalixia.ha.model.security.Permissions;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -38,6 +41,7 @@ public class DeviceResource {
     UsersService usersService;
 
     @GET
+    @RequiresPermissions(Permissions.DEVICES_VIEW)
     public @NotNull Response findAllDevicesOfUser(@PathParam("username") String username) {
         List<? extends Device> devices = devicesService.findAllDevicesOfUser(username)
                 .toList().toBlockingObservable().single();
@@ -50,6 +54,7 @@ public class DeviceResource {
 
     @GET
     @Path("{name}")
+    @RequiresPermissions(Permissions.DEVICES_VIEW)
     public @NotNull Response findDeviceByName(@PathParam("username") String username, @PathParam("name") String name) {
         Device device = devicesService.findDeviceByName(username, name);
         if (device == null)
@@ -65,6 +70,7 @@ public class DeviceResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @RequiresPermissions(Permissions.DEVICES_CREATE)
     public Response createDevice(@PathParam("username") String username, Map json) throws URISyntaxException {
         String name = (String) json.get("name");
         String type = (String) json.get("type");
@@ -102,6 +108,7 @@ public class DeviceResource {
     @PUT
     @Path("{name}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @RequiresPermissions(Permissions.DEVICES_CREATE)
     public Response updateDevice(@PathParam("username") String username, @PathParam("name") String name, Map json)
             throws URISyntaxException {
         String newName = (String) json.get("name");

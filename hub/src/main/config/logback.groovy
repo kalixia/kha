@@ -27,7 +27,7 @@ appender("FILE", RollingFileAppender) {
 
 logger "com.kalixia.ha", INFO
 logger "com.kalixia.grapi", DEBUG
-logger "org.apache.shiro", INFO
+logger "org.apache.shiro", DEBUG
 logger "io.netty", DEBUG
 logger "org.hibernate.validator", WARN
 

@@ -3,14 +3,17 @@ package com.kalixia.ha.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
+import com.kalixia.ha.model.security.OAuthTokens;
+import com.kalixia.ha.model.security.Role;
 import org.joda.time.DateTime;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Collections.emptySet;
 
 public class User extends AbstractAuditable {
     private final String username;
@@ -19,22 +22,17 @@ public class User extends AbstractAuditable {
     private String firstName;
     private String lastName;
     private Set<Role> roles;
+    private Set<OAuthTokens> oauthTokens = new HashSet<>();
 
     @JsonCreator
-    public User(@JsonProperty("username") String username) {
-        super();
-        this.username = username;
+    public User(@JsonProperty("username") String username, @JsonProperty("password") String password,
+                @JsonProperty("email") String email, @JsonProperty("firstName") String firstName, @JsonProperty("lastName") String lastName,
+                @JsonProperty("roles") Set<Role> roles, @JsonProperty("oauthTokens") Set<OAuthTokens> oauthTokens) {
+        this(username, password, email, firstName, lastName, roles, oauthTokens, new DateTime(), new DateTime());
     }
 
-    public User(String username, String password, DateTime creationDate, DateTime lastUpdateDate) {
-        this(username, password, null, null, null, Collections.singleton(Role.ANONYMOUS), creationDate, lastUpdateDate);
-    }
-
-    public User(String username, String password, String email, String firstName, String lastName, Set<Role> roles) {
-        this(username, password, email, firstName, lastName, roles, new DateTime(), new DateTime());
-    }
-
-    public User(String username, String password, String email, String firstName, String lastName, Set<Role> roles,
+    public User(String username, String password, String email, String firstName, String lastName,
+                Set<Role> roles, Set<OAuthTokens> oauthTokens,
                 DateTime creationDate, DateTime lastUpdateDate) {
         super(creationDate, lastUpdateDate);
         checkNotNull(username, "The username can't be null");
@@ -51,6 +49,7 @@ public class User extends AbstractAuditable {
         this.firstName = firstName;
         this.lastName = lastName;
         this.roles = roles;
+        this.oauthTokens = oauthTokens;
     }
 
     public String getUsername() {
@@ -99,6 +98,14 @@ public class User extends AbstractAuditable {
 
     public void addRole(Role role) {
         roles.add(role);
+    }
+
+    public Set<OAuthTokens> getOauthTokens() {
+        return oauthTokens;
+    }
+
+    public void addOAuthAccessToken(OAuthTokens tokens) {
+        oauthTokens.add(tokens);
     }
 
     @Override

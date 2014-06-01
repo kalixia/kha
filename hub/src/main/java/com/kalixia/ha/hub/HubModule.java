@@ -7,14 +7,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+import com.kalixia.ha.api.InstallationService;
 import com.kalixia.ha.api.ServicesModule;
+import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.api.rest.GeneratedJaxRsDaggerModule;
 import com.kalixia.ha.api.rest.json.JScienceModule;
+import com.kalixia.ha.api.security.SecurityModule;
 import com.kalixia.ha.dao.lucene.LuceneConfiguration;
 import com.kalixia.ha.dao.lucene.LuceneModule;
 import com.kalixia.ha.model.configuration.ConfigurationBuilder;
 import dagger.Module;
 import dagger.Provides;
+import org.apache.shiro.mgt.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +30,16 @@ import java.io.IOException;
         includes = {
                 GeneratedJaxRsDaggerModule.class,
                 ServicesModule.class,
+                SecurityModule.class,
                 LuceneModule.class
         }
 )
 public class HubModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(HubModule.class);
 
-    @Provides @Singleton Hub provideHub(ApiServer apiServer, WebAppServer webAppServer, JmxReporter reporter) {
-        return new HubImpl(apiServer, webAppServer, reporter);
+    @Provides @Singleton Hub provideHub(ApiServer apiServer, WebAppServer webAppServer, UsersService usersService,
+                                        SecurityManager securityManager, JmxReporter reporter) {
+        return new HubImpl(apiServer, webAppServer, usersService, securityManager, reporter);
     }
 
     @Provides @Singleton HubConfiguration provideHubConfiguration() {
@@ -52,6 +58,10 @@ public class HubModule {
 
     @Provides @Singleton WebAppServer provideWebAppServer() {
         return new WebAppServer(8080);
+    }
+
+    @Provides @Singleton InstallationService provideInstallationService(UsersService usersService) {
+        return new HubInstallationService(usersService);
     }
 
     @Provides @Singleton JmxReporter provideJmxReporter(MetricRegistry registry) {

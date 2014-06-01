@@ -1,6 +1,6 @@
 package com.kalixia.ha.api.security;
 
-import com.kalixia.ha.api.UsersService;
+import com.kalixia.ha.dao.UsersDao;
 import com.kalixia.ha.model.User;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -14,16 +14,19 @@ import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
-public class KhaRealm extends AuthorizingRealm {
-    private final UsersService usersService;
+class KhaRealm extends AuthorizingRealm {
+    private final UsersDao usersDao;
+    private static final Logger LOGGER = LoggerFactory.getLogger(KhaRealm.class);
 
-    public KhaRealm(UsersService usersService) {
-        this.usersService = usersService;
+    public KhaRealm(UsersDao usersDao) {
+        this.usersDao = usersDao;
     }
 
     @Override
@@ -52,7 +55,12 @@ public class KhaRealm extends AuthorizingRealm {
     }
 
     private SimpleAccount getAccountFromUsername(String username) {
-        User user = usersService.findByUsername(username);
+        User user = null;
+        try {
+            user = usersDao.findByUsername(username);
+        } catch (Exception e) {
+            LOGGER.error("Can't find user '{}'", e);
+        }
         if (user == null)
             return null;
 

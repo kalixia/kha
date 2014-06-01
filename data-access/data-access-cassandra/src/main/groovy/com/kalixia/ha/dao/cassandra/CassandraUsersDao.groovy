@@ -1,7 +1,8 @@
 package com.kalixia.ha.dao.cassandra
 
 import com.kalixia.ha.dao.UsersDao
-import com.kalixia.ha.model.Role
+import com.kalixia.ha.model.security.OAuthTokens
+import com.kalixia.ha.model.security.Role
 import com.kalixia.ha.model.User
 import com.netflix.astyanax.MutationBatch
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException
@@ -36,6 +37,11 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
     }
 
     @Override
+    User findByOAuthAccessToken(String token) throws Exception {
+        return null
+    }
+
+    @Override
     public void save(User user) throws ConnectionException {
         user.setLastUpdateDate(DateTime.now())
         MutationBatch m = schema.keyspace.prepareMutationBatch()
@@ -47,7 +53,13 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
                 .putColumn(COL_LAST_NAME, user.lastName)
                 .putColumn(COL_CREATION_DATE, user.creationDate.toDate())
                 .putColumn(COL_LAST_UPDATE_DATE, user.lastUpdateDate.toDate())
-        user.roles.each { role -> row.putColumn(new UserProperty(type: 'role', property: role.name()), role.name()) }
+        user.roles.each { role ->
+            row.putColumn(new UserProperty(type: 'role', property: role.name()), role.name())
+        }
+        user.oauthTokens.each { tokens ->
+            row.putColumn(new UserProperty(type: 'oauth_tokens',
+                    property: tokens.accessToken), tokens.refreshToken)
+        }
         m.execute()
     }
 
@@ -58,7 +70,7 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
     }
 
     @Override
-    Long getUsersCount() throws Exception {
+    long getUsersCount() throws Exception {
         // TODO: implement this!
         throw new UnsupportedOperationException()
     }
@@ -71,6 +83,7 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
 
         String password, email, firstName, lastName
         Set<Role> roles = []
+        Set<OAuthTokens> oauthTokens = []
         DateTime creationDate, lastUpdateDate
         result.each { Column<UserProperty> col ->
             switch (col.name) {
@@ -97,13 +110,17 @@ public class CassandraUsersDao extends AbstractCassandraDao<User, String, UserPr
                         case 'role':
                             roles << Role.valueOf(col.stringValue)
                             break;
+                        case 'oauth_tokens':
+                            oauthTokens << new OAuthTokens(col.name.property, col.stringValue)
                         default:
-                            LOGGER.error("Unexpected column {}", col.name);
+                            LOGGER.error("Unexpected column {}", col.name.type)
                             break;
                     }
                     break
             }
         }
-        return new User(username, password, email, firstName, lastName, roles, creationDate, lastUpdateDate)
+        return new User(username, password, email, firstName, lastName,
+                roles, oauthTokens,
+                creationDate, lastUpdateDate)
     }
 }

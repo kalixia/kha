@@ -55,6 +55,7 @@
                     <compilerArgs>
                         <compilerArg>-Adagger=true</compilerArg>
                         <compilerArg>-Ametrics=true</compilerArg>
+                        <compilerArg>-Ashiro=true</compilerArg>
                         <!--<compilerArg>-Arxjava=true</compilerArg>-->
                     </compilerArgs>
                 </configuration>

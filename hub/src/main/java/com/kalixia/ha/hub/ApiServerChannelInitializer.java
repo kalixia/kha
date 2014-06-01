@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.kalixia.grapi.codecs.ApiProtocolSwitcher;
 import com.kalixia.grapi.codecs.json.ByteBufSerializer;
 import com.kalixia.grapi.codecs.rest.RESTCodec;
+import com.kalixia.grapi.codecs.shiro.ShiroHandler;
 import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
@@ -19,30 +20,28 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import org.apache.shiro.mgt.SecurityManager;
 
 import javax.inject.Inject;
 
 public class ApiServerChannelInitializer extends ChannelInitializer<SocketChannel> {
     private final ChannelHandler apiProtocolSwitcher;
-//    private final ObservableEncoder rxjavaHandler;
+    private final ShiroHandler shiroHandler;
     private final GeneratedJaxRsModuleHandler jaxRsHandlers;
-//    private final EventExecutorGroup rxJavaGroup;
     private static final ChannelHandler debugger = new LoggingHandler(LogLevel.TRACE);
     private static final ChannelHandler apiRequestLogger = new LoggingHandler(RESTCodec.class, LogLevel.DEBUG);
 
     @Inject
     public ApiServerChannelInitializer(ObjectMapper objectMapper,
                                        ApiProtocolSwitcher apiProtocolSwitcher,
-//                                       ObservableEncoder rxjavaHandler,
+                                       SecurityManager securityManager,
                                        GeneratedJaxRsModuleHandler jaxRsModuleHandler) {
         this.apiProtocolSwitcher = apiProtocolSwitcher;
-//        this.rxjavaHandler = rxjavaHandler;
         this.jaxRsHandlers =  jaxRsModuleHandler;
+        this.shiroHandler = new ShiroHandler(securityManager);
         SimpleModule nettyModule = new SimpleModule("Netty", PackageVersion.VERSION);
         nettyModule.addSerializer(new ByteBufSerializer());
         objectMapper.registerModule(nettyModule);
-        // TODO: allow customization of the thread pool!
-//        rxJavaGroup = new DefaultEventExecutorGroup(4, new DefaultThreadFactory("rxjava"));
     }
 
     @Override
@@ -53,8 +52,9 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
         pipeline.addLast("http-response-encoder", new HttpResponseEncoder());
         pipeline.addLast("http-object-aggregator", new HttpObjectAggregator(1048576));
         pipeline.addLast("chunked-writer", new ChunkedWriteHandler());
-//        pipeline.addLast("deflater", new HttpContentDecompressor());
-//        pipeline.addLast("inflater", new HttpContentCompressor());
+        pipeline.addLast("deflater", new HttpContentDecompressor());
+        pipeline.addLast("inflater", new HttpContentCompressor());
+        pipeline.addLast("shiro", shiroHandler);
 
         // Alters the pipeline depending on either REST or WebSockets requests
         pipeline.addLast("api-protocol-switcher", apiProtocolSwitcher);
@@ -62,8 +62,6 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
 
         // Logging handlers for API requests
         pipeline.addLast("api-request-logger", apiRequestLogger);
-
-//        pipeline.addLast(rxJavaGroup, "rxjava-handler", rxjavaHandler);
 
         // JAX-RS handlers
         pipeline.addLast("jax-rs-handler", jaxRsHandlers);

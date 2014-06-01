@@ -1,9 +1,12 @@
 package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.UsersDao
-import com.kalixia.ha.model.Role
 import com.kalixia.ha.model.User
+import com.kalixia.ha.model.security.Role
+import org.apache.shiro.authc.credential.PasswordService
 import spock.lang.Specification
+
+import static com.google.common.collect.Sets.newHashSet
 
 class UsersServiceTest extends Specification {
 
@@ -14,7 +17,8 @@ class UsersServiceTest extends Specification {
     def "test service configuration"() {
         given:
         def dao = Mock(UsersDao)
-        def service = new UsersServiceImpl(dao)
+        def passwordService = Mock(PasswordService)
+        def service = new UsersServiceImpl(dao, passwordService)
 
         when:
         service.init()
@@ -36,15 +40,25 @@ class UsersServiceTest extends Specification {
     def "test creating a user"() {
         given:
         def dao = Mock(UsersDao)
-        def service = new UsersServiceImpl(dao)
-        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>)
+        def passwordService = Mock(PasswordService)
+        def service = new UsersServiceImpl(dao, passwordService)
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, newHashSet())
         dao.findByUsername(user.username) >> user
 
         when: "creating a user"
         service.init()
-        service.saveUser(user)
+        service.createUser(user)
 
         then: "expect to find it by username"
         service.findByUsername('johndoe')
+
+        when: "updating a user"
+        user.email = 'johndoe@gmail.com'
+        service.saveUser(user)
+        def found = service.findByUsername('johndoe')
+
+        then: "expect changes to be retrieved"
+        found != null
+        found.email == 'johndoe@gmail.com'
     }
 }

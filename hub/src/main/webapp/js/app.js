@@ -1,6 +1,8 @@
 'use strict';
 
-var app = angular.module('hub', ['hub.welcome.controllers', 'hub.users.controllers', 'hub.devices.controllers', 'hub.services', 'ngRoute', 'restangular', 'ui.bootstrap'])
+var app = angular.module('hub',
+    ['hub.welcome.controllers', 'hub.users.controllers', 'hub.devices.controllers', 'hub.services',
+        'ngRoute', 'ngResource', 'ui.bootstrap'])
     .config(function($routeProvider, $httpProvider) {
         // Set up our mappings between URLs, templates, and controllers
         $routeProvider

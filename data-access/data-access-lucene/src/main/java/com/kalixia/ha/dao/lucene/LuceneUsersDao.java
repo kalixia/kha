@@ -1,17 +1,20 @@
 package com.kalixia.ha.dao.lucene;
 
 import com.kalixia.ha.dao.UsersDao;
-import com.kalixia.ha.model.Role;
+import com.kalixia.ha.model.security.OAuthTokens;
+import com.kalixia.ha.model.security.Role;
 import com.kalixia.ha.model.User;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
@@ -40,6 +43,7 @@ public class LuceneUsersDao implements UsersDao {
     private static final String FIELD_FIRST_NAME = "firstName";
     private static final String FIELD_LAST_NAME = "lastName";
     private static final String FIELD_ROLE = "role";
+    private static final String FIELD_OAUTH_TOKENS = "oauthTokens";
     private static final String FIELD_CREATION_DATE = "creationDate";
     private static final String FIELD_LAST_UPDATE_DATE = "lastUpdateDate";
     private static final String FIELD_TYPE = "type";
@@ -56,13 +60,33 @@ public class LuceneUsersDao implements UsersDao {
         LOGGER.info("Searching for user '{}' in Lucene indexes", username);
 
         IndexSearcher indexSearcher = buildIndexSearcher();
-        Term term = new Term("username", username);
+        Term term = new Term(FIELD_USERNAME, username);
         BooleanQuery q = new BooleanQuery();
         q.add(new TermQuery(term), BooleanClause.Occur.MUST);
         q.add(new TermQuery(termType), BooleanClause.Occur.MUST);
         TopDocs hits = indexSearcher.search(q, 1);
         if (hits.totalHits == 0) {
             LOGGER.warn("No user found with login '{}'", username);
+            return null;            // no result found
+        }
+        ScoreDoc[] scoreDocs = hits.scoreDocs;
+        ScoreDoc scoreDoc = scoreDocs[0];
+        Document doc = indexSearcher.doc(scoreDoc.doc);
+        return extractUserFromDoc(doc);
+    }
+
+    @Override
+    public User findByOAuthAccessToken(String token) throws Exception {
+        LOGGER.info("Searching for user with OAuth2 access token '{}' in Lucene indexes", token);
+
+        IndexSearcher indexSearcher = buildIndexSearcher();
+        Term term = new Term(FIELD_OAUTH_TOKENS, token);
+        BooleanQuery q = new BooleanQuery();
+        q.add(new PrefixQuery(term), BooleanClause.Occur.MUST);
+        q.add(new TermQuery(termType), BooleanClause.Occur.MUST);
+        TopDocs hits = indexSearcher.search(q, 1);
+        if (hits.totalHits == 0) {
+            LOGGER.warn("No user found with OAuth access token '{}'", token);
             return null;            // no result found
         }
         ScoreDoc[] scoreDocs = hits.scoreDocs;
@@ -80,7 +104,13 @@ public class LuceneUsersDao implements UsersDao {
         doc.add(new StringField(FIELD_EMAIL, user.getEmail(), Store.YES));
         doc.add(new StringField(FIELD_FIRST_NAME, user.getFirstName(), Store.YES));
         doc.add(new StringField(FIELD_LAST_NAME, user.getLastName(), Store.YES));
-        user.getRoles().stream().forEach(role -> doc.add(new StringField(FIELD_ROLE, role.name(), Store.YES)));
+        user.getRoles().stream().forEach(role ->
+                doc.add(new StringField(FIELD_ROLE, role.name(), Store.YES)));
+        user.getOauthTokens().stream()
+                .map(tokens -> String.join(":", tokens.getAccessToken(), tokens.getRefreshToken()))
+                .forEach(serializedTokens ->
+                        doc.add(new StringField(FIELD_OAUTH_TOKENS, serializedTokens, Store.YES))
+                );
         doc.add(new StoredField(FIELD_CREATION_DATE, user.getCreationDate().toString()));
         doc.add(new StoredField(FIELD_LAST_UPDATE_DATE, DateTime.now().toString()));
         doc.add(new StringField(FIELD_TYPE, "user", Store.NO));
@@ -112,7 +142,7 @@ public class LuceneUsersDao implements UsersDao {
     }
 
     @Override
-    public Long getUsersCount() throws Exception {
+    public long getUsersCount() throws Exception {
         IndexSearcher indexSearcher = buildIndexSearcher();
         TermQuery q = new TermQuery(termType);
         TopDocs hits = indexSearcher.search(q, Integer.MAX_VALUE);
@@ -128,9 +158,18 @@ public class LuceneUsersDao implements UsersDao {
         Set<Role> roles = Stream.of(doc.getFields(FIELD_ROLE))
                 .map(field -> Role.valueOf(field.stringValue()))
                 .collect(toSet());
+        Set<OAuthTokens> oauthAccessTokens = Stream.of(doc.getFields(FIELD_OAUTH_TOKENS))
+                .map(IndexableField::stringValue)
+                .map(serializedTokens -> {
+                    String[] tokens = serializedTokens.split(":");
+                    return new OAuthTokens(tokens[0], tokens[1]);
+                })
+                .collect(toSet());
         DateTime creationDate = DateTime.parse(doc.get(FIELD_CREATION_DATE));
         DateTime lastUpdateDate = DateTime.parse(doc.get(FIELD_LAST_UPDATE_DATE));
-        return new User(username, password, email, firstName, lastName, roles, creationDate, lastUpdateDate);
+        return new User(username, password, email, firstName, lastName,
+                roles, oauthAccessTokens,
+                creationDate, lastUpdateDate);
     }
 
     private IndexSearcher buildIndexSearcher() throws IOException {

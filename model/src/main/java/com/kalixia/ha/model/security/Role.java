@@ -1,11 +1,13 @@
-package com.kalixia.ha.model;
+package com.kalixia.ha.model.security;
 
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Set;
 
 public enum Role {
-    ADMINISTRATOR("users:*"), USER, ANONYMOUS;
+    ADMINISTRATOR(Permissions.USERS_ALL, Permissions.DEVICES_ALL),
+    USER(Permissions.DEVICES_ALL),
+    ANONYMOUS;
 
     private final Set<String> permissions;
 

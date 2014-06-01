@@ -35,6 +35,10 @@
             <groupId>com.netflix.rxnetty</groupId>
             <artifactId>rx-netty</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+        </dependency>
 
         <!-- Hystrix dependencies -->
         <dependency>

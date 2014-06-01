@@ -11,6 +11,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.kalixia.ha.api.ServicesModule;
 import com.kalixia.ha.api.rest.GeneratedJaxRsDaggerModule;
+import com.kalixia.ha.api.security.SecurityModule;
 import com.kalixia.ha.dao.cassandra.CassandraModule;
 import dagger.Module;
 import dagger.Provides;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
         includes = {
                 GeneratedJaxRsDaggerModule.class,
                 ServicesModule.class,
+                SecurityModule.class,
                 CassandraModule.class
         }
 )

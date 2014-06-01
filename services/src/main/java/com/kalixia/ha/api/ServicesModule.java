@@ -5,6 +5,7 @@ import com.kalixia.ha.dao.SensorsDao;
 import com.kalixia.ha.dao.UsersDao;
 import dagger.Module;
 import dagger.Provides;
+import org.apache.shiro.authc.credential.PasswordService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +16,9 @@ import java.io.IOException;
 public class ServicesModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServicesModule.class);
 
-    @Provides @Singleton UsersService provideUsersService(UsersDao dao) {
+    @Provides @Singleton UsersService provideUsersService(UsersDao dao, PasswordService passwordService) {
         try {
-            UsersServiceImpl service = new UsersServiceImpl(dao);
+            UsersServiceImpl service = new UsersServiceImpl(dao, passwordService);
             service.init();
             return service;
         } catch (IOException e) {

@@ -1,8 +1,7 @@
 package com.kalixia.ha.api.security
 
-import com.kalixia.ha.api.UsersServiceImpl
 import com.kalixia.ha.dao.UsersDao
-import com.kalixia.ha.model.Role
+import com.kalixia.ha.model.security.Role
 import com.kalixia.ha.model.User
 import org.apache.shiro.SecurityUtils
 import org.apache.shiro.authc.UnknownAccountException
@@ -14,22 +13,23 @@ import org.apache.shiro.util.Factory
 import org.joda.time.DateTime
 import spock.lang.Specification
 
+import static java.util.Collections.emptySet
+
 class KhaRealmTest extends Specification {
 
     def "test Shiro realm"() {
         given: "a user service having only John Doe as an administrator"
         def dao = Mock(UsersDao)
         dao.findByUsername('john') >> new User("john", "doe", "john@doe.com", "John", "Doe",
-                [Role.ADMINISTRATOR] as Set<Role>, DateTime.now(), DateTime.now())
+                [Role.ADMINISTRATOR] as Set<Role>, emptySet(), DateTime.now(), DateTime.now())
         dao.findByUsername(_) >> null
-        def service = new UsersServiceImpl(dao)
 
         and:
         Factory<SecurityManager> factory = new org.apache.shiro.util.AbstractFactory<SecurityManager>() {
             @Override
             protected SecurityManager createInstance() {
                 def manager = new DefaultSecurityManager()
-                def realm = new KhaRealm(service)
+                def realm = new KhaRealm(dao)
                 manager.setRealm(realm)
                 return manager
             }

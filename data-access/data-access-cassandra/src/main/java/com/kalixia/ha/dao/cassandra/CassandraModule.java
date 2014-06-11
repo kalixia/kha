@@ -1,71 +1,60 @@
 package com.kalixia.ha.dao.cassandra;
 
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Metadata;
+import com.datastax.driver.core.Session;
+import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
+import com.datastax.driver.core.policies.ExponentialReconnectionPolicy;
+import com.datastax.driver.core.policies.RoundRobinPolicy;
+import com.datastax.driver.core.policies.TokenAwarePolicy;
 import com.kalixia.ha.dao.DevicesDao;
-import com.kalixia.ha.dao.SensorsDao;
 import com.kalixia.ha.dao.UsersDao;
-import com.netflix.astyanax.AstyanaxContext;
-import com.netflix.astyanax.Keyspace;
-import com.netflix.astyanax.connectionpool.ConnectionPoolConfiguration;
-import com.netflix.astyanax.connectionpool.impl.BadHostDetectorImpl;
-import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
-import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
-import com.netflix.astyanax.connectionpool.impl.ExponentialRetryBackoffStrategy;
-import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
-import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import dagger.Module;
 import dagger.Provides;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 
-import static com.netflix.astyanax.connectionpool.NodeDiscoveryType.RING_DESCRIBE;
-import static com.netflix.astyanax.connectionpool.impl.ConnectionPoolType.TOKEN_AWARE;
-import static com.netflix.astyanax.model.ConsistencyLevel.CL_ONE;
-
 @Module(library = true)
 public class CassandraModule {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraModule.class);
 
-    @Provides @Singleton UsersDao provideUserDao(SchemaDefinition schema) {
-        return new CassandraUsersDao(schema);
+    @Provides @Singleton UsersDao provideUserDao(Session session, SchemaCreator schemaCreator) {
+        return new CassandraUsersDao(session);
     }
 
-    @Provides @Singleton DevicesDao provideDevicesDao(SchemaDefinition schema, UsersDao usersDao) {
-        return new CassandraDevicesDao(schema, usersDao);
+    @Provides @Singleton DevicesDao provideDevicesDao(Session session, UsersDao usersDao, SchemaCreator schemaCreator) {
+        return new CassandraDevicesDao(session, usersDao);
     }
 
-    @Provides @Singleton SensorsDao provideSensorsDao(SchemaDefinition schema) {
-        return new CassandraSensorsDao(schema);
+//    @Provides @Singleton SensorsDao provideSensorsDao(SchemaCreator schemaCreator) {
+//        return new CassandraSensorsDao(schemaCreator);
+//    }
+
+    @Provides @Singleton Session provideSession(Cluster cluster) {
+        try {
+            return cluster.connect();
+        } catch (Exception e) {
+            LOGGER.error("Can't connect to Cassandra", e);
+            return null;
+        }
     }
 
-    @Provides @Singleton Keyspace provideKeyspace(AstyanaxContext<Keyspace> ctx) {
-        ctx.start();
-        return ctx.getClient();
-    }
-
-    @Provides @Singleton AstyanaxContext<Keyspace> provideContext(ConnectionPoolConfiguration pool) {
-        return new AstyanaxContext.Builder()
-                .forCluster("MyCluster")
-                .forKeyspace("test")
-                .withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
-                        .setDiscoveryType(RING_DESCRIBE)
-                        .setConnectionPoolType(TOKEN_AWARE)
-                        .setDefaultReadConsistencyLevel(CL_ONE)
-                        .setDefaultWriteConsistencyLevel(CL_ONE)
-                        .setTargetCassandraVersion("1.2")
-                        .setCqlVersion("3.0.0")
-                )
-                .withConnectionPoolConfiguration(pool)
-                .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
-                .buildKeyspace(ThriftFamilyFactory.getInstance());
-    }
-
-    @Provides @Singleton ConnectionPoolConfiguration provideConnectionPool() {
-        ConnectionPoolConfigurationImpl pool = new ConnectionPoolConfigurationImpl("MyConnectionPool")
-                .setPort(9160)
-                .setMaxConnsPerHost(3)
-                .setSeeds("127.0.0.1,127.0.0.1:9171,10.33.2.11,10.33.2.12");
-        return pool
-                .setBadHostDetector(new BadHostDetectorImpl(pool))
-                .setRetryBackoffStrategy(new ExponentialRetryBackoffStrategy(pool));
+    @Provides @Singleton Cluster provideCluster() {
+        Cluster cluster = Cluster.builder()
+                .addContactPoints("127.0.0.1")
+                .withRetryPolicy(DowngradingConsistencyRetryPolicy.INSTANCE)
+                .withReconnectionPolicy(new ExponentialReconnectionPolicy(100L, 5000L))
+                .withLoadBalancingPolicy(new TokenAwarePolicy(new RoundRobinPolicy()))
+                .build();
+        Metadata metadata = cluster.getMetadata();
+        LOGGER.info("Connected to cluster: '{}'", metadata.getClusterName());
+        metadata.getAllHosts()
+                .forEach(host -> LOGGER.info("Datacenter: '{}'; Host: '{}'; Rack: '{}'",
+                        new Object[] { host.getDatacenter(), host.getAddress(), host.getRack() })
+                );
+        return cluster;
     }
 
 }

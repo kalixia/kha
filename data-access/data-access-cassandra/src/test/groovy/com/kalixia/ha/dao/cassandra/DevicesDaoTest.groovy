@@ -3,7 +3,6 @@ package com.kalixia.ha.dao.cassandra
 import com.kalixia.ha.dao.AbstractDevicesDaoTest
 import com.kalixia.ha.dao.DevicesDao
 import com.kalixia.ha.dao.UsersDao
-import com.netflix.astyanax.util.TimeUUIDUtils
 
 class DevicesDaoTest extends AbstractDevicesDaoTest {
 
@@ -19,7 +18,7 @@ class DevicesDaoTest extends AbstractDevicesDaoTest {
 
     @Override
     UUID createUUID() {
-        return TimeUUIDUtils.uniqueTimeUUIDinMicros
+        return UUID.randomUUID()
     }
 
     def setupSpec() {

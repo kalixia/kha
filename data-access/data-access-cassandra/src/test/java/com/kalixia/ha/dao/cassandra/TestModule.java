@@ -1,38 +1,46 @@
 package com.kalixia.ha.dao.cassandra;
 
-import com.netflix.astyanax.AstyanaxContext;
-import com.netflix.astyanax.Keyspace;
-import com.netflix.astyanax.connectionpool.ConnectionPoolConfiguration;
-import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
-import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
-import com.netflix.astyanax.thrift.ThriftFamilyFactory;
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Metadata;
+import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
+import com.datastax.driver.core.policies.ExponentialReconnectionPolicy;
 import dagger.Module;
 import dagger.Provides;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
-
-import static com.netflix.astyanax.model.ConsistencyLevel.CL_ONE;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 
 @Module(injects = DataHolder.class, includes = CassandraModule.class, overrides = true)
 public class TestModule {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestModule.class);
 
-    @Provides @Singleton AstyanaxContext<Keyspace> provideContext(ConnectionPoolConfiguration pool) {
-        LoggerFactory.getLogger(getClass()).info("Using test configuration...");
-        return new AstyanaxContext.Builder()
-                .forCluster("MyCluster")
-                .forKeyspace("test")
-                .withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
-                                //                        .setDiscoveryType(RING_DESCRIBE)
-                                //                        .setConnectionPoolType(TOKEN_AWARE)
-                                .setDefaultReadConsistencyLevel(CL_ONE)
-                                .setDefaultWriteConsistencyLevel(CL_ONE)
-                                .setTargetCassandraVersion("1.2")
-                                .setCqlVersion("3.0.0")
-                )
-                .withConnectionPoolConfiguration(pool)
-                .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
-                .buildKeyspace(ThriftFamilyFactory.getInstance());
+    @Provides @Singleton Cluster provideCluster() {
+        try {
+            Cluster cluster = Cluster.builder()
+                    .addContactPointsWithPorts(Arrays.asList(
+//                            new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 9042) // mvn cassandra:run + nodetool enablebinary
+                            new InetSocketAddress(InetAddress.getByName("localhost"), 9142)  // cassandraunit
+                    ))
+                    .withRetryPolicy(DowngradingConsistencyRetryPolicy.INSTANCE)
+                    .withReconnectionPolicy(new ExponentialReconnectionPolicy(100L, 5000L))
+                    .build();
+            Metadata metadata = cluster.getMetadata();
+            LOGGER.info("Connected to cluster: '{}'", metadata.getClusterName());
+            metadata.getAllHosts()
+                    .forEach(host -> LOGGER.info("Datacenter: '{}'; Host: '{}'; Rack: '{}'",
+                            new Object[] { host.getDatacenter(), host.getAddress(), host.getRack() })
+                    );
+            return cluster;
+        } catch (UnknownHostException e) {
+            LOGGER.error("Can't connect to Cassandra", e);
+            return null;
+        }
     }
+
 
 }

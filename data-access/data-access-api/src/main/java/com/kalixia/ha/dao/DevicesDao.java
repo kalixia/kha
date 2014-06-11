@@ -5,9 +5,9 @@ import rx.Observable;
 import java.util.UUID;
 
 public interface DevicesDao {
-    Device findById(UUID id) throws Exception;
-    Device findByOwnerAndName(String ownerUsername, String name) throws Exception;
-    Observable<? extends Device> findAllDevicesOfUser(String username) throws Exception;
-    void save(Device device) throws Exception;
+    Device findById(UUID id);
+    Device findByOwnerAndName(String ownerUsername, String name);
+    Observable<? extends Device> findAllDevicesOfUser(String username);
+    void save(Device device);
     void delete(UUID id);
 }

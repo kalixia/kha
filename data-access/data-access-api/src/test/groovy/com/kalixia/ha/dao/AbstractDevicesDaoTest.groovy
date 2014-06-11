@@ -1,5 +1,6 @@
 package com.kalixia.ha.dao
 
+import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.security.Role
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.RGBLamp
@@ -36,6 +37,7 @@ abstract class AbstractDevicesDaoTest extends Specification {
 
         then:
         user == usersDao.findByUsername(user.getUsername())
+        deviceFound != null
         deviceFound.name == 'my lamp'
         deviceFound.owner == user
 
@@ -51,6 +53,7 @@ abstract class AbstractDevicesDaoTest extends Specification {
 
         then:
         user == usersDao.findByUsername(user.getUsername())
+        deviceFound != null
         deviceFound.name == 'my lamp'
         deviceFound.owner == user
     }
@@ -89,6 +92,20 @@ abstract class AbstractDevicesDaoTest extends Specification {
         deviceFound.sensors.size() == 1
         deviceFound.sensors[0].name == 'dummy'
         deviceFound.sensors[0].unit == SI.SECOND
+    }
+
+    def "test searching for a missing sensor"() {
+        when:
+        Device found = devicesDao.findById(UUID.randomUUID())
+
+        then:
+        found == null
+
+        when:
+        found = devicesDao.findByOwnerAndName("john", "doe")
+
+        then:
+        found == null
     }
 
 }

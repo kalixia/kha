@@ -56,97 +56,117 @@ public class LuceneUsersDao implements UsersDao {
     }
 
     @Override
-    public User findByUsername(String username) throws Exception {
+    public User findByUsername(String username) {
         LOGGER.info("Searching for user '{}' in Lucene indexes", username);
-
-        IndexSearcher indexSearcher = buildIndexSearcher();
-        Term term = new Term(FIELD_USERNAME, username);
-        BooleanQuery q = new BooleanQuery();
-        q.add(new TermQuery(term), BooleanClause.Occur.MUST);
-        q.add(new TermQuery(termType), BooleanClause.Occur.MUST);
-        TopDocs hits = indexSearcher.search(q, 1);
-        if (hits.totalHits == 0) {
-            LOGGER.warn("No user found with login '{}'", username);
-            return null;            // no result found
+        try {
+            IndexSearcher indexSearcher = buildIndexSearcher();
+            Term term = new Term(FIELD_USERNAME, username);
+            BooleanQuery q = new BooleanQuery();
+            q.add(new TermQuery(term), BooleanClause.Occur.MUST);
+            q.add(new TermQuery(termType), BooleanClause.Occur.MUST);
+            TopDocs hits = indexSearcher.search(q, 1);
+            if (hits.totalHits == 0) {
+                LOGGER.warn("No user found with login '{}'", username);
+                return null;            // no result found
+            }
+            ScoreDoc[] scoreDocs = hits.scoreDocs;
+            ScoreDoc scoreDoc = scoreDocs[0];
+            Document doc = indexSearcher.doc(scoreDoc.doc);
+            return extractUserFromDoc(doc);
+        } catch (IOException e) {
+            LOGGER.error("Unexpected Lucene error", e);
+            return null;
         }
-        ScoreDoc[] scoreDocs = hits.scoreDocs;
-        ScoreDoc scoreDoc = scoreDocs[0];
-        Document doc = indexSearcher.doc(scoreDoc.doc);
-        return extractUserFromDoc(doc);
     }
 
     @Override
-    public User findByOAuthAccessToken(String token) throws Exception {
+    public User findByOAuthAccessToken(String token) {
         LOGGER.info("Searching for user with OAuth2 access token '{}' in Lucene indexes", token);
-
-        IndexSearcher indexSearcher = buildIndexSearcher();
-        Term term = new Term(FIELD_OAUTH_TOKENS, token);
-        BooleanQuery q = new BooleanQuery();
-        q.add(new PrefixQuery(term), BooleanClause.Occur.MUST);
-        q.add(new TermQuery(termType), BooleanClause.Occur.MUST);
-        TopDocs hits = indexSearcher.search(q, 1);
-        if (hits.totalHits == 0) {
-            LOGGER.warn("No user found with OAuth access token '{}'", token);
-            return null;            // no result found
+        try {
+            IndexSearcher indexSearcher = buildIndexSearcher();
+            Term term = new Term(FIELD_OAUTH_TOKENS, token);
+            BooleanQuery q = new BooleanQuery();
+            q.add(new PrefixQuery(term), BooleanClause.Occur.MUST);
+            q.add(new TermQuery(termType), BooleanClause.Occur.MUST);
+            TopDocs hits = indexSearcher.search(q, 1);
+            if (hits.totalHits == 0) {
+                LOGGER.warn("No user found with OAuth access token '{}'", token);
+                return null;            // no result found
+            }
+            ScoreDoc[] scoreDocs = hits.scoreDocs;
+            ScoreDoc scoreDoc = scoreDocs[0];
+            Document doc = indexSearcher.doc(scoreDoc.doc);
+            return extractUserFromDoc(doc);
+        } catch (IOException e) {
+            LOGGER.error("Unexpected Lucene error", e);
+            return null;
         }
-        ScoreDoc[] scoreDocs = hits.scoreDocs;
-        ScoreDoc scoreDoc = scoreDocs[0];
-        Document doc = indexSearcher.doc(scoreDoc.doc);
-        return extractUserFromDoc(doc);
     }
 
     @Override
-    public void save(User user) throws Exception {
+    public void save(User user) {
         LOGGER.info("Saving user '{}' to Lucene indexes", user.getUsername());
-        Document doc = new Document();
-        doc.add(new StringField(FIELD_USERNAME, user.getUsername(), Store.YES));
-        doc.add(new StringField(FIELD_PASSWORD, user.getPassword(), Store.YES));
-        doc.add(new StringField(FIELD_EMAIL, user.getEmail(), Store.YES));
-        doc.add(new StringField(FIELD_FIRST_NAME, user.getFirstName(), Store.YES));
-        doc.add(new StringField(FIELD_LAST_NAME, user.getLastName(), Store.YES));
-        user.getRoles().stream().forEach(role ->
-                doc.add(new StringField(FIELD_ROLE, role.name(), Store.YES)));
-        user.getOauthTokens().stream()
-                .map(tokens -> String.join(":", tokens.getAccessToken(), tokens.getRefreshToken()))
-                .forEach(serializedTokens ->
-                        doc.add(new StringField(FIELD_OAUTH_TOKENS, serializedTokens, Store.YES))
-                );
-        doc.add(new StoredField(FIELD_CREATION_DATE, user.getCreationDate().toString()));
-        doc.add(new StoredField(FIELD_LAST_UPDATE_DATE, DateTime.now().toString()));
-        doc.add(new StringField(FIELD_TYPE, "user", Store.NO));
-        Term term = new Term(FIELD_USERNAME, user.getUsername());
-        indexWriter.updateDocument(term, doc);
-        indexWriter.commit();
-    }
-
-    @Override
-    public Observable<User> findUsers() throws Exception {
-        LOGGER.info("Searching for all users...");
-
-        IndexSearcher indexSearcher = buildIndexSearcher();
-        TermQuery q = new TermQuery(termType);
-        TopDocs hits = indexSearcher.search(q, Integer.MAX_VALUE);
-        if (hits.totalHits == 0) {
-            LOGGER.warn("No user found");
-            return Observable.empty();
+        try {
+            Document doc = new Document();
+            doc.add(new StringField(FIELD_USERNAME, user.getUsername(), Store.YES));
+            doc.add(new StringField(FIELD_PASSWORD, user.getPassword(), Store.YES));
+            doc.add(new StringField(FIELD_EMAIL, user.getEmail(), Store.YES));
+            doc.add(new StringField(FIELD_FIRST_NAME, user.getFirstName(), Store.YES));
+            doc.add(new StringField(FIELD_LAST_NAME, user.getLastName(), Store.YES));
+            user.getRoles().stream().forEach(role ->
+                    doc.add(new StringField(FIELD_ROLE, role.name(), Store.YES)));
+            user.getOauthTokens().stream()
+                    .map(tokens -> String.join(":", tokens.getAccessToken(), tokens.getRefreshToken()))
+                    .forEach(serializedTokens ->
+                                    doc.add(new StringField(FIELD_OAUTH_TOKENS, serializedTokens, Store.YES))
+                    );
+            doc.add(new StoredField(FIELD_CREATION_DATE, user.getCreationDate().toString()));
+            doc.add(new StoredField(FIELD_LAST_UPDATE_DATE, DateTime.now().toString()));
+            doc.add(new StringField(FIELD_TYPE, "user", Store.NO));
+            Term term = new Term(FIELD_USERNAME, user.getUsername());
+            indexWriter.updateDocument(term, doc);
+            indexWriter.commit();
+        } catch (IOException e) {
+            LOGGER.error("Unexpected Lucene error", e);
         }
-        return Observable.from(hits.scoreDocs)
-                .map(scoreDoc -> {
-                    try {
-                        return indexSearcher.doc(scoreDoc.doc);
-                    } catch (IOException e) {
-                        throw Exceptions.propagate(e);
-                    }
-                })
-                .map(this::extractUserFromDoc);
     }
 
     @Override
-    public long getUsersCount() throws Exception {
-        IndexSearcher indexSearcher = buildIndexSearcher();
-        TermQuery q = new TermQuery(termType);
-        TopDocs hits = indexSearcher.search(q, Integer.MAX_VALUE);
-        return (long) hits.totalHits;
+    public Observable<User> findUsers() {
+        LOGGER.info("Searching for all users...");
+        try {
+            IndexSearcher indexSearcher = buildIndexSearcher();
+            TermQuery q = new TermQuery(termType);
+            TopDocs hits = indexSearcher.search(q, Integer.MAX_VALUE);
+            if (hits.totalHits == 0) {
+                LOGGER.warn("No user found");
+                return Observable.empty();
+            }
+            return Observable.from(hits.scoreDocs)
+                    .map(scoreDoc -> {
+                        try {
+                            return indexSearcher.doc(scoreDoc.doc);
+                        } catch (IOException e) {
+                            throw Exceptions.propagate(e);
+                        }
+                    })
+                    .map(this::extractUserFromDoc);
+        } catch (IOException e) {
+            return Observable.error(e);
+        }
+    }
+
+    @Override
+    public long getUsersCount() {
+        try {
+            IndexSearcher indexSearcher = buildIndexSearcher();
+            TermQuery q = new TermQuery(termType);
+            TopDocs hits = indexSearcher.search(q, Integer.MAX_VALUE);
+            return (long) hits.totalHits;
+        } catch (IOException e) {
+            LOGGER.error("Unexpected Lucene error", e);
+            return 0;
+        }
     }
 
     private User extractUserFromDoc(Document doc) {
@@ -172,8 +192,13 @@ public class LuceneUsersDao implements UsersDao {
                 creationDate, lastUpdateDate);
     }
 
-    private IndexSearcher buildIndexSearcher() throws IOException {
-        return new IndexSearcher(DirectoryReader.open(indexWriter, true));
+    private IndexSearcher buildIndexSearcher() {
+        try {
+            return new IndexSearcher(DirectoryReader.open(indexWriter, true));
+        } catch (IOException e) {
+            LOGGER.error("Can't initialize index searcher", e);
+            throw new RuntimeException("Can't initialize index searcher", e);
+        }
     }
 
 }

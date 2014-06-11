@@ -61,48 +61,56 @@ public class LuceneDevicesDao implements DevicesDao {
     }
 
     @Override
-    public Device findById(UUID id) throws Exception {
+    public Device findById(UUID id) {
         LOGGER.info("Searching for device {} in Lucene indexes", id);
-
-        IndexSearcher indexSearcher = buildIndexSearcher();
-        Term term = new Term(FIELD_ID, id.toString());
-        BooleanQuery q = new BooleanQuery();
-        q.add(new TermQuery(term), BooleanClause.Occur.MUST);
-        q.add(new TermQuery(termDeviceType), BooleanClause.Occur.MUST);
-        TopDocs hits = indexSearcher.search(q, 1);
-        if (hits.totalHits == 0) {
-            LOGGER.warn("No device found with ID {}", id);
-            return null;            // no result found
+        try {
+            IndexSearcher indexSearcher = buildIndexSearcher();
+            Term term = new Term(FIELD_ID, id.toString());
+            BooleanQuery q = new BooleanQuery();
+            q.add(new TermQuery(term), BooleanClause.Occur.MUST);
+            q.add(new TermQuery(termDeviceType), BooleanClause.Occur.MUST);
+            TopDocs hits = indexSearcher.search(q, 1);
+            if (hits.totalHits == 0) {
+                LOGGER.warn("No device found with ID {}", id);
+                return null;            // no result found
+            }
+            ScoreDoc[] scoreDocs = hits.scoreDocs;
+            ScoreDoc scoreDoc = scoreDocs[0];
+            Document doc = indexSearcher.doc(scoreDoc.doc);
+            return buildDeviceFromDocument(doc, indexSearcher);
+        } catch (IOException e) {
+            LOGGER.error("Unexpected Lucene error", e);
+            return null;
         }
-        ScoreDoc[] scoreDocs = hits.scoreDocs;
-        ScoreDoc scoreDoc = scoreDocs[0];
-        Document doc = indexSearcher.doc(scoreDoc.doc);
-        return buildDeviceFromDocument(doc, indexSearcher);
     }
 
     @Override
-    public Device findByOwnerAndName(String ownerUsername, String name) throws Exception {
+    public Device findByOwnerAndName(String ownerUsername, String name) {
         LOGGER.info("Searching for device '{}' of user '{}' in Lucene indexes", name, ownerUsername);
-
-        IndexSearcher indexSearcher = buildIndexSearcher();
-        BooleanQuery q = new BooleanQuery();
-        q.add(new TermQuery(new Term(FIELD_NAME, name)), BooleanClause.Occur.MUST);
-        q.add(new TermQuery(new Term(FIELD_OWNER, ownerUsername)), BooleanClause.Occur.MUST);
-        q.add(new TermQuery(termDeviceType), BooleanClause.Occur.MUST);
-        TopDocs hits = indexSearcher.search(q, 1);
-        if (hits.totalHits == 0) {
-            LOGGER.warn("No device found with name '{}' for user '{}'", name, ownerUsername);
-            return null;            // no result found
+        try {
+            IndexSearcher indexSearcher = buildIndexSearcher();
+            BooleanQuery q = new BooleanQuery();
+            q.add(new TermQuery(new Term(FIELD_NAME, name)), BooleanClause.Occur.MUST);
+            q.add(new TermQuery(new Term(FIELD_OWNER, ownerUsername)), BooleanClause.Occur.MUST);
+            q.add(new TermQuery(termDeviceType), BooleanClause.Occur.MUST);
+            TopDocs hits = indexSearcher.search(q, 1);
+            if (hits.totalHits == 0) {
+                LOGGER.warn("No device found with name '{}' for user '{}'", name, ownerUsername);
+                return null;            // no result found
+            }
+            ScoreDoc[] scoreDocs = hits.scoreDocs;
+            ScoreDoc scoreDoc = scoreDocs[0];
+            Document doc = indexSearcher.doc(scoreDoc.doc);
+            return buildDeviceFromDocument(doc, indexSearcher);
+        } catch (IOException e) {
+            LOGGER.error("Unexpected Lucene error", e);
+            return null;
         }
-        ScoreDoc[] scoreDocs = hits.scoreDocs;
-        ScoreDoc scoreDoc = scoreDocs[0];
-        Document doc = indexSearcher.doc(scoreDoc.doc);
-        return buildDeviceFromDocument(doc, indexSearcher);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Observable<? extends Device> findAllDevicesOfUser(String username) throws Exception {
+    public Observable<? extends Device> findAllDevicesOfUser(String username) {
         LOGGER.info("Searching for all devices of user '{}' in Lucene indexes", username);
         IndexSearcher indexSearcher = buildIndexSearcher();
 
@@ -130,35 +138,38 @@ public class LuceneDevicesDao implements DevicesDao {
     }
 
     @Override
-    public void save(Device device) throws Exception {
+    public void save(Device device) {
         LOGGER.info("Saving device '{}' ({}) to Lucene indexes", device.getName(), device.getId());
+        try {
+            // store device information
+            Document doc = new Document();
+            String deviceID = device.getId().toString();
+            doc.add(new StringField(FIELD_ID, deviceID, Store.YES));
+            doc.add(new StringField(FIELD_NAME, device.getName(), Store.YES));
+            doc.add(new StringField(FIELD_OWNER, device.getOwner().getUsername(), Store.YES));
+            doc.add(new StoredField(FIELD_CREATION_DATE, device.getCreationDate().toString()));
+            doc.add(new StoredField(FIELD_LAST_UPDATE_DATE, DateTime.now().toString()));
+            doc.add(new StringField(FIELD_TYPE, "device", Store.NO));
+            Term term = new Term(FIELD_ID, deviceID);
+            indexWriter.updateDocument(term, doc);
 
-        // store device information
-        Document doc = new Document();
-        String deviceID = device.getId().toString();
-        doc.add(new StringField(FIELD_ID, deviceID, Store.YES));
-        doc.add(new StringField(FIELD_NAME, device.getName(), Store.YES));
-        doc.add(new StringField(FIELD_OWNER, device.getOwner().getUsername(), Store.YES));
-        doc.add(new StoredField(FIELD_CREATION_DATE, device.getCreationDate().toString()));
-        doc.add(new StoredField(FIELD_LAST_UPDATE_DATE, DateTime.now().toString()));
-        doc.add(new StringField(FIELD_TYPE, "device", Store.NO));
-        Term term = new Term(FIELD_ID, deviceID);
-        indexWriter.updateDocument(term, doc);
+            // store device's sensors information
+            for (Sensor sensor : device.getSensors()) {
+                Document sensorDoc = new Document();
+                String sensorID = deviceID + '-' + sensor.getName();
+                sensorDoc.add(new StringField(FIELD_ID, sensorID, Store.YES));
+                sensorDoc.add(new StringField(FIELD_SENSOR_DEVICE_ID, deviceID, Store.NO));
+                sensorDoc.add(new StringField(FIELD_SENSOR_NAME, sensor.getName(), Store.YES));
+                sensorDoc.add(new StringField(FIELD_SENSOR_UNIT, sensor.getUnit().toString(), Store.YES));
+                sensorDoc.add(new StringField(FIELD_TYPE, "sensor", Store.NO));
+                term = new Term(FIELD_ID, sensorID);
+                indexWriter.updateDocument(term, sensorDoc);
+            }
 
-        // store device's sensors information
-        for (Sensor sensor : device.getSensors()) {
-            Document sensorDoc = new Document();
-            String sensorID = deviceID + '-' + sensor.getName();
-            sensorDoc.add(new StringField(FIELD_ID, sensorID, Store.YES));
-            sensorDoc.add(new StringField(FIELD_SENSOR_DEVICE_ID, deviceID, Store.NO));
-            sensorDoc.add(new StringField(FIELD_SENSOR_NAME, sensor.getName(), Store.YES));
-            sensorDoc.add(new StringField(FIELD_SENSOR_UNIT, sensor.getUnit().toString(), Store.YES));
-            sensorDoc.add(new StringField(FIELD_TYPE, "sensor", Store.NO));
-            term = new Term(FIELD_ID, sensorID);
-            indexWriter.updateDocument(term, sensorDoc);
+            indexWriter.commit();
+        } catch (IOException e) {
+            LOGGER.error("Unexpected Lucene error", e);
         }
-
-        indexWriter.commit();
     }
 
     @Override

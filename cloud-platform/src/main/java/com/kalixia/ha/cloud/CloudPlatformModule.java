@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+import com.kalixia.ha.api.InstallationService;
 import com.kalixia.ha.api.ServicesModule;
+import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.api.rest.GeneratedJaxRsDaggerModule;
 import com.kalixia.ha.api.security.SecurityModule;
 import com.kalixia.ha.dao.cassandra.CassandraModule;
@@ -42,6 +44,10 @@ public class CloudPlatformModule {
 
     @Provides @Singleton WebAppServer provideWebAppServer() {
         return new WebAppServer(8080);
+    }
+
+    @Provides @Singleton InstallationService provideInstallationService() {
+        return new CloudPlatformInstallationService();
     }
 
     @Provides @Singleton

@@ -8,13 +8,19 @@ import com.datastax.driver.core.policies.ExponentialReconnectionPolicy;
 import com.datastax.driver.core.policies.RoundRobinPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
 import com.kalixia.ha.dao.DevicesDao;
+import com.kalixia.ha.dao.SensorsDao;
 import com.kalixia.ha.dao.UsersDao;
+import com.kalixia.ha.model.sensors.DataPoint;
 import dagger.Module;
 import dagger.Provides;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
+import java.util.List;
+import java.util.UUID;
 
 @Module(library = true)
 public class CassandraModule {
@@ -28,9 +34,19 @@ public class CassandraModule {
         return new CassandraDevicesDao(session, usersDao);
     }
 
-//    @Provides @Singleton SensorsDao provideSensorsDao(SchemaCreator schemaCreator) {
-//        return new CassandraSensorsDao(schemaCreator);
-//    }
+    @Singleton @Provides SensorsDao provideSensorsDao() {
+        return new SensorsDao() {
+            @Override
+            public DataPoint getLastValue(UUID sensorID) {
+                return null;
+            }
+
+            @Override
+            public List<DataPoint> getHistory(DateTime from, DateTime to, Period period) {
+                return null;
+            }
+        };
+    }
 
     @Provides @Singleton Session provideSession(Cluster cluster) {
         try {

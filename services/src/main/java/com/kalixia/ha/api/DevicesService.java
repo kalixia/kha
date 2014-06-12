@@ -2,6 +2,7 @@ package com.kalixia.ha.api;
 
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
+import com.kalixia.ha.model.devices.DeviceMetadata;
 import rx.Observable;
 import java.util.UUID;
 
@@ -28,6 +29,12 @@ public interface DevicesService {
      * @return the device
      */
     Device findDeviceByName(String ownerUsername, String name);
+
+    /**
+     * Return an {@link Observable} of supported {@link Device}s, via the {@link DeviceMetadata}s
+     * @return the metadata of the supported devices
+     */
+    Observable<DeviceMetadata> findAllSupportedDevices();
 
     /**
      * Creates a new device.

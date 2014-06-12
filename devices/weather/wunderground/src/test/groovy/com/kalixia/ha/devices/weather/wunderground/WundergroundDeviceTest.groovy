@@ -1,7 +1,10 @@
 package com.kalixia.ha.devices.weather.wunderground
 
 import com.kalixia.ha.model.User
+import com.kalixia.ha.model.security.Role
 import spock.lang.Specification
+
+import static com.google.common.collect.Sets.newHashSet
 
 class WundergroundDeviceTest extends Specification {
     def setupSpec() {
@@ -9,8 +12,11 @@ class WundergroundDeviceTest extends Specification {
     }
 
     def "test configuration"() {
+        given:
+        def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, newHashSet())
+
         when: "creating a test Wunderground virtual device"
-        WundergroundDevice device = new WundergroundDevice(UUID.randomUUID(), "test device", new User("test"))
+        WundergroundDevice device = new WundergroundDevice(UUID.randomUUID(), "test device", user)
         def configuration = device.configuration
 
         then: "the configuration to be properly loaded"

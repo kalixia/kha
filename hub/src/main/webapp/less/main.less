@@ -12,7 +12,36 @@
     }
 }
 
-/* Login Screen */
+.supported-devices {
+  .make-row();
+  .list-inline;
+  .device-metadata {
+    .make-md-column(4);
+    background-color: @gray-lighter;
+    border-radius: 15px;
+    text-align: center;
+    cursor: pointer;
+    .transition-property(background-color);
+    .transition-duration(1s);
+    &:hover, &:focus {
+      background-color: darken(@gray-lighter, 15%);
+    }
+    .logo {
+      max-width: 150px;
+      max-height: 150px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+  }
+  .device-selected {
+    background-color: @brand-success !important;
+  }
+}
+
+  /* Login Screen */
 .hub_login {
     .hub_authTitle {
         text-align: center;

@@ -1,17 +1,24 @@
 'use strict';
 
-var devicesServices = angular.module('hub.devices.services', []);
+var devicesServices = angular.module('hub.devices.services', ['hub.security.services', 'restangular']);
 
-devicesServices.factory('DeviceService', ['Restangular', function deviceServiceFactory(Restangular) {
-    return {
-        getUserDevices: function(username) {
-            return Restangular.one('', username).getList('devices');
-        },
-        createDevice: function(owner, device) {
-            return Restangular.one('', owner.username).all('devices').post(device);
+devicesServices.factory('DeviceService', ['Restangular', 'SecurityService', '$log',
+    function deviceServiceFactory(Restangular, SecurityService, $log) {
+        return {
+            getUserDevices: function(username) {
+                return Restangular.one('', username).getList('devices').get();
+            },
+            createDevice: function(owner, device) {
+                return Restangular.one('', owner.username).all('devices').post(device);
+            },
+            findAllSupportedDevices: function() {
+                return Restangular
+                    .one(SecurityService.getCurrentUser().username, 'devices')
+                    .getList('supported');
+            }
         }
     }
-}]);
+]);
 
 //hubServices.factory('User', function($resource) {
 //    return $resource('http://localhost\\:8082/:username', {username: '@id'});

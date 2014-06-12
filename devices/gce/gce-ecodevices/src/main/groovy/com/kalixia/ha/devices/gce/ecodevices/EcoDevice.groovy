@@ -39,7 +39,7 @@ class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements PullBa
         teleinfoSensor2 = new TeleinfoSensor(configuration.power2.name, TeleinfoSensorSlot.TELEINFO2)
         counter1 = new CounterSensor<>(configuration.counter1.name, NonSI.LITRE)
         counter2 = new CounterSensor<>(configuration.counter2.name, SI.CUBIC_METRE)
-        addSensors(teleinfoSensor1, teleinfoSensor2, counter1)
+        addSensors(teleinfoSensor1, teleinfoSensor2, counter1, counter2)
     }
 
     @Override

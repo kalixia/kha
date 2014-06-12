@@ -2,12 +2,19 @@
 
 angular.module('hub.devices.controllers', ['hub.devices.services', 'ngRoute', 'restangular', 'ui.bootstrap'])
     .controller('CreateDeviceController', ['$scope', 'DeviceService', CreateDeviceController]);
-//    .controller('CreateDeviceController', ['$scope', 'DeviceService', DeviceListController])
-//    .controller('CreateDeviceController', ['$scope', 'DeviceService', DeviceDetailController]);
 
 function CreateDeviceController($scope, DeviceService) {
     $scope.device = {};
     $scope.owner = $scope.user;
+    $scope.supportedDevices = DeviceService.findAllSupportedDevices().$object;
+    $scope.selectDevice = function(type) {
+        $scope.device.type = type;
+    };
+    $scope.deviceSelected = function(device) {
+        if ($scope.device.type == device.type) {
+            return true;
+        }
+    };
     $scope.create = function(owner) {
         return DeviceService.createDevice(owner, $scope.device);
     };

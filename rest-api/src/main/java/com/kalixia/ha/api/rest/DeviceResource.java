@@ -6,6 +6,7 @@ import com.kalixia.ha.api.DevicesService;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
+import com.kalixia.ha.model.devices.DeviceMetadata;
 import com.kalixia.ha.model.devices.RGBLamp;
 import com.kalixia.ha.model.security.Permissions;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -145,4 +146,14 @@ public class DeviceResource {
         }
     }
 
+    @GET
+    @Path("/supported")
+    public Response findAllSupportedDevices() {
+        List<DeviceMetadata> devicesMetadata = devicesService.findAllSupportedDevices()
+                .toList().toBlockingObservable().single();
+        return Response
+                .ok(devicesMetadata)
+                .header(CACHE_CONTROL, "max-age=3600, must-revalidate")
+                .build();
+    }
 }

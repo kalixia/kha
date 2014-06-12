@@ -59,9 +59,9 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
         pipeline.addLast("http-request-decoder", new HttpRequestDecoder());
         pipeline.addLast("http-response-encoder", new HttpResponseEncoder());
         pipeline.addLast("http-object-aggregator", new HttpObjectAggregator(1048576));
-        pipeline.addLast("chunked-writer", new ChunkedWriteHandler());
-        pipeline.addLast("deflater", new HttpContentDecompressor());
-        pipeline.addLast("inflater", new HttpContentCompressor());
+//        pipeline.addLast("chunked-writer", new ChunkedWriteHandler());
+//        pipeline.addLast("deflater", new HttpContentDecompressor());      // TODO: seems to cause issue with request processed twice!
+//        pipeline.addLast("inflater", new HttpContentCompressor());
         pipeline.addLast("shiro", shiroHandler);
         pipeline.addLast("user-logging-handler", userLoggingHandler);
 
@@ -72,7 +72,7 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
         pipeline.addLast("api-request-logger", apiRequestLogger);
 
         // JAX-RS handlers
-        pipeline.addLast("jax-rs-handler", jaxRsHandlers);
+        pipeline.addLast("jax-rs-handlers", jaxRsHandlers);
     }
 
     @Sharable

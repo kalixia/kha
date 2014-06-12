@@ -22,7 +22,7 @@ public class User extends AbstractAuditable {
     private String firstName;
     private String lastName;
     private Set<Role> roles;
-    private Set<OAuthTokens> oauthTokens = new HashSet<>();
+    private Set<OAuthTokens> oauthTokens;
 
     @JsonCreator
     public User(@JsonProperty("username") String username, @JsonProperty("password") String password,
@@ -43,6 +43,8 @@ public class User extends AbstractAuditable {
         checkNotNull(lastName, "The last name can't be null");
         checkNotNull(roles, "The user roles can't be null");
         checkArgument(roles.size() > 0, "The user must have at least one role");
+        if (oauthTokens == null)
+            oauthTokens = new HashSet<>();
         this.username = username;
         this.password = password;
         this.email = email;

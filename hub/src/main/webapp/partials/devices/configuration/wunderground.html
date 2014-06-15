@@ -1,0 +1,19 @@
+<form name="wundergroundForm" novalidate role="form" ng-controller="ConfigureWundergroundDeviceController">
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error': !wundergroundForm.apiKey.$valid }">
+        <label for="apiKey">API Key:</label>
+        <input id="apiKey" name="apiKey" type="text" ng-model="configuration.apiKey" required autofocus class="form-control"/><br/>
+    </div>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error': !wundergroundForm.city.$valid }">
+        <label for="city">City:</label>
+        <input id="city" name="city" type="text" ng-model="configuration.city" required class="form-control"/><br/>
+    </div>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error': !wundergroundForm.country.$valid }">
+        <label for="country">Country:</label>
+        <input id="country" name="country" type="text" ng-model="configuration.country" required class="form-control"/><br/>
+    </div>
+
+    <pre>configuration = {{configuration | json}}</pre>
+</form>

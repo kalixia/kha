@@ -51,6 +51,18 @@
                 </button>
             </div>
         </div>
+        <div class="animate-switch" ng-switch-when="4">
+            <div ng-include="deviceConfigurationTemplate"></div>
+            <div>
+                <button ng-click="previousStep()" class="btn"><span class="glyphicon glyphicon-chevron-left"></span> Previous</button>
+                <button ng-click="setupDevice()"
+                        ng-disabled="!validForm"
+                        type="submit"
+                        class="btn btn-primary">
+                    Configure my device
+                </button>
+            </div>
+        </div>
     </div>
 
 </div>

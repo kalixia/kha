@@ -19,7 +19,12 @@ function CreateDeviceController($scope, DeviceService) {
         return DeviceService.createDevice(owner, $scope.device);
     };
     $scope.$watch('createDeviceForm.$valid', function (val) {
-        $scope.$emit('device.create.form.valid', { value: val, scope: $scope });
+        if ($scope.device.type != null)
+            $scope.$emit('device.create.form.valid', { value: val, scope: $scope });
+    });
+    $scope.$watch('device.type', function() {
+        if ($scope.createDeviceForm.$valid)
+            $scope.$emit('device.create.form.valid', { value: true, scope: $scope });
     });
 }
 

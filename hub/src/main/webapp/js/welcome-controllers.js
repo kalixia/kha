@@ -27,6 +27,12 @@ function WelcomeController($scope, WelcomeService, SecurityService, $location, $
             description: 'Add your first device or sensor',
             complete: false,
             disabled: true
+        },
+        {
+            number: 4,
+            description: 'Configure your device',
+            complete: false,
+            disabled: true
         }
     ];
     $scope.currentStep = $scope.steps[0];
@@ -36,6 +42,7 @@ function WelcomeController($scope, WelcomeService, SecurityService, $location, $
     // beware of 0 index-based array but step numbers 1 index-based.
     $scope.nextStep = function() {
         $scope.errorMessage = '';
+        $scope.validForm = false;
         $scope.currentStep = $scope.steps[$scope.currentStep.number];
     };
     $scope.previousStep = function() {
@@ -65,6 +72,9 @@ function WelcomeController($scope, WelcomeService, SecurityService, $location, $
             }
         });
     };
+    $scope.setupDevice = function() {
+        $log.info("Should setup device!");
+    }
 
     $scope.$on('user.create.form.valid', function(event, data) {
         $scope.validForm = data.value;
@@ -73,5 +83,8 @@ function WelcomeController($scope, WelcomeService, SecurityService, $location, $
     $scope.$on('device.create.form.valid', function(event, data) {
         $scope.validForm = data.value;
         $scope.currentStepScope = data.scope;
+        var device = $scope.currentStepScope.device;
+        $scope.deviceConfigurationTemplate = "partials/devices/configuration/" + device.type + ".html";
+        $log.debug("Device configuration view set to: " + $scope.deviceConfigurationTemplate);
     });
 }

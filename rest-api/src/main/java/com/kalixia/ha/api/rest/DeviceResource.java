@@ -1,13 +1,11 @@
 package com.kalixia.ha.api.rest;
 
 import com.kalixia.grapi.codecs.jaxrs.UriTemplateUtils;
-import com.kalixia.ha.api.DevicesFactory;
 import com.kalixia.ha.api.DevicesService;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.devices.DeviceMetadata;
-import com.kalixia.ha.model.devices.RGBLamp;
 import com.kalixia.ha.model.security.Permissions;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 
@@ -21,7 +19,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -77,9 +74,6 @@ public class DeviceResource {
         String type = (String) json.get("type");
         checkArgument(name != null, "Missing device name");
         checkArgument(type != null, "Missing device type");
-        if (!"RGBLamp".equals(type))
-            throw new IllegalArgumentException(String.format("Invalid device type '%s'", type));
-
         User owner = usersService.findByUsername(username);
         if (owner == null) {
             return Response
@@ -87,8 +81,7 @@ public class DeviceResource {
                     .entity(Errors.withErrors(new ErrorMessage("Can't find user '%s'", username)))
                     .build();
         }
-
-        Device device = DevicesFactory.createDevice(name, owner, RGBLamp.class);
+        Device device = devicesService.create(owner, name, type);
         if (devicesService.findDeviceById(device.getId()) == null) {
             devicesService.saveDevice(device);
             URI deviceURI = new URI(UriTemplateUtils.createURI(
@@ -116,34 +109,9 @@ public class DeviceResource {
         String newType = (String) json.get("type");
         checkArgument(newName != null, "Missing device name");
         checkArgument(newType != null, "Missing device type");
-        if (!"RGBLamp".equals(newType))
-            throw new IllegalArgumentException(String.format("Invalid device type '%s'", newType));
 
-        User owner = usersService.findByUsername(username);
-        if (owner == null) {
-            return Response
-                    .status(Response.Status.EXPECTATION_FAILED)
-                    .entity(Errors.withErrors(new ErrorMessage("Can't find user '%s'", username)))
-                    .build();
-        }
-
-        Device device = DevicesFactory.createDevice(newName, owner, RGBLamp.class);
-        Device existingDevice = devicesService.findDeviceById(device.getId());
-        if (existingDevice == null) {
-            return Response
-                    .status(Response.Status.NOT_FOUND)
-                    .entity(Errors.withErrors(
-                            new ErrorMessage("The device '%s' for user '%s' does not exist. " +
-                                    "Create it first via a POST request.", name, username)))
-                    .build();
-        } else {
-            // ensure that this is the same device otherwise delete the old one and create the new one
-            if (!existingDevice.getId().equals(device.getId())) {
-                devicesService.deleteDevice(existingDevice.getId());
-            }
-            devicesService.saveDevice(device);
-            return Response.ok().build();
-        }
+        // TODO: support update of device via JAX-RS
+        throw new UnsupportedOperationException("Device update is now working yet!");
     }
 
     @GET

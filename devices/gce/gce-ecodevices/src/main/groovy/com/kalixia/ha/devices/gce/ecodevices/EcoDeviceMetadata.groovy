@@ -1,5 +1,7 @@
 package com.kalixia.ha.devices.gce.ecodevices
 
+import com.kalixia.ha.model.User
+import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.devices.DeviceMetadata
 import com.kalixia.ha.model.quantity.WattsPerHour
 import com.kalixia.ha.model.sensors.CounterSensorMetadata
@@ -33,6 +35,11 @@ class EcoDeviceMetadata implements DeviceMetadata {
                 new CounterSensorMetadata("Water", NonSI.LITER),
                 new CounterSensorMetadata("Gas", SI.CUBIC_METRE)
         ]
+    }
+
+    @Override
+    Device createDevice(User owner, String name) {
+        return new EcoDevice(UUID.randomUUID(), name, owner)
     }
 }
 

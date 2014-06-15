@@ -53,6 +53,9 @@ public abstract class AbstractDevice<C extends Configuration> extends AbstractAu
         this.sensors = Sets.newHashSet();
         try {
             configuration = ConfigurationBuilder.loadConfiguration(name, getConfigurationFilename(), getConfigurationClass());
+            if (configuration == null) {
+                throw new IllegalStateException("Can't initialize device because of missing configuration");
+            }
             init(configuration);
         } catch (IOException e) {
             LOGGER.error("Device '{}' won't start", e);

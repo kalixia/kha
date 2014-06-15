@@ -1,12 +1,15 @@
 package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.DevicesDao
+import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.devices.DeviceMetadata
 import groovy.util.logging.Slf4j
 import rx.Observable
 
 import java.util.function.Consumer
+
+import static com.google.common.base.Preconditions.checkNotNull
 
 @Slf4j(value = "LOGGER")
 class DevicesServiceImpl implements DevicesService {
@@ -53,6 +56,27 @@ class DevicesServiceImpl implements DevicesService {
         } else {
             return Observable.from(devicesMetadataLoader)
         }
+    }
+
+    @Override
+    Device create(User owner, String name, String type) {
+        checkNotNull(owner)
+        checkNotNull(name)
+        checkNotNull(type)
+        if (type.isEmpty())
+            throw new IllegalArgumentException("Missing device type")
+
+        Device device
+        Iterator<DeviceMetadata> supportedDevices = devicesMetadataLoader.iterator();
+        for (DeviceMetadata metadata : supportedDevices) {
+            if (metadata.type == type) {
+                device = metadata.createDevice(owner, name)
+                return device
+            }
+        }
+
+        if (device == null)
+            throw new IllegalArgumentException(String.format("Invalid device type '%s'", type))
     }
 
     @Override

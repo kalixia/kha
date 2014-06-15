@@ -37,6 +37,16 @@ public interface DevicesService {
     Observable<DeviceMetadata> findAllSupportedDevices();
 
     /**
+     * Create a device for <tt>owner</tt> by specifying its <tt>name</tt> and <tt>type</tt>.
+     * @param owner the owner of the device to create
+     * @param name the name of the created device
+     * @param type the type of device to create
+     * @return the create device
+     * @throws IllegalArgumentException if tne type of device is not supported
+     */
+    Device create(User owner, String name, String type);
+
+    /**
      * Creates a new device.
      * @param device the device to create
      * @return the created device as an {@link Observable}

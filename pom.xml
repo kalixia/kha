@@ -23,7 +23,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <grapi.version>0.4.2-SNAPSHOT</grapi.version>
+        <grapi.version>0.4.2</grapi.version>
         <hystrix.version>1.4.0-RC4</hystrix.version>
         <rxjava.version>0.18.3</rxjava.version>
         <rxnetty.version>0.3.5</rxnetty.version>

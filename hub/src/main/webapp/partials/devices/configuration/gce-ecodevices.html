@@ -1,0 +1,23 @@
+<form name="ecoDeviceForm" novalidate role="form" ng-controller="ConfigureGCEEcoDevicesDeviceController">
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error': !ecoDeviceForm.host.$valid }">
+        <label for="host">IP Address:</label>
+        <input id="host" name="host" type="text" ng-model="configuration.host" required autofocus
+               placeholder="192.168.1.X" class="form-control"/>
+        <span class="help-block">
+            If you access your EcoDevices for example via <a href="http://192.168.1.33">http://192.168.1.33</a>,
+            then you should input <code>192.168.1.33</code>.
+        </span>
+    </div>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error': !ecoDeviceForm.port.$valid }">
+        <label for="port">Port:</label>
+        <input id="port" name="port" type="text" ng-model="configuration.port" required class="form-control"/>
+        <span class="help-block">
+            If you access your EcoDevices for example via <a href="http://192.168.1.33">http://192.168.1.33</a>,
+            then you should input <code>80</code>.
+        </span>
+    </div>
+
+    <pre>configuration = {{configuration | json}}</pre>
+</form>

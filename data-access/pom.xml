@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>data-access</artifactId>
+    <name>Data Access</name>
     <packaging>pom</packaging>
 
     <modules>

@@ -69,6 +69,9 @@ function WelcomeController($scope, WelcomeService, SecurityService, $location, $
                 case 409:
                     $scope.errorMessage = "Device already exists!";
                     break;
+                case 500:
+                    $scope.errorMessage = error.data;
+                    break;
             }
         });
     };
@@ -86,5 +89,9 @@ function WelcomeController($scope, WelcomeService, SecurityService, $location, $
         var device = $scope.currentStepScope.device;
         $scope.deviceConfigurationTemplate = "partials/devices/configuration/" + device.type + ".html";
         $log.debug("Device configuration view set to: " + $scope.deviceConfigurationTemplate);
+    });
+    $scope.$on('device.configure.form.valid', function(event, data) {
+        $scope.validForm = data.value;
+        $scope.currentStepScope = data.scope;
     });
 }

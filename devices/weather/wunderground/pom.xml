@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>wunderground</artifactId>
+    <name>Devices: Weather: Wunderground</name>
 
     <dependencies>
 

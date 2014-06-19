@@ -4,11 +4,6 @@
         <input id="name" name="name" type="text" ng-model="device.name" required autofocus class="form-control"/><br/>
     </div>
 
-    <!--<div class="form-group has-feedback" ng-class="{ 'has-error': !createDeviceForm.name.$valid }">-->
-        <!--<label for="type">Type:</label>-->
-        <!--<input id="type" name="type" type="text" ng-model="device.type" required class="form-control"/><br/>-->
-    <!--</div>-->
-
     <ul class="supported-devices">
         <li ng-repeat="device in supportedDevices"
             ng-click="selectDevice(device.type)"

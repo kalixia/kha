@@ -10,5 +10,6 @@ import java.util.SortedSet;
  * @param <Q>
  */
 public interface AggregatedSensor<Q extends Quantity> extends Sensor<Q> {
+    String getSensorsPrefix();
     Set<Sensor<Q>> getSensors();
 }

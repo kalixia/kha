@@ -8,6 +8,7 @@ class EmbeddedCassandraUtils {
     def static setupRepository() {
         LOGGER.info("Starting Embedded Cassandra Server...")
         EmbeddedCassandraServerHelper.startEmbeddedCassandra("/cassandra.yaml")
+        Thread.sleep(5000)
     }
 
     def static cleanupRepository() {

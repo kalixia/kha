@@ -12,5 +12,6 @@ public interface Permissions {
     String DEVICES_ALL = "devices:*";
     String DEVICES_CREATE = "devices:create";
     String DEVICES_VIEW = "devices:view";
+    String DEVICES_SUPPORTED = "devices:supported";
 
 }

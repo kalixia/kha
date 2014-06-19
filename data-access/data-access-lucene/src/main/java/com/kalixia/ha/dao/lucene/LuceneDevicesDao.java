@@ -5,6 +5,7 @@ import com.kalixia.ha.dao.UsersDao;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.devices.RGBLamp;
+import com.kalixia.ha.model.sensors.AggregatedSensor;
 import com.kalixia.ha.model.sensors.BasicSensor;
 import com.kalixia.ha.model.sensors.Sensor;
 import org.apache.lucene.document.Document;
@@ -26,8 +27,10 @@ import rx.Observable;
 import rx.exceptions.Exceptions;
 
 import javax.inject.Inject;
+import javax.measure.quantity.Quantity;
 import javax.measure.unit.Unit;
 import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -138,7 +141,7 @@ public class LuceneDevicesDao implements DevicesDao {
     }
 
     @Override
-    public void save(Device device) {
+    public void save(Device<?> device) {
         LOGGER.info("Saving device '{}' ({}) to Lucene indexes", device.getName(), device.getId());
         try {
             // store device information
@@ -159,8 +162,18 @@ public class LuceneDevicesDao implements DevicesDao {
                 String sensorID = deviceID + '-' + sensor.getName();
                 sensorDoc.add(new StringField(FIELD_ID, sensorID, Store.YES));
                 sensorDoc.add(new StringField(FIELD_SENSOR_DEVICE_ID, deviceID, Store.NO));
-                sensorDoc.add(new StringField(FIELD_SENSOR_NAME, sensor.getName(), Store.YES));
-                sensorDoc.add(new StringField(FIELD_SENSOR_UNIT, sensor.getUnit().toString(), Store.YES));
+                if (AggregatedSensor.class.isAssignableFrom(sensor.getClass())) {
+                    AggregatedSensor<?> aggregatedSensor = (AggregatedSensor) sensor;
+                    Set<? extends Sensor<? extends Quantity>> subSensors = aggregatedSensor.getSensors();
+                    for (Sensor subSensor : subSensors) {
+                        sensorDoc.add(new StringField(FIELD_SENSOR_NAME,
+                                aggregatedSensor.getSensorsPrefix() + "/" + subSensor.getName(), Store.YES));
+                        sensorDoc.add(new StringField(FIELD_SENSOR_UNIT, subSensor.getUnit().toString(), Store.YES));
+                    }
+                } else {
+                    sensorDoc.add(new StringField(FIELD_SENSOR_NAME, sensor.getName(), Store.YES));
+                    sensorDoc.add(new StringField(FIELD_SENSOR_UNIT, sensor.getUnit().toString(), Store.YES));
+                }
                 sensorDoc.add(new StringField(FIELD_TYPE, "sensor", Store.NO));
                 term = new Term(FIELD_ID, sensorID);
                 indexWriter.updateDocument(term, sensorDoc);

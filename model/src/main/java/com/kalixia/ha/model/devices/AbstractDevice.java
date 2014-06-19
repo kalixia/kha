@@ -26,8 +26,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Abstract device class easing code a little bit.
  */
-public abstract class AbstractDevice<C extends Configuration> extends AbstractAuditable
-        implements Device, ConfigurableDevice<C> {
+public abstract class AbstractDevice<C extends Configuration> extends AbstractAuditable implements Device<C> {
     private final UUID id;
     private final String name;
     private final User owner;
@@ -36,6 +35,7 @@ public abstract class AbstractDevice<C extends Configuration> extends AbstractAu
     protected C configuration;
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+    protected abstract void init(C configuration);
     protected abstract String getConfigurationFilename();
     protected abstract Class<C> getConfigurationClass();
 
@@ -58,7 +58,7 @@ public abstract class AbstractDevice<C extends Configuration> extends AbstractAu
             }
             init(configuration);
         } catch (IOException e) {
-            LOGGER.error("Device '{}' won't start", e);
+            LOGGER.error("Device '{}' won't start", name, e);
         }
     }
 

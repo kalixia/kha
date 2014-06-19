@@ -51,7 +51,7 @@ public class CassandraDevicesDao implements DevicesDao {
                 .setUUID(COL_ID, id);
         return Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
-                .map(this::buildUserFromRow)
+                .map(this::buildDeviceFromRow)
                 .defaultIfEmpty(null)
                 .toBlockingObservable().single();
     }
@@ -63,7 +63,7 @@ public class CassandraDevicesDao implements DevicesDao {
                 .setString(COL_NAME, name);
         return Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
-                .map(this::buildUserFromRow)
+                .map(this::buildDeviceFromRow)
                 .defaultIfEmpty(null)
                 .toBlockingObservable().single();
     }
@@ -74,11 +74,11 @@ public class CassandraDevicesDao implements DevicesDao {
                 .setString(COL_OWNER, username);
         return Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
-                .map(this::buildUserFromRow);
+                .map(this::buildDeviceFromRow);
     }
 
     @Override
-    public void save(Device device) {
+    public void save(Device<?> device) {
         Map<String, String> sensorsData = device.getSensors().stream()
                 .map(sensor -> ImmutableMap.<String, String>builder().put(sensor.getName(), sensor.getUnit().toString()).build())
                 .collect(
@@ -102,7 +102,7 @@ public class CassandraDevicesDao implements DevicesDao {
     }
 
     @SuppressWarnings("unchecked")
-    private Device buildUserFromRow(Row row) {
+    private Device buildDeviceFromRow(Row row) {
         UUID id = row.getUUID(COL_ID);
         User owner = usersDao.findByUsername(row.getString(COL_OWNER));
         String name = row.getString(COL_NAME);

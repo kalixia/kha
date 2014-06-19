@@ -19,7 +19,8 @@ import rx.functions.Func1;
 
 import java.util.UUID;
 
-public class WundergroundDevice extends AbstractDevice<WundergroundDeviceConfiguration> implements WeatherService, PullBasedDevice {
+public class WundergroundDevice extends AbstractDevice<WundergroundDeviceConfiguration>
+        implements WeatherService,PullBasedDevice<WundergroundDeviceConfiguration> {
     private WundergroundDeviceConfiguration configuration;
     private HttpClient<ByteBuf, ByteBuf> httpClient;
     private ObjectMapper mapper;

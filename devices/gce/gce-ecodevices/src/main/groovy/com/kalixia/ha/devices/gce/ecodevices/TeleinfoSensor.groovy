@@ -2,7 +2,11 @@ package com.kalixia.ha.devices.gce.ecodevices
 
 import com.google.common.collect.Sets
 import com.kalixia.ha.model.quantity.WattsPerHour
-import com.kalixia.ha.model.sensors.*
+import com.kalixia.ha.model.sensors.AggregatedSensor
+import com.kalixia.ha.model.sensors.CounterSensor
+import com.kalixia.ha.model.sensors.DataPoint
+import com.kalixia.ha.model.sensors.GaugeSensor
+import com.kalixia.ha.model.sensors.Sensor
 
 import javax.measure.Measure
 import javax.measure.quantity.Power
@@ -41,6 +45,11 @@ class TeleinfoSensor implements AggregatedSensor<WattsPerHour> {
     @Override
     DataPoint<WattsPerHour> getLastValue() {
         throw new UnsupportedOperationException("The teleinfo is an aggregate sensor. It has no value in itself!")
+    }
+
+    @Override
+    String getSensorsPrefix() {
+        return name
     }
 
     public Set<Sensor<WattsPerHour>> getSensors() {

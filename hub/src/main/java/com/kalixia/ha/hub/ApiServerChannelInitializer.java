@@ -8,26 +8,16 @@ import com.kalixia.grapi.codecs.json.ByteBufSerializer;
 import com.kalixia.grapi.codecs.rest.RESTCodec;
 import com.kalixia.grapi.codecs.shiro.ShiroHandler;
 import com.kalixia.ha.api.rest.GeneratedJaxRsModuleHandler;
-import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.ChannelPromise;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.HttpContentCompressor;
-import io.netty.handler.codec.http.HttpContentDecompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.util.Attribute;
-import io.netty.util.AttributeKey;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.subject.Subject;
-import org.jboss.logging.MDC;
 
 import javax.inject.Inject;
 
@@ -75,23 +65,4 @@ public class ApiServerChannelInitializer extends ChannelInitializer<SocketChanne
         pipeline.addLast("jax-rs-handlers", jaxRsHandlers);
     }
 
-    @Sharable
-    private class UserLoggingHandler extends ChannelDuplexHandler {
-        public static final String MDC_PROPERTY = "USER";
-
-        @Override
-        public void read(ChannelHandlerContext ctx) throws Exception {
-            Attribute<Subject> subjectAttribute = ctx.attr(ShiroHandler.ATTR_SUBJECT);
-            if (subjectAttribute != null && subjectAttribute.get() != null)
-                MDC.put(MDC_PROPERTY, subjectAttribute.get());
-            super.read(ctx);
-        }
-
-        @Override
-        public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-            super.write(ctx, msg, promise);
-            MDC.remove(MDC_PROPERTY);
-        }
-
-    }
 }

@@ -18,7 +18,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
-public class ZibaseDevice extends AbstractDevice<ZibaseDeviceConfiguration> implements PullBasedDevice {
+public class ZibaseDevice extends AbstractDevice<ZibaseDeviceConfiguration>
+        implements PullBasedDevice<ZibaseDeviceConfiguration> {
     private ZibaseDeviceConfiguration configuration;
     private CloseableHttpAsyncClient httpClient;
     private ObjectMapper mapper;

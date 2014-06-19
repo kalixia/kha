@@ -87,7 +87,10 @@ public class DeviceResource {
             URI deviceURI = new URI(UriTemplateUtils.createURI(
                     "/{username}/devices/{device}",
                     username, device.getName()));
-            return Response.created(deviceURI).build();
+            return Response
+                    .created(deviceURI)
+                    .entity(device)
+                    .build();
         } else {
             return Response
                     .status(Response.Status.CONFLICT)
@@ -116,6 +119,7 @@ public class DeviceResource {
 
     @GET
     @Path("/supported")
+    @RequiresPermissions(Permissions.DEVICES_SUPPORTED)
     public Response findAllSupportedDevices() {
         List<DeviceMetadata> devicesMetadata = devicesService.findAllSupportedDevices()
                 .toList().toBlockingObservable().single();

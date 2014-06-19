@@ -1,10 +1,11 @@
 package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.DevicesDao
-import com.kalixia.ha.model.security.Role
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.devices.RGBLamp
+import com.kalixia.ha.model.security.Role
+import rx.Observable
 import spock.lang.Specification
 
 import static java.util.Collections.emptySet
@@ -101,4 +102,45 @@ class DevicesServiceTest extends Specification {
         foundDevice != null
         foundDevice == device2
     }
+
+    def "test searching for all supported devices"() {
+        given:
+        def dao = Mock(DevicesDao)
+        def service = new DevicesServiceImpl(dao)
+
+        when:
+        Observable supportedDevices = service.findAllSupportedDevices()
+
+        then:
+        supportedDevices != null
+        supportedDevices.count().toBlockingObservable().single() == 1
+    }
+
+    def "test creating an unsupported device"() {
+        given:
+        def dao = Mock(DevicesDao)
+        def service = new DevicesServiceImpl(dao)
+        def owner = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, emptySet())
+
+        when:
+        service.create(owner, "my device", "unsupported-device")
+
+        then:
+        thrown(IllegalArgumentException)
+    }
+
+    def "test creating a RGB Lamp"() {
+        given:
+        def dao = Mock(DevicesDao)
+        def service = new DevicesServiceImpl(dao)
+        def owner = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, emptySet())
+
+        when:
+        def device = service.create(owner, "my lamp", "rgb-lamp")
+
+        then:
+        device != null
+        device.name == "my lamp"
+    }
+
 }

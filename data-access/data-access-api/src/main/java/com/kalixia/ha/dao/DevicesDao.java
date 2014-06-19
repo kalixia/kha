@@ -8,6 +8,6 @@ public interface DevicesDao {
     Device findById(UUID id);
     Device findByOwnerAndName(String ownerUsername, String name);
     Observable<? extends Device> findAllDevicesOfUser(String username);
-    void save(Device device);
+    void save(Device<?> device);
     void delete(UUID id);
 }

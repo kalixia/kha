@@ -7,14 +7,14 @@ import static ch.qos.logback.classic.Level.*
 
 appender("STDOUT", ConsoleAppender) {
     encoder(PatternLayoutEncoder) {
-        pattern = "%d{HH:mm:ss.SSS} [%X{CLIENT_ADDR}/%X{REQUEST_ID}] [%thread] %-5level %logger{36} - %msg%n"
+        pattern = "%d{HH:mm:ss.SSS} [%X{CLIENT_ADDR}/%X{REQUEST_ID}] [%X{USER}] [%thread] %-5level %logger{36} - %msg%n"
     }
     withJansi = true
 }
 
 appender("FILE", RollingFileAppender) {
     encoder(PatternLayoutEncoder) {
-        pattern = "%d{HH:mm:ss.SSS} [%X{CLIENT_ADDR}/%X{REQUEST_ID}] [%thread] %-5level %logger{36} - %msg%n"
+        pattern = "%d{HH:mm:ss.SSS} [%X{CLIENT_ADDR}/%X{REQUEST_ID}] [%X{USER}] [%thread] %-5level %logger{36} - %msg%n"
 //        immediateFlush = false
     }
     append = true

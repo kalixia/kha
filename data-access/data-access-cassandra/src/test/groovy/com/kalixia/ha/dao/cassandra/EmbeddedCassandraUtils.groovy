@@ -7,7 +7,7 @@ import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 class EmbeddedCassandraUtils {
     def static setupRepository() {
         LOGGER.info("Starting Embedded Cassandra Server...")
-        EmbeddedCassandraServerHelper.startEmbeddedCassandra()
+        EmbeddedCassandraServerHelper.startEmbeddedCassandra("/cassandra.yaml")
     }
 
     def static cleanupRepository() {

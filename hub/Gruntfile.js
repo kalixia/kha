@@ -73,13 +73,13 @@ module.exports = function (grunt) {
           https: false,
           changeOrigin: false
         },
-        {
-          context: '/api-docs',
-          host: 'localhost',
-          port: 8080,
-          https: false,
-          changeOrigin: false
-        },
+//        {
+//          context: '/api-docs',
+//          host: 'localhost',
+//          port: 8080,
+//          https: false,
+//          changeOrigin: false
+//        },
         {
           context: '/oauth/token',
           host: 'localhost',
@@ -224,8 +224,15 @@ module.exports = function (grunt) {
     usemin: {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
       css: ['<%= yeoman.dist %>/css/{,*/}*.css'],
+      swagger: ['<%= yeoman.dist %>/js/*.swagger.js'],
       options: {
-        dirs: ['<%= yeoman.dist %>']
+        //dirs: ['<%= yeoman.dist %>'],
+        assetsDirs: ['<%= yeoman.dist %>', '<%= yeoman.dist %>/images'],
+        patterns: {
+          swagger: [
+              [/(throbber\.gif)/, 'Replacing reference to throbber.gif']
+          ]
+        }
       }
     },
     imagemin: {
@@ -294,7 +301,8 @@ module.exports = function (grunt) {
             '*.{ico,png,txt}',
             '.htaccess',
             'images/{,*/}*.{png,gif,webp}',
-            'fonts/*'
+            'fonts/*',
+            'api-docs/*'
           ]
         }, {
           expand: true,
@@ -362,6 +370,9 @@ module.exports = function (grunt) {
         files: {
           '<%= yeoman.dist %>/js/hub.js': [
             '<%= yeoman.dist %>/js/hub.js'
+          ],
+          '<%= yeoman.dist %>/js/swagger.js': [
+            '<%= yeoman.dist %>/js/swagger.js'
           ]
         }
       }

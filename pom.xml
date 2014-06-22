@@ -23,7 +23,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <grapi.version>0.4.2</grapi.version>
+        <grapi.version>0.4.3-SNAPSHOT</grapi.version>
         <hystrix.version>1.4.0-RC4</hystrix.version>
         <rxjava.version>0.18.3</rxjava.version>
         <rxnetty.version>0.3.5</rxnetty.version>
@@ -382,6 +382,31 @@
                                             </limit>
                                         </limits>
                                     </rule>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-versions</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <message>You are running an older version of Maven. Kha requires at least Maven 3.0</message>
+                                        <version>[3.0.0,)</version>
+                                    </requireMavenVersion>
+                                    <requireJavaVersion>
+                                        <message>You are running an older version of Java. Kha requires at least JDK 1.8</message>
+                                        <version>[1.8.0,)</version>
+                                    </requireJavaVersion>
                                 </rules>
                             </configuration>
                         </execution>

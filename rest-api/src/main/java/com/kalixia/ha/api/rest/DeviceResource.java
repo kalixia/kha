@@ -1,12 +1,21 @@
 package com.kalixia.ha.api.rest;
 
 import com.kalixia.grapi.codecs.jaxrs.UriTemplateUtils;
+import com.kalixia.grapi.codecs.rest.RESTCodec;
 import com.kalixia.ha.api.DevicesService;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.devices.DeviceMetadata;
 import com.kalixia.ha.model.security.Permissions;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.Authorization;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 import javax.inject.Inject;
@@ -31,6 +40,7 @@ import static javax.ws.rs.core.HttpHeaders.CACHE_CONTROL;
 
 @Path("/{username}/devices")
 @Produces(MediaType.APPLICATION_JSON)
+@Api(value = "devices", description = "API for Devices", position = 2)
 public class DeviceResource {
     @Inject
     DevicesService devicesService;
@@ -40,7 +50,20 @@ public class DeviceResource {
 
     @GET
     @RequiresPermissions(Permissions.DEVICES_VIEW)
-    public @NotNull Response findAllDevicesOfUser(@PathParam("username") String username) {
+    @ApiOperation(value = "Retrieve the list of devices of a user",
+            response = Device.class, responseContainer = "List",
+            authorizations = {@Authorization("oauth2")})
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "the list of devices the user has"),
+            @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
+            @ApiResponse(code = 403, message = "if the request is denied for security reasons")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,
+                    dataType = "uuid", paramType = "header")
+    })
+    public @NotNull Response findAllDevicesOfUser(
+            @ApiParam(value = "the owner of the devices", required = true) @PathParam("username") String username) {
         List<? extends Device> devices = devicesService.findAllDevicesOfUser(username)
                 .toList().toBlockingObservable().single();
         return Response
@@ -51,9 +74,23 @@ public class DeviceResource {
     }
 
     @GET
-    @Path("{name}")
+    @Path("/{name}")
     @RequiresPermissions(Permissions.DEVICES_VIEW)
-    public @NotNull Response findDeviceByName(@PathParam("username") String username, @PathParam("name") String name) {
+    @ApiOperation(value = "Retrieve the device of a user having the given name",
+            response = Device.class, authorizations = {@Authorization("oauth2")})
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "the device"),
+            @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
+            @ApiResponse(code = 403, message = "if the request is denied for security reasons"),
+            @ApiResponse(code = 404, message = "if the device does not exist")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,
+                    dataType = "uuid", paramType = "header")
+    })
+    public @NotNull Response findDeviceByName(
+            @ApiParam(value = "the owner of the device", required = true) @PathParam("username") String username,
+            @ApiParam(value = "the name of the device", required = true) @PathParam("name") String name) {
         Device device = devicesService.findDeviceByName(username, name);
         if (device == null)
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -103,7 +140,7 @@ public class DeviceResource {
     }
 
     @PUT
-    @Path("{name}")
+    @Path("/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiresPermissions(Permissions.DEVICES_CREATE)
     public Response updateDevice(@PathParam("username") String username, @PathParam("name") String name, Map json)
@@ -120,6 +157,17 @@ public class DeviceResource {
     @GET
     @Path("/supported")
     @RequiresPermissions(Permissions.DEVICES_SUPPORTED)
+    @ApiOperation(value = "Find all supported devices", response = DeviceMetadata.class, responseContainer = "List",
+            authorizations = {@Authorization("oauth2")})
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "the list of devices metadata"),
+            @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
+            @ApiResponse(code = 403, message = "if the request is denied for security reasons")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,
+                    dataType = "uuid", paramType = "header")
+    })
     public Response findAllSupportedDevices() {
         List<DeviceMetadata> devicesMetadata = devicesService.findAllSupportedDevices()
                 .toList().toBlockingObservable().single();

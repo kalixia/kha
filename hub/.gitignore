@@ -12,3 +12,5 @@ node_modules
 .DS_Store
 src/main/webapp/bower_components
 src/main/webapp/dist
+src/main/webapp/css/hub.css
+src/main/webapp/api-docs

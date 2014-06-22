@@ -1,5 +1,6 @@
 package com.kalixia.ha.api.rest;
 
+import com.wordnik.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.apache.shiro.mgt.SecurityManager;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
+@Api(value = "security", description = "API for Security", position = 6)
 public class SecurityResource {
     @Inject
     SecurityManager securityManager;

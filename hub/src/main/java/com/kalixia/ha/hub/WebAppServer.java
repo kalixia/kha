@@ -1,5 +1,6 @@
 package com.kalixia.ha.hub;
 
+import com.kalixia.grapi.codecs.rest.RESTCodec;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -9,9 +10,13 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.oio.OioServerSocketChannel;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.cors.CorsConfig;
+import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import org.apache.lucene.util.NamedThreadFactory;
 import org.slf4j.Logger;
@@ -25,8 +30,7 @@ public class WebAppServer {
     private ServerBootstrap apiBootstrap;
     private final int port;
     private final String hubSiteDirectory;
-    private OioEventLoopGroup parentGroup;
-    private OioEventLoopGroup childGroup;
+    private final CorsConfig corsConfig;
     private static final Logger LOGGER = LoggerFactory.getLogger(WebAppServer.class);
 
     public WebAppServer(int port) {
@@ -37,6 +41,21 @@ public class WebAppServer {
         } else {
             this.hubSiteDirectory = hubHomeDirectory + "/site";
         }
+        corsConfig = CorsConfig.withAnyOrigin()
+                        .allowCredentials()                                     // required for custom headers
+                        .allowedRequestMethods(
+                                HttpMethod.GET,
+                                HttpMethod.POST,
+                                HttpMethod.PUT,
+                                HttpMethod.DELETE,
+                                HttpMethod.OPTIONS)
+                        .maxAge(1 * 60 * 60)                                    // 1 hour
+                        .allowedRequestHeaders(
+                                HttpHeaders.Names.CONTENT_TYPE,
+                                RESTCodec.HEADER_REQUEST_ID,                    // header for tracking request ID
+                                HttpHeaders.Names.AUTHORIZATION)                // header for OAuth2 authentication
+                        .exposeHeaders(RESTCodec.HEADER_REQUEST_ID)
+                        .build();
         LOGGER.debug("Website content served from '{}'", hubSiteDirectory);
     }
 
@@ -56,11 +75,12 @@ public class WebAppServer {
                             ChannelPipeline pipeline = ch.pipeline();
 
                             pipeline.addLast("http-request-decoder", new HttpRequestDecoder());
-//                            pipeline.addLast("deflater", new HttpContentDecompressor());
                             pipeline.addLast("http-object-aggregator", new HttpObjectAggregator(1048576));
                             pipeline.addLast("http-response-encoder", new HttpResponseEncoder());
+//                            pipeline.addLast("deflater", new HttpContentDecompressor());
 //                            pipeline.addLast("inflater", new HttpContentCompressor());
                             pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
+                            pipeline.addLast("cors", new CorsHandler(corsConfig));
                             pipeline.addLast("file-handler", new HttpStaticFileServerHandler(hubSiteDirectory, true));
                         }
                     });

@@ -110,6 +110,34 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <locations>com.kalixia.ha.api.rest</locations>
+                            <apiVersion>v1</apiVersion>
+                            <basePath>http://localhost:8082</basePath>
+                            <outputTemplate>https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache</outputTemplate>
+                            <outputPath>${basedir}/src/main/webapp/api-docs/strapdown.html</outputPath>
+                            <!--<swaggerUIDocBasePath>http://www.example.com/apidocsf</swaggerUIDocBasePath>-->
+                            <swaggerDirectory>${basedir}/src/main/webapp/api-docs</swaggerDirectory>
+                            <!--<useOutputFlatStructure>false</useOutputFlatStructure>-->
+                            <!--<mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>-->
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>com.github.trecloux</groupId>
                 <artifactId>yeoman-maven-plugin</artifactId>
                 <version>0.2</version>
@@ -136,6 +164,9 @@
                     <filesets>
                         <fileset>
                             <directory>src/main/webapp/dist</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>src/main/webapp/api-docs</directory>
                         </fileset>
                         <fileset>
                             <directory>.tmp</directory>

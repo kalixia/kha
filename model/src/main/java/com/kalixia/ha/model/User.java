@@ -5,23 +5,38 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import com.kalixia.ha.model.security.OAuthTokens;
 import com.kalixia.ha.model.security.Role;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.joda.time.DateTime;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Collections.emptySet;
 
+@ApiModel("User")
 public class User extends AbstractAuditable {
+    @ApiModelProperty(value = "the login of the user", required = true)
     private final String username;
+
+    @ApiModelProperty(value = "the password of the user", required = true)
     private String password;
+
+    @ApiModelProperty(value = "the email of the user", required = true)
     private String email;
+
+    @ApiModelProperty(value = "the first name of the user", required = true)
     private String firstName;
+
+    @ApiModelProperty(value = "the last name of the user", required = true)
     private String lastName;
+
+    @ApiModelProperty(value = "the roles of the user (security)", required = true, dataType = "string",
+            allowableValues = "ADMINISTRATOR, USER, ANONYMOUS")
     private Set<Role> roles;
+
+    @ApiModelProperty(value = "the OAuth2 set of tokens (access and refresh tokens) of the user", required = true)
     private Set<OAuthTokens> oauthTokens;
 
     @JsonCreator

@@ -4,6 +4,8 @@ import com.kalixia.grapi.codecs.jaxrs.UriTemplateUtils;
 import com.kalixia.ha.api.DevicesService;
 import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.sensors.MutableSensor;
+import com.wordnik.swagger.annotations.Api;
+
 import javax.inject.Inject;
 import javax.measure.unit.Unit;
 import javax.ws.rs.Consumes;
@@ -21,6 +23,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 @Path("/{username}/devices/{device}/sensors")
 @Produces(MediaType.APPLICATION_JSON)
+@Api(value = "sensors", description = "API for Sensors", position = 3)
 public class SensorResource {
     @Inject
     DevicesService devicesService;

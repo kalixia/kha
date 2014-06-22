@@ -6,6 +6,7 @@ public interface Permissions {
     String USERS_ALL = "users:*";
     String USERS_CREATE = "users:create";
     String USERS_VIEW = "users:view";
+    String USERS_LIST = "users:view";
     String USERS_COUNT = "users:count";
 
     // permissions for devices

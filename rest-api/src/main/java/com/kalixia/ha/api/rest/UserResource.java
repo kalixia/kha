@@ -3,6 +3,11 @@ package com.kalixia.ha.api.rest;
 import com.kalixia.grapi.codecs.jaxrs.UriTemplateUtils;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -23,13 +28,18 @@ import static javax.ws.rs.core.HttpHeaders.CACHE_CONTROL;
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
+@Api(value = "users", description = "API for Users", position = 1)
 public class UserResource {
     @Inject
     UsersService service;
 
     @GET
     @Path("{username}")
-    public Response findByUsername(@PathParam("username") String username) {
+    @ApiOperation(value = "Retrieve user by login", response = User.class)
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "user not found")
+    })
+    public Response findByUsername(@PathParam("username") @ApiParam(value = "login of the user", required = true) String username) {
         User user = service.findByUsername(username);
         if (user == null)
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -63,7 +73,8 @@ public class UserResource {
     @PUT
     @Path("{username}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateUser(@PathParam("username") String username, @Valid User user) throws URISyntaxException {
+    public Response updateUser(@PathParam("username") @ApiParam(value = "login of the user", required = true) String username,
+                               @Valid User user) throws URISyntaxException {
         if (service.findByUsername(username) == null) {
             return Response
                     .status(Response.Status.NOT_FOUND)

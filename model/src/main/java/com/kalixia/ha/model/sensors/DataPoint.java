@@ -1,6 +1,8 @@
 package com.kalixia.ha.model.sensors;
 
 import com.google.common.base.Objects;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.joda.time.Instant;
 
 import javax.measure.Measurable;
@@ -12,8 +14,12 @@ import java.io.Serializable;
  * done.
  * @param <Q> the type of value
  */
+@ApiModel("DataPoint")
 public class DataPoint<Q extends Quantity> implements Serializable {
+    @ApiModelProperty("value of the datapoint")
     private final Measurable<Q> value;
+
+    @ApiModelProperty("date of the datapoint")
     private final Instant at;
 
     public DataPoint(Measurable<Q> value) {

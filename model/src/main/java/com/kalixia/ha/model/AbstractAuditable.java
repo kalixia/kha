@@ -1,11 +1,15 @@
 package com.kalixia.ha.model;
 
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.joda.time.DateTime;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractAuditable implements Auditable {
+    @ApiModelProperty(value = "the date the entity was created", required = false)
     private final DateTime creationDate;
+
+    @ApiModelProperty(value = "the date the entity was lastly updated", required = false)
     private DateTime lastUpdateDate;
 
     protected AbstractAuditable() {

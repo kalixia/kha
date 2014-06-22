@@ -42,6 +42,7 @@ import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -284,8 +285,14 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
             return null;
         }
 
-        if ("/".equals(uri))
-            uri = "/index.html";
+        if (uri.endsWith("/")) {
+            if (Files.exists(Paths.get(baseDir, uri, "service.json")))
+                uri = uri + "/service.json";
+            else if (Files.exists(Paths.get(baseDir, uri, "index.json")))
+                uri = uri + "/index.json";
+            else if (Files.exists(Paths.get(baseDir, uri, "index.html")))
+                uri = uri + "/index.html";
+        }
 
         // Convert to absolute path.
         return baseDir + File.separator + uri;

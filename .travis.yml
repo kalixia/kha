@@ -1,5 +1,6 @@
 language: java
-jdk: oraclejdk8
+jdk:
+  - oraclejdk8
 
 # Install Grunt and Bower (required by the Hub and Cloud Platform modules)
 before_script:

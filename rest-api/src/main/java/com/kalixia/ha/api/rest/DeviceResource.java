@@ -16,6 +16,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.Authorization;
+import com.wordnik.swagger.annotations.AuthorizationScope;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,15 @@ import static javax.ws.rs.core.Response.Status.EXPECTATION_FAILED;
 
 @Path("/{username}/devices")
 @Produces(MediaType.APPLICATION_JSON)
-@Api(value = "devices", description = "API for Devices", position = 2)
+@Api(
+        value = "devices",
+        description = "API for Devices", position = 2,
+        authorizations = {
+                @Authorization(value = "oauth2", scopes = {
+                        @AuthorizationScope(scope = "write", description = "write your devices")
+                })
+        }
+)
 public class DeviceResource {
     @Inject
     DevicesService devicesService;
@@ -56,9 +65,7 @@ public class DeviceResource {
 
     @GET
     @RequiresPermissions(Permissions.DEVICES_VIEW)
-    @ApiOperation(value = "Retrieve the list of devices of a user",
-            response = Device.class, responseContainer = "List",
-            authorizations = {@Authorization("oauth2")})
+    @ApiOperation(value = "Retrieve the list of devices of a user", response = Device.class, responseContainer = "List")
     @ApiResponses({
             @ApiResponse(code = 200, message = "the list of devices the user has"),
             @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
@@ -82,8 +89,7 @@ public class DeviceResource {
     @GET
     @Path("/{name}")
     @RequiresPermissions(Permissions.DEVICES_VIEW)
-    @ApiOperation(value = "Retrieve the device of a user having the given name",
-            response = Device.class, authorizations = {@Authorization("oauth2")})
+    @ApiOperation(value = "Retrieve the device of a user having the given name", response = Device.class)
     @ApiResponses({
             @ApiResponse(code = 200, message = "the device"),
             @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
@@ -181,8 +187,7 @@ public class DeviceResource {
     @GET
     @Path("/supported")
     @RequiresPermissions(Permissions.DEVICES_SUPPORTED)
-    @ApiOperation(value = "Find all supported devices", response = DeviceMetadata.class, responseContainer = "List",
-            authorizations = {@Authorization("oauth2")})
+    @ApiOperation(value = "Find all supported devices", response = DeviceMetadata.class, responseContainer = "List")
     @ApiResponses({
             @ApiResponse(code = 200, message = "the list of devices metadata"),
             @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),

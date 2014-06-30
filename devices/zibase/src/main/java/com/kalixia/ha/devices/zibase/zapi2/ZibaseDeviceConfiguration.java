@@ -12,14 +12,22 @@ public class ZibaseDeviceConfiguration extends Configuration {
     private String zibaseID;
 
     @JsonProperty("authentication")
-    private AuthenticationConfiguration authentication;
+    private AuthenticationConfiguration authentication = new AuthenticationConfiguration();
 
     public String getUrl() {
         return url;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public String getZibaseID() {
         return zibaseID;
+    }
+
+    public void setZibaseID(String zibaseID) {
+        this.zibaseID = zibaseID;
     }
 
     public AuthenticationConfiguration getAuthentication() {

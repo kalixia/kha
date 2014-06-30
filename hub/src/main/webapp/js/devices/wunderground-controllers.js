@@ -6,6 +6,10 @@ angular.module('hub.devices.wunderground.controllers', ['hub.devices.services', 
 function ConfigureWundergroundDeviceController($scope, DeviceService) {
     $scope.configuration = {};
 
+    $scope.$watch('wundergroundForm.$valid', function(val) {
+        $scope.$emit('device.configure.form.valid', { value: val, scope: $scope });
+    });
+
     /*
     $scope.device = {};
     $scope.owner = $scope.user;

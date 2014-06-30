@@ -5,13 +5,8 @@ import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Dimmer;
 import com.kalixia.ha.model.capabilities.Light;
 import com.kalixia.ha.model.capabilities.Switch;
-import com.kalixia.ha.model.sensors.DataPoint;
-import com.kalixia.ha.model.sensors.Temperature;
 import org.joda.time.DateTime;
-import rx.Observable;
 
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
 import java.util.UUID;
 
 /**
@@ -23,12 +18,10 @@ public class RGBLamp extends AbstractDevice<RGBLampConfiguration> implements Dim
     private Color color;
     private float intensity;
     private float celsius;
+    public static final String TYPE = "rgb-lamp";
 
-    public RGBLamp(UUID id, String name, User owner) {
-        this(id, name, owner, new DateTime(), new DateTime());
-    }
-    public RGBLamp(UUID id, String name, User owner, DateTime creationDate, DateTime lastUpdateDate) {
-        super(id, name, owner, creationDate, lastUpdateDate, Switch.class, Light.class);
+    public RGBLamp(DeviceBuilder builder) {
+        super(builder, Switch.class, Light.class);
     }
 
     @Override
@@ -87,5 +80,10 @@ public class RGBLamp extends AbstractDevice<RGBLampConfiguration> implements Dim
     @Override
     public void init(RGBLampConfiguration configuration) {
         // TODO: do something about it??
+    }
+
+    @Override
+    public String getType() {
+        return TYPE;
     }
 }

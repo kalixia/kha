@@ -3,6 +3,7 @@ package com.kalixia.ha.devices.gce.ecodevices
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.capabilities.Counter
 import com.kalixia.ha.model.devices.AbstractDevice
+import com.kalixia.ha.model.devices.DeviceBuilder
 import com.kalixia.ha.model.devices.PullBasedDevice
 import com.kalixia.ha.model.quantity.WattsPerHour
 import com.kalixia.ha.model.sensors.CounterSensor
@@ -25,16 +26,17 @@ import javax.measure.unit.SI
  *
  * The gaz and water counters are not yet implemented.
  */
-class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements PullBasedDevice {
+ class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements PullBasedDevice {
     private final TeleinfoSensor teleinfoSensor1
     private final TeleinfoSensor teleinfoSensor2
     private final CounterSensor<Volume> counter1
     private final CounterSensor<Volume> counter2
     private TeleinfoRetriever retriever
     private HttpClient httpClient
+    public static final String TYPE = "gce-eco-device"
 
-    def EcoDevice(UUID id, String name, User owner) {
-        super(id, name, owner, Counter.class)
+    def EcoDevice(DeviceBuilder builder) {
+        super(builder, Counter.class)
         teleinfoSensor1 = new TeleinfoSensor(configuration.power1.name, TeleinfoSensorSlot.TELEINFO1)
         teleinfoSensor2 = new TeleinfoSensor(configuration.power2.name, TeleinfoSensorSlot.TELEINFO2)
         counter1 = new CounterSensor<>(configuration.counter1.name, NonSI.LITRE)
@@ -67,5 +69,10 @@ class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements PullBa
     @Override
     protected Class<EcoDeviceConfiguration> getConfigurationClass() {
         return EcoDeviceConfiguration.class
+    }
+
+    @Override
+    String getType() {
+        return TYPE
     }
 }

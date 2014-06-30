@@ -39,27 +39,15 @@ public abstract class AbstractDevice<C extends Configuration> extends AbstractAu
     protected abstract String getConfigurationFilename();
     protected abstract Class<C> getConfigurationClass();
 
-    protected AbstractDevice(UUID id, String name, User owner, Class<? extends Capability>... capabilities) {
-        this(id, name, owner, new DateTime(), new DateTime(), capabilities);
-    }
-
-    protected AbstractDevice(UUID id, String name, User owner, DateTime creationDate, DateTime lastUpdateDate,
+    protected AbstractDevice(DeviceBuilder builder,
                              Class<? extends Capability>... capabilities) {
-        super(creationDate, lastUpdateDate);
-        this.id = id;
-        this.name = name;
-        this.owner = owner;
+        super(builder.getCreationDate(), builder.getLastUpdateDate());
+        this.id = builder.getId();
+        this.name = builder.getName();
+        this.owner = builder.getOwner();
         this.capabilities = Collections.unmodifiableSet(Sets.newHashSet(capabilities));
         this.sensors = Sets.newHashSet();
-        try {
-            configuration = ConfigurationBuilder.loadConfiguration(name, getConfigurationFilename(), getConfigurationClass());
-            if (configuration == null) {
-                throw new IllegalStateException("Can't initialize device because of missing configuration");
-            }
-            init(configuration);
-        } catch (IOException e) {
-            LOGGER.error("Device '{}' won't start", name, e);
-        }
+        reloadConfiguration();
     }
 
     @JsonIgnore
@@ -109,6 +97,30 @@ public abstract class AbstractDevice<C extends Configuration> extends AbstractAu
 
     public C getConfiguration() {
         return configuration;
+    }
+
+    @Override
+    public void reloadConfiguration() {
+        try {
+            configuration = ConfigurationBuilder.loadConfiguration(
+                    name, getConfigurationFilename(), getConfigurationClass());
+            if (configuration == null) {
+                throw new IllegalStateException("Can't initialize device because of missing configuration");
+            }
+            init(configuration);
+        } catch (IOException e) {
+            LOGGER.error("Can't load configuration of device '{}'", name, e);
+        }
+    }
+
+    @Override
+    public void saveConfiguration(Configuration configuration) {
+        try {
+            ConfigurationBuilder.saveConfiguration(this, configuration);
+            reloadConfiguration();
+        } catch (IOException e) {
+            LOGGER.error("Can't save configuration of device '{}'", name, e);
+        }
     }
 
     @Override

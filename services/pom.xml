@@ -58,6 +58,12 @@
             <artifactId>groovy-all</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+
         <!-- Logging dependencies -->
         <dependency>
             <groupId>ch.qos.logback</groupId>

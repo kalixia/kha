@@ -1,6 +1,7 @@
 package com.kalixia.ha.devices.zibase.zapi2
 
 import com.kalixia.ha.model.User
+import com.kalixia.ha.model.devices.DeviceBuilder
 import com.kalixia.ha.model.security.Role
 import spock.lang.Specification
 
@@ -16,7 +17,11 @@ class ZibaseDeviceTest extends Specification {
         def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, newHashSet())
 
         when: "creating a test Zibase"
-        ZibaseDevice device = new ZibaseDevice(UUID.randomUUID(), "test device", user)
+        ZibaseDevice device = new DeviceBuilder()
+                .ofType(ZibaseDevice.TYPE)
+                .withName('test device')
+                .withOwner(user)
+                .build()
         def configuration = device.configuration
 
         then: "the configuration to be properly loaded"

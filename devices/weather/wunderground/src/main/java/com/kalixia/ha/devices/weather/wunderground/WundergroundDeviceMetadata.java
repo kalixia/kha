@@ -31,9 +31,4 @@ public class WundergroundDeviceMetadata implements DeviceMetadata {
         return Collections.emptySet();  // TODO: expose Wunderground sensors!
     }
 
-    @Override
-    public Device createDevice(User owner, String name) {
-        return new WundergroundDevice(UUID.randomUUID(), name, owner);
-    }
-
 }

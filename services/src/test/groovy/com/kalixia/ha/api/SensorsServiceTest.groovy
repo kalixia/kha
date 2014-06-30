@@ -1,9 +1,10 @@
 package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.SensorsDao
-import com.kalixia.ha.model.security.Role
 import com.kalixia.ha.model.User
+import com.kalixia.ha.model.devices.DeviceBuilder
 import com.kalixia.ha.model.devices.RGBLamp
+import com.kalixia.ha.model.security.Role
 import com.kalixia.ha.model.sensors.DataPoint
 import spock.lang.Specification
 
@@ -23,7 +24,7 @@ class SensorsServiceTest extends Specification {
         def dao = Mock(SensorsDao)
         def service = new SensorsServiceImpl(dao)
         def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, emptySet())
-        def deviceAndSensor = new RGBLamp(UUID.randomUUID(), 'my lamp', user)
+        def deviceAndSensor = new DeviceBuilder().ofType(RGBLamp.TYPE).withName('my lamp').withOwner(user).build()
         dao.getLastValue(deviceAndSensor.id) >> new DataPoint<LuminousFlux>(Measure.valueOf(3, LuminousFlux.UNIT))
 
         when: "requesting last sensor value"

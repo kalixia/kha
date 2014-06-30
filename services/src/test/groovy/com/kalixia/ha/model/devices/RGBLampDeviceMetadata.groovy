@@ -1,6 +1,5 @@
 package com.kalixia.ha.model.devices
 
-import com.kalixia.ha.model.User
 import com.kalixia.ha.model.sensors.SensorMetadata
 
 import static java.util.Collections.emptySet
@@ -26,8 +25,4 @@ class RGBLampDeviceMetadata implements DeviceMetadata {
         return emptySet()
     }
 
-    @Override
-    Device createDevice(User owner, String name) {
-        return new RGBLamp(UUID.randomUUID(), name, owner)
-    }
 }

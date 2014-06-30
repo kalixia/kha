@@ -7,6 +7,7 @@ import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import java.util.Set;
+import java.util.UUID;
 
 @ApiModel("DeviceMetadata")
 public interface DeviceMetadata {
@@ -39,13 +40,5 @@ public interface DeviceMetadata {
     @JsonProperty("sensors")
     @ApiModelProperty("sensors metadata of the device")
     Set<SensorMetadata> getSensorsMetadata();
-
-    /**
-     * Create a device for <tt>owner</tt> by specifying its <tt>name</tt> .
-     * @param owner the owner of the device to create
-     * @param name the name of the created device
-     * @return the created device
-     */
-    Device createDevice(User owner, String name);
 
 }

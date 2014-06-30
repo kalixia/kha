@@ -1,6 +1,7 @@
 package com.kalixia.ha.dao
 
 import com.kalixia.ha.model.devices.Device
+import com.kalixia.ha.model.devices.DeviceBuilder
 import com.kalixia.ha.model.security.Role
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.RGBLamp
@@ -26,8 +27,18 @@ abstract class AbstractDevicesDaoTest extends Specification {
         def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, emptySet())
         def deviceId1 = createUUID()
         def deviceId2 = createUUID()
-        def device1 = new RGBLamp(deviceId1, 'my lamp', user)
-        def device2 = new RGBLamp(deviceId2, 'another lamp', user)
+        def device1 = new DeviceBuilder()
+                .ofType(RGBLamp.TYPE)
+                .withID(deviceId1)
+                .withName('my lamp')
+                .withOwner(user)
+                .build()
+        def device2 = new DeviceBuilder()
+                .ofType(RGBLamp.TYPE)
+                .withID(deviceId2)
+                .withName('another lamp')
+                .withOwner(user)
+                .build()
 
         when:
         usersDao.save(user)
@@ -62,7 +73,13 @@ abstract class AbstractDevicesDaoTest extends Specification {
         given:
         def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, emptySet())
         def deviceId = createUUID()
-        def device = new RGBLamp(deviceId, 'my lamp', user)
+        def device = new DeviceBuilder()
+                .ofType(RGBLamp.TYPE)
+                .withID(deviceId)
+                .withName('my lamp')
+                .withOwner(user)
+                .build()
+
         device.addSensor(new Sensor<Duration>() {
             @Override
             String getName() {

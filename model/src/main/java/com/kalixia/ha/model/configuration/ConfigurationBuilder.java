@@ -2,6 +2,7 @@ package com.kalixia.ha.model.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.kalixia.ha.model.devices.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,11 @@ public class ConfigurationBuilder {
                 LOGGER.error("Can't find configuration file for '{}'", name, configurationFilenameWithoutExt);
             return conf;
         }
+    }
+
+    public static void saveConfiguration(Device device, Configuration configuration) throws IOException {
+        File configurationFile = new File(System.getProperty("app.home") + "/etc/", device.getId() + ".yml");
+        mapper.writeValue(configurationFile, configuration);
     }
 
     private static <C extends Configuration> C loadConfigurationFromStream(Class<C> configurationClass,

@@ -1,6 +1,7 @@
 package com.kalixia.ha.devices.gce.ecodevices
 
 import com.kalixia.ha.model.User
+import com.kalixia.ha.model.devices.DeviceBuilder
 import com.kalixia.ha.model.security.Role
 import spock.lang.Specification
 
@@ -16,7 +17,7 @@ class EcoDeviceTest extends Specification {
         def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, newHashSet())
 
         when: "creating a test EcoDevice"
-        EcoDevice device = new EcoDevice(UUID.randomUUID(), "test device", user)
+        EcoDevice device = new DeviceBuilder().ofType(EcoDevice.TYPE).withName('test device').withOwner(user).build()
 
         then: "the configuration to be properly loaded"
         device.configuration != null

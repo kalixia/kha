@@ -4,7 +4,7 @@ import com.kalixia.ha.dao.DevicesDao;
 import com.kalixia.ha.dao.UsersDao;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
-import com.kalixia.ha.model.devices.RGBLamp;
+import com.kalixia.ha.model.devices.DeviceBuilder;
 import com.kalixia.ha.model.sensors.AggregatedSensor;
 import com.kalixia.ha.model.sensors.BasicSensor;
 import com.kalixia.ha.model.sensors.Sensor;
@@ -45,6 +45,7 @@ public class LuceneDevicesDao implements DevicesDao {
     private static final String FIELD_ID = "id";
     private static final String FIELD_NAME = "name";
     private static final String FIELD_OWNER = "owner";
+    private static final String FIELD_DEVICE_TYPE = "device-type";
     private static final String FIELD_CREATION_DATE = "creationDate";
     private static final String FIELD_LAST_UPDATE_DATE = "lastUpdateDate";
     private static final String FIELD_TYPE = "type";
@@ -150,6 +151,7 @@ public class LuceneDevicesDao implements DevicesDao {
             doc.add(new StringField(FIELD_ID, deviceID, Store.YES));
             doc.add(new StringField(FIELD_NAME, device.getName(), Store.YES));
             doc.add(new StringField(FIELD_OWNER, device.getOwner().getUsername(), Store.YES));
+            doc.add(new StringField(FIELD_DEVICE_TYPE, device.getType(), Store.YES));
             doc.add(new StoredField(FIELD_CREATION_DATE, device.getCreationDate().toString()));
             doc.add(new StoredField(FIELD_LAST_UPDATE_DATE, DateTime.now().toString()));
             doc.add(new StringField(FIELD_TYPE, "device", Store.NO));
@@ -192,6 +194,7 @@ public class LuceneDevicesDao implements DevicesDao {
 
     private Device buildDeviceFromDocument(Document doc, IndexSearcher indexSearcher) {
         UUID id = UUID.fromString(doc.get(FIELD_ID));
+        String type = doc.get(FIELD_DEVICE_TYPE);
         String name = doc.get(FIELD_NAME);
         String username = doc.get(FIELD_OWNER);
         User owner = null;
@@ -202,7 +205,15 @@ public class LuceneDevicesDao implements DevicesDao {
         }
         DateTime creationDate = DateTime.parse(doc.get(FIELD_CREATION_DATE));
         DateTime lastUpdateDate = DateTime.parse(doc.get(FIELD_LAST_UPDATE_DATE));
-        Device device = new RGBLamp(id, name, owner, creationDate, lastUpdateDate);
+        // create the appropriate device
+        Device device = new DeviceBuilder()
+                .ofType(type)
+                .withID(id)
+                .withName(name)
+                .withOwner(owner)
+                .withCreationDate(creationDate)
+                .withLastUpdateDate(lastUpdateDate)
+                .build();
         try {
             Sensor[] sensors = findSensorsOfDevice(id);
             if (sensors != null)

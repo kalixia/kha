@@ -12,8 +12,17 @@ public class WundergroundDeviceConfiguration extends Configuration {
     @JsonProperty("station")
     private String station;
 
+    @JsonProperty("city")
+    private String city;
+
+    @JsonProperty("state")
+    private String state;
+
+    @JsonProperty("country")
+    private String country;
+
     @JsonProperty("polling")
-    private PullBasedConfiguration polling;
+    private PullBasedConfiguration polling = new PullBasedConfiguration();
 
     @JsonProperty("host")
     private String host;
@@ -25,8 +34,40 @@ public class WundergroundDeviceConfiguration extends Configuration {
         return apiKey;
     }
 
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
     public String getStation() {
         return station;
+    }
+
+    public void setStation(String station) {
+        this.station = station;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public PullBasedConfiguration getPolling() {
@@ -37,7 +78,15 @@ public class WundergroundDeviceConfiguration extends Configuration {
         return host;
     }
 
+    public void setHost(String host) {
+        this.host = host;
+    }
+
     public int getPort() {
         return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 }

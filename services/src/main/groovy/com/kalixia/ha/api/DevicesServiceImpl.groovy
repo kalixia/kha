@@ -2,31 +2,25 @@ package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.DevicesDao
 import com.kalixia.ha.model.User
+import com.kalixia.ha.model.configuration.Configuration
+import com.kalixia.ha.model.configuration.ConfigurationBuilder
 import com.kalixia.ha.model.devices.Device
+import com.kalixia.ha.model.devices.DeviceBuilder
+import com.kalixia.ha.model.devices.DeviceFactory
 import com.kalixia.ha.model.devices.DeviceMetadata
 import groovy.util.logging.Slf4j
+import org.apache.commons.beanutils.DynaBean
+import org.apache.commons.beanutils.WrapDynaBean
 import rx.Observable
-
-import java.util.function.Consumer
 
 import static com.google.common.base.Preconditions.checkNotNull
 
 @Slf4j(value = "LOGGER")
 class DevicesServiceImpl implements DevicesService {
     final DevicesDao devicesDao
-    final ServiceLoader<DeviceMetadata> devicesMetadataLoader
 
     DevicesServiceImpl(DevicesDao devicesDao) {
         this.devicesDao = devicesDao
-        devicesMetadataLoader = ServiceLoader.load(DeviceMetadata.class)
-        if (LOGGER.isDebugEnabled()) {
-            devicesMetadataLoader.forEach(new Consumer<DeviceMetadata>() {
-                @Override
-                void accept(DeviceMetadata deviceMetadata) {
-                    LOGGER.debug("Found device metadata for '{}'", deviceMetadata.name)
-                }
-            })
-        }
     }
 
     @Override
@@ -49,34 +43,37 @@ class DevicesServiceImpl implements DevicesService {
 
     @Override
     Observable<DeviceMetadata> findAllSupportedDevices() {
-        LOGGER.info("Searching for all supported devices...")
-        if (!devicesMetadataLoader.iterator().hasNext()) {
-            LOGGER.warn("No device supported. Most likely your installation is messed up!")
-            return Observable.empty()
-        } else {
-            return Observable.from(devicesMetadataLoader)
-        }
+        return DeviceFactory.instance.findAllSupportedDevices()
     }
 
     @Override
     Device create(User owner, String name, String type) {
-        checkNotNull(owner)
-        checkNotNull(name)
-        checkNotNull(type)
-        if (type.isEmpty())
-            throw new IllegalArgumentException("Missing device type")
+        return new DeviceBuilder()
+            .ofType(type)
+            .withName(name)
+            .withOwner(owner)
+            .build()
+    }
 
-        Device device
-        Iterator<DeviceMetadata> supportedDevices = devicesMetadataLoader.iterator();
-        for (DeviceMetadata metadata : supportedDevices) {
-            if (metadata.type == type) {
-                device = metadata.createDevice(owner, name)
-                return device
-            }
-        }
-
+    @Override
+    Device configure(UUID id, Map configurationData) {
+        Device device = findDeviceById(id)
         if (device == null)
-            throw new IllegalArgumentException(String.format("Invalid device type '%s'", type))
+            return device
+        Configuration configuration = mergeWithConfigurationData(device, configurationData)
+        // save it to the configuration file
+        device.saveConfiguration(configuration)
+        return device
+    }
+
+    private Configuration mergeWithConfigurationData(Device device, Map<String, Object> configurationData) {
+        checkNotNull(device, "Device can't be null");
+        Configuration configuration = device.configuration
+        checkNotNull(configuration, "Device configuration can't be null")
+        // merge with configuration data
+        DynaBean wrapper = new WrapDynaBean(configuration);
+        configurationData.each { key, value -> wrapper.set(key, value) }
+        return configuration
     }
 
     @Override

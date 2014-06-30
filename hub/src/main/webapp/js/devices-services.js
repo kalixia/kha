@@ -11,6 +11,13 @@ devicesServices.factory('DeviceService', ['Restangular', 'SecurityService', '$lo
             createDevice: function(owner, device) {
                 return Restangular.one('', owner.username).all('devices').post(device);
             },
+            configureDevice: function(owner, device, configuration) {
+                return Restangular
+                    .one('', owner.username)
+                    .one('devices', device)
+                    .one('', 'configuration')
+                    .customPUT(configuration);
+            },
             findAllSupportedDevices: function() {
                 return Restangular
                     .one(SecurityService.getCurrentUser().username, 'devices')

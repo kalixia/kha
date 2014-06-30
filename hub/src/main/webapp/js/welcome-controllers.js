@@ -1,13 +1,14 @@
 'use strict';
 
-angular.module('hub.welcome.controllers', ['hub.welcome.services', 'hub.security.services'])
-    .controller('WelcomeController', ['$scope', 'WelcomeService', 'SecurityService', '$location', '$log', WelcomeController]);
+angular.module('hub.welcome.controllers', ['hub.welcome.services', 'hub.security.services', 'hub.devices.services'])
+    .controller('WelcomeController', ['$scope', 'WelcomeService', 'SecurityService', 'DeviceService', '$location', '$log', WelcomeController]);
 
-function WelcomeController($scope, WelcomeService, SecurityService, $location, $log) {
+function WelcomeController($scope, WelcomeService, SecurityService, DeviceService, $location, $log) {
     $scope.user = { roles: [ 'ADMINISTRATOR']};
     WelcomeService.installDone().then(function(done) {
-        if (done == true)
-            $location.path('login');
+        if (done) {
+            $location.path('/login');
+        }
     });
     $scope.steps = [
         {
@@ -76,8 +77,18 @@ function WelcomeController($scope, WelcomeService, SecurityService, $location, $
         });
     };
     $scope.setupDevice = function() {
-        $log.info("Should setup device!");
-    }
+        var configuration = $scope.currentStepScope.configuration;
+        var owner = SecurityService.getCurrentUser();
+        var deviceName = "test";    // TODO: figure out the device name!
+        $log.debug("Configure device with configuration:");
+        $log.debug(configuration);
+        $log.debug("for user:");
+        $log.debug(owner.username);
+        $log.debug("for device:");
+        $log.debug(deviceName);
+        DeviceService.configureDevice(owner, deviceName, configuration);
+        $location.path('/' + owner.username);
+    };
 
     $scope.$on('user.create.form.valid', function(event, data) {
         $scope.validForm = data.value;

@@ -22,7 +22,14 @@ public interface Device<C extends Configuration> extends Auditable {
     @ApiModelProperty(value = "the name of the device", required = true)
     String getName();
 
+    /**
+     * The technical name of the device.
+     */
+    String getType();
+
     C getConfiguration();
+    void reloadConfiguration();
+    void saveConfiguration(Configuration configuration);
 
     Set<Class<? extends Capability>> getCapabilities();
     boolean hasCapability(Class<? extends Capability> capability);

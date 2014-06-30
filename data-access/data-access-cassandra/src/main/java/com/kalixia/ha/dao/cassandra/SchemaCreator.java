@@ -49,6 +49,7 @@ public class SchemaCreator {
         LOGGER.info("Preparing schema for devices data...");
         session.execute("CREATE TABLE IF NOT EXISTS kha.devices (\n" +
                 "    id uuid PRIMARY KEY,\n" +
+                "    type text,\n" +
                 "    owner text,\n" +
                 "    name text,\n" +
                 "    sensors map<text,text>,\n" +

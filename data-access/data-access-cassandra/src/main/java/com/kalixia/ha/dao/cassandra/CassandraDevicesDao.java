@@ -10,7 +10,7 @@ import com.kalixia.ha.dao.DevicesDao;
 import com.kalixia.ha.dao.UsersDao;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
-import com.kalixia.ha.model.devices.RGBLamp;
+import com.kalixia.ha.model.devices.DeviceBuilder;
 import com.kalixia.ha.model.sensors.MutableSensor;
 import com.kalixia.ha.model.sensors.Sensor;
 import org.joda.time.DateTime;
@@ -30,6 +30,7 @@ public class CassandraDevicesDao implements DevicesDao {
     private static final String COL_ID = "id";
     private static final String COL_OWNER = "owner";
     private static final String COL_NAME = "name";
+    private static final String COL_TYPE = "type";
     private static final String COL_SENSORS = "sensors";
     private static final String COL_CREATION_DATE = "creation_date";
     private static final String COL_LAST_UPDATE_DATE = "last_update_date";
@@ -37,8 +38,8 @@ public class CassandraDevicesDao implements DevicesDao {
     public CassandraDevicesDao(Session session, UsersDao usersDao) {
         this.session = session;
         this.usersDao = usersDao;
-        psCreateDevice = session.prepare("INSERT INTO kha.devices (id, owner, name, sensors, creation_date, last_update_date) " +
-                "VALUES (:id, :owner, :name, :sensors, :creation_date, :last_update_date);");
+        psCreateDevice = session.prepare("INSERT INTO kha.devices (id, type, owner, name, sensors, creation_date, last_update_date) " +
+                "VALUES (:id, :type, :owner, :name, :sensors, :creation_date, :last_update_date);");
         psFindDeviceById = session.prepare("SELECT * from kha.devices where id = :id");
         psFindDevicesOfUser = session.prepare("SELECT * from kha.devices where owner = :owner");
         psFindDeviceByOwnerAndName = session.prepare("SELECT * from kha.devices where owner = :owner and name = :name" +
@@ -90,6 +91,7 @@ public class CassandraDevicesDao implements DevicesDao {
                 .setUUID(COL_ID, device.getId())
                 .setString(COL_OWNER, device.getOwner().getUsername())
                 .setString(COL_NAME, device.getName())
+                .setString(COL_TYPE, device.getType())
                 .setMap(COL_SENSORS, sensorsData)
                 .setDate(COL_CREATION_DATE, device.getCreationDate().toDate())
                 .setDate(COL_LAST_UPDATE_DATE, device.getLastUpdateDate().toDate());
@@ -106,6 +108,7 @@ public class CassandraDevicesDao implements DevicesDao {
         UUID id = row.getUUID(COL_ID);
         User owner = usersDao.findByUsername(row.getString(COL_OWNER));
         String name = row.getString(COL_NAME);
+        String type = row.getString(COL_TYPE);
         Sensor[] sensors = row.getMap(COL_SENSORS, String.class, String.class).entrySet().stream()
                 .map(entry -> {
                     MutableSensor sensor = new MutableSensor();
@@ -116,7 +119,15 @@ public class CassandraDevicesDao implements DevicesDao {
                 .toArray(Sensor[]::new);
         DateTime creationDate = new DateTime(row.getDate(COL_CREATION_DATE));
         DateTime lastUpdateDate = new DateTime(row.getDate(COL_LAST_UPDATE_DATE));
-        RGBLamp device = new RGBLamp(id, name, owner, creationDate, lastUpdateDate);
+        // create the appropriate device
+        Device device = new DeviceBuilder()
+                .ofType(type)
+                .withID(id)
+                .withName(name)
+                .withOwner(owner)
+                .withCreationDate(creationDate)
+                .withLastUpdateDate(lastUpdateDate)
+                .build();
         device.addSensors(sensors);
         return device;
     }

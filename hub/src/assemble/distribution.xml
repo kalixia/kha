@@ -25,6 +25,7 @@
             </includes>
         </fileSet>
 
+        <!-- Copy generated website -->
         <fileSet>
             <directory>src/main/webapp/dist</directory>
             <outputDirectory>/site</outputDirectory>

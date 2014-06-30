@@ -3,11 +3,13 @@ package com.kalixia.ha.api
 import com.kalixia.ha.dao.DevicesDao
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.Device
+import com.kalixia.ha.model.devices.DeviceBuilder
 import com.kalixia.ha.model.devices.RGBLamp
 import com.kalixia.ha.model.security.Role
 import rx.Observable
 import spock.lang.Specification
 
+import static java.util.Collections.emptyMap
 import static java.util.Collections.emptySet
 
 class DevicesServiceTest extends Specification {
@@ -38,8 +40,16 @@ class DevicesServiceTest extends Specification {
         def dao = Mock(DevicesDao)
         def service = new DevicesServiceImpl(dao)
         def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, emptySet())
-        def device1 = new RGBLamp(UUID.randomUUID(), 'lamp1', user)
-        def device2 = new RGBLamp(UUID.randomUUID(), 'lamp2', user)
+        def device1 = new DeviceBuilder()
+                .ofType(RGBLamp.TYPE)
+                .withName('lamp1')
+                .withOwner(user)
+                .build()
+        def device2 = new DeviceBuilder()
+                .ofType(RGBLamp.TYPE)
+                .withName('lamp2')
+                .withOwner(user)
+                .build()
         dao.findById(device1.id) >> device1
         dao.findById(device2.id) >> device2
         dao.findByOwnerAndName(user.username, device1.name) >> device1
@@ -82,8 +92,16 @@ class DevicesServiceTest extends Specification {
         def dao = Mock(DevicesDao)
         def service = new DevicesServiceImpl(dao)
         def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, emptySet())
-        def device1 = new RGBLamp(UUID.randomUUID(), 'lamp1', user)
-        def device2 = new RGBLamp(UUID.randomUUID(), 'lamp2', user)
+        def device1 = new DeviceBuilder()
+                .ofType(RGBLamp.TYPE)
+                .withName('lamp1')
+                .withOwner(user)
+                .build()
+        def device2 = new DeviceBuilder()
+                .ofType(RGBLamp.TYPE)
+                .withName('lamp2')
+                .withOwner(user)
+                .build()
 
         when: "who has two devices"
         dao.findAllDevicesOfUser(user.username) >> rx.Observable.create({ rx.Observer<Device> observer ->
@@ -137,10 +155,23 @@ class DevicesServiceTest extends Specification {
 
         when:
         def device = service.create(owner, "my lamp", "rgb-lamp")
+        dao.findById(device.id) >> device
 
         then:
         device != null
+        device.id != null
         device.name == "my lamp"
+        device.configuration != null
+        device.configuration.intensity == 1.0
+
+        when:
+        service.configure(device.id, ['intensity': 0.5f])
+//        device.reloadConfiguration()
+
+        then:
+        device != null
+        device.configuration != null
+        device.configuration.intensity == 0.5
     }
 
 }

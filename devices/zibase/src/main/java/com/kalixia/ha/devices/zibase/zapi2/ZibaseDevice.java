@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kalixia.ha.devices.zibase.zapi2.commands.FetchTokenCommand;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.AbstractDevice;
+import com.kalixia.ha.model.devices.DeviceBuilder;
 import com.kalixia.ha.model.devices.PullBasedDevice;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
@@ -24,10 +25,11 @@ public class ZibaseDevice extends AbstractDevice<ZibaseDeviceConfiguration>
     private CloseableHttpAsyncClient httpClient;
     private ObjectMapper mapper;
     private String token;
+    public static final String TYPE = "zibase";
     private static final Logger logger = LoggerFactory.getLogger(ZibaseDevice.class);
 
-    public ZibaseDevice(UUID id, String name, User owner) {
-        super(id, name, owner);
+    public ZibaseDevice(DeviceBuilder builder) {
+        super(builder);
     }
 
     @Override
@@ -73,4 +75,8 @@ public class ZibaseDevice extends AbstractDevice<ZibaseDeviceConfiguration>
         return ZibaseDeviceConfiguration.class;
     }
 
+    @Override
+    public String getType() {
+        return TYPE;
+    }
 }

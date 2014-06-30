@@ -1,9 +1,13 @@
 package com.kalixia.ha.api;
 
 import com.kalixia.ha.model.User;
+import com.kalixia.ha.model.configuration.Configuration;
 import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.devices.DeviceMetadata;
 import rx.Observable;
+
+import java.beans.IntrospectionException;
+import java.util.Map;
 import java.util.UUID;
 
 public interface DevicesService {
@@ -46,10 +50,11 @@ public interface DevicesService {
      */
     Device create(User owner, String name, String type);
 
+    Device configure(UUID id, Map configurationData);
+
     /**
      * Creates a new device.
      * @param device the device to create
-     * @return the created device as an {@link Observable}
      */
     void saveDevice(Device device);
 

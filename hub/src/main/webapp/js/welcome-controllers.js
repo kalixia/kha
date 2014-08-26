@@ -5,8 +5,9 @@ angular.module('hub.welcome.controllers', ['hub.welcome.services', 'hub.security
 
 function WelcomeController($scope, WelcomeService, SecurityService, DeviceService, $location, $log) {
     $scope.user = { roles: [ 'ADMINISTRATOR']};
+    $scope.device = {};
     WelcomeService.installDone().then(function(done) {
-        if (done) {
+        if (done == "true") {
             $location.path('/login');
         }
     });
@@ -55,37 +56,39 @@ function WelcomeController($scope, WelcomeService, SecurityService, DeviceServic
         $log.debug(user);
         WelcomeService.installFor(user).then(function (createdUser) {
             $scope.user = createdUser;
-            $scope.nextStep()
+            $scope.nextStep();
         }, function (error) {
             $log.error(error);
         });
     };
     $scope.createDevice = function() {
-        $scope.currentStepScope.create(SecurityService.getCurrentUser()).then(function() { $scope.nextStep() }, function(error) {
-            $log.error(error);
-            switch (error.status) {
-                case 400:
-                    $scope.errorMessage = error.data;
-                    break;
-                case 409:
-                    $scope.errorMessage = "Device already exists!";
-                    break;
-                case 500:
-                    $scope.errorMessage = error.data;
-                    break;
+        $scope.currentStepScope.create(SecurityService.getCurrentUser()).then(
+            function (device) {
+                $scope.device = device;
+                $scope.nextStep();
+            },
+            function (error) {
+                $log.error(error);
+                switch (error.status) {
+                    case 400:
+                        $scope.errorMessage = error.data;
+                        break;
+                    case 409:
+                        $scope.errorMessage = "Device already exists!";
+                        break;
+                    case 500:
+                        $scope.errorMessage = error.data;
+                        break;
+                }
             }
-        });
+        );
     };
     $scope.setupDevice = function() {
-        var configuration = $scope.currentStepScope.configuration;
+        var configuration = $scope.device.configuration;
         var owner = SecurityService.getCurrentUser();
-        var deviceName = "test";    // TODO: figure out the device name!
+        var deviceName = $scope.device.name;
         $log.debug("Configure device with configuration:");
         $log.debug(configuration);
-        $log.debug("for user:");
-        $log.debug(owner.username);
-        $log.debug("for device:");
-        $log.debug(deviceName);
         DeviceService.configureDevice(owner, deviceName, configuration);
         $location.path('/' + owner.username);
     };

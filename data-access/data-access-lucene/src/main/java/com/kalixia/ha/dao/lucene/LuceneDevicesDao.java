@@ -6,8 +6,8 @@ import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.devices.DeviceBuilder;
 import com.kalixia.ha.model.sensors.AggregatedSensor;
-import com.kalixia.ha.model.sensors.BasicSensor;
 import com.kalixia.ha.model.sensors.Sensor;
+import com.kalixia.ha.model.sensors.SensorBuilder;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
@@ -52,6 +52,7 @@ public class LuceneDevicesDao implements DevicesDao {
     private static final String FIELD_SENSOR_DEVICE_ID = "device";
     private static final String FIELD_SENSOR_NAME = "name";
     private static final String FIELD_SENSOR_UNIT = "unit";
+    private static final String FIELD_SENSOR_TYPE = "sensor-type";
     private static final Term termDeviceType = new Term(FIELD_TYPE, "device");
     private static final Term termSensorType = new Term(FIELD_TYPE, "sensor");
     private static final int MAX_DEVICES_PER_USER = 1000;
@@ -171,10 +172,12 @@ public class LuceneDevicesDao implements DevicesDao {
                         sensorDoc.add(new StringField(FIELD_SENSOR_NAME,
                                 aggregatedSensor.getSensorsPrefix() + "/" + subSensor.getName(), Store.YES));
                         sensorDoc.add(new StringField(FIELD_SENSOR_UNIT, subSensor.getUnit().toString(), Store.YES));
+                        sensorDoc.add(new StringField(FIELD_SENSOR_TYPE, sensor.getType(), Store.YES));
                     }
                 } else {
                     sensorDoc.add(new StringField(FIELD_SENSOR_NAME, sensor.getName(), Store.YES));
                     sensorDoc.add(new StringField(FIELD_SENSOR_UNIT, sensor.getUnit().toString(), Store.YES));
+                    sensorDoc.add(new StringField(FIELD_SENSOR_TYPE, sensor.getType(), Store.YES));
                 }
                 sensorDoc.add(new StringField(FIELD_TYPE, "sensor", Store.NO));
                 term = new Term(FIELD_ID, sensorID);
@@ -186,6 +189,26 @@ public class LuceneDevicesDao implements DevicesDao {
             LOGGER.error("Unexpected Lucene error", e);
         }
     }
+
+    /*
+    private void save(Device<?> device, Sensor<?> sensor) {
+        // store device's sensors information
+        Document sensorDoc = new Document();
+        String sensorID = device.getID() + '-' + sensor.getName();
+        sensorDoc.add(new StringField(FIELD_ID, sensorID, Store.YES));
+        sensorDoc.add(new StringField(FIELD_SENSOR_DEVICE_ID, deviceID, Store.NO));
+        sensorDoc.add(new StringField(FIELD_SENSOR_TYPE, sensor.getType(), Store.YES));
+        sensorDoc.add(new StringField(FIELD_TYPE, "sensor", Store.NO));
+        if (AggregatedSensor.class.isAssignableFrom(sensor.getClass())) {
+            // TODO: store aggregated sensor!
+        } else {
+            sensorDoc.add(new StringField(FIELD_SENSOR_NAME, sensor.getName(), Store.YES));
+            sensorDoc.add(new StringField(FIELD_SENSOR_UNIT, sensor.getUnit().toString(), Store.YES));
+        }
+        term = new Term(FIELD_ID, sensorID);
+        indexWriter.updateDocument(term, sensorDoc);
+    }
+    */
 
     @Override
     public void delete(UUID id) {
@@ -215,7 +238,7 @@ public class LuceneDevicesDao implements DevicesDao {
                 .withLastUpdateDate(lastUpdateDate)
                 .build();
         try {
-            Sensor[] sensors = findSensorsOfDevice(id);
+            Sensor[] sensors = findSensorsOfDevice(device);
             if (sensors != null)
                 device.addSensors(sensors);
         } catch (IOException e) {
@@ -224,15 +247,15 @@ public class LuceneDevicesDao implements DevicesDao {
         return device;
     }
 
-    private Sensor[] findSensorsOfDevice(UUID id) throws IOException {
+    private Sensor[] findSensorsOfDevice(Device device) throws IOException {
         IndexSearcher indexSearcher = buildIndexSearcher();
-        Term term = new Term(FIELD_SENSOR_DEVICE_ID, id.toString());
+        Term term = new Term(FIELD_SENSOR_DEVICE_ID, device.getId().toString());
         BooleanQuery q = new BooleanQuery();
         q.add(new TermQuery(term), BooleanClause.Occur.MUST);
         q.add(new TermQuery(termSensorType), BooleanClause.Occur.MUST);
         TopDocs hits = indexSearcher.search(q, MAX_SENSORS_PER_DEVICE);
         if (hits.totalHits == 0) {
-            LOGGER.warn("No sensor found for device '{}'", id);
+            LOGGER.warn("No sensor found for device '{}'", device.getId());
             return null;            // no result found
         }
         return Stream.of(hits.scoreDocs)
@@ -243,15 +266,21 @@ public class LuceneDevicesDao implements DevicesDao {
                         throw Exceptions.propagate(e);
                     }
                 })
-                .map(this::buildSensorFromDocument)
+                .map(doc -> buildSensorFromDocument(device, doc))
                 .toArray(Sensor[]::new);
     }
 
     @SuppressWarnings("unchecked")
-    private Sensor buildSensorFromDocument(Document doc) {
+    private Sensor<?> buildSensorFromDocument(Device device, Document doc) {
+        String type = doc.get(FIELD_SENSOR_TYPE);
         String name = doc.get(FIELD_SENSOR_NAME);
         Unit unit = Unit.valueOf(doc.get(FIELD_SENSOR_UNIT));
-        return new BasicSensor(name, unit);                 // TODO: make this handle various sensors types!
+        return new SensorBuilder()
+                .forDevice(device)
+                .ofType(type)
+                .withName(name)
+                .withUnit(unit)
+                .build();
     }
 
     private IndexSearcher buildIndexSearcher() {

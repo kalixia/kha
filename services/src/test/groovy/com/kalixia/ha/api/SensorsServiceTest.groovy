@@ -1,9 +1,9 @@
 package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.SensorsDao
+import com.kalixia.ha.devices.rgblamp.RGBLamp
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.DeviceBuilder
-import com.kalixia.ha.model.devices.RGBLamp
 import com.kalixia.ha.model.security.Role
 import com.kalixia.ha.model.sensors.DataPoint
 import spock.lang.Specification

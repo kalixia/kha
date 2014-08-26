@@ -24,9 +24,16 @@ CREATE TABLE IF NOT EXISTS kha.devices (
     id uuid PRIMARY KEY,
     owner text,
     name text,
-    sensors map<text,text>,
     creation_date timestamp,
     last_update_date timestamp
 );
 CREATE INDEX IF NOT EXISTS idx_devices_by_owner ON kha.devices (owner);
 CREATE INDEX IF NOT EXISTS idx_devices_by_name ON kha.devices (name);
+
+CREATE TABLE IF NOT EXISTS kha.sensors (
+    device uuid,
+    name text,
+    unit text,
+    type text,
+    PRIMARY KEY(device, name)
+);

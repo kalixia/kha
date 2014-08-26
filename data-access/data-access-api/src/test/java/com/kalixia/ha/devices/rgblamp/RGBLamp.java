@@ -1,13 +1,11 @@
-package com.kalixia.ha.model.devices;
+package com.kalixia.ha.devices.rgblamp;
 
 import com.kalixia.ha.model.Color;
-import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.capabilities.Dimmer;
 import com.kalixia.ha.model.capabilities.Light;
 import com.kalixia.ha.model.capabilities.Switch;
-import org.joda.time.DateTime;
-
-import java.util.UUID;
+import com.kalixia.ha.model.devices.AbstractDevice;
+import com.kalixia.ha.model.devices.DeviceBuilder;
 
 /**
  * Devices which controls a RGB lamp or RGB Led Strip.

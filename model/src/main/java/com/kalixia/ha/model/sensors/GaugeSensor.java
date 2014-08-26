@@ -7,7 +7,7 @@ import javax.measure.unit.Unit;
 /**
  * Sensor based on a simple counter.
  */
-public class GaugeSensor<Q extends Quantity> extends BasicSensor<Q> {
+public abstract class GaugeSensor<Q extends Quantity> extends BasicSensor<Q> {
     private Measurable<Q> min;
     private Measurable<Q> max;
 

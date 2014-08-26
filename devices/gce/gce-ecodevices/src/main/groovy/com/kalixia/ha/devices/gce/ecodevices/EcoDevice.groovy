@@ -1,12 +1,13 @@
 package com.kalixia.ha.devices.gce.ecodevices
 
-import com.kalixia.ha.model.User
 import com.kalixia.ha.model.capabilities.Counter
 import com.kalixia.ha.model.devices.AbstractDevice
 import com.kalixia.ha.model.devices.DeviceBuilder
 import com.kalixia.ha.model.devices.PullBasedDevice
 import com.kalixia.ha.model.quantity.WattsPerHour
 import com.kalixia.ha.model.sensors.CounterSensor
+import com.kalixia.ha.model.sensors.Sensor
+import com.kalixia.ha.model.sensors.SensorBuilder
 import io.reactivex.netty.RxNetty
 import io.reactivex.netty.protocol.http.client.HttpClient
 import rx.Observable
@@ -29,18 +30,28 @@ import javax.measure.unit.SI
  class EcoDevice extends AbstractDevice<EcoDeviceConfiguration> implements PullBasedDevice {
     private final TeleinfoSensor teleinfoSensor1
     private final TeleinfoSensor teleinfoSensor2
-    private final CounterSensor<Volume> counter1
-    private final CounterSensor<Volume> counter2
+    private final Sensor<Volume> counter1
+    private final Sensor<Volume> counter2
     private TeleinfoRetriever retriever
     private HttpClient httpClient
-    public static final String TYPE = "gce-eco-device"
+    public static final String TYPE = "gce-ecodevices"
 
     def EcoDevice(DeviceBuilder builder) {
         super(builder, Counter.class)
         teleinfoSensor1 = new TeleinfoSensor(configuration.power1.name, TeleinfoSensorSlot.TELEINFO1)
         teleinfoSensor2 = new TeleinfoSensor(configuration.power2.name, TeleinfoSensorSlot.TELEINFO2)
-        counter1 = new CounterSensor<>(configuration.counter1.name, NonSI.LITRE)
-        counter2 = new CounterSensor<>(configuration.counter2.name, SI.CUBIC_METRE)
+        counter1 = new SensorBuilder()
+                .forDevice(this)
+                .ofType('counter1')
+                .withName(configuration.counter1.name)
+                .withUnit(NonSI.LITRE)
+                .build()
+        counter2 = new SensorBuilder()
+                .forDevice(this)
+                .ofType('counter2')
+                .withName(configuration.counter2.name)
+                .withUnit(SI.CUBIC_METRE)
+                .build()
         addSensors(teleinfoSensor1, teleinfoSensor2, counter1, counter2)
     }
 

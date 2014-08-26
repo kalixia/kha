@@ -72,6 +72,13 @@
 
         <!-- Tests dependencies -->
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>data-access-api</artifactId>
+            <classifier>tests</classifier>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-core</artifactId>
         </dependency>

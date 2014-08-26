@@ -74,6 +74,10 @@ public class WundergroundDeviceConfiguration extends Configuration {
         return polling;
     }
 
+    public void setPolling(PullBasedConfiguration polling) {
+        this.polling = polling;
+    }
+
     public String getHost() {
         return host;
     }

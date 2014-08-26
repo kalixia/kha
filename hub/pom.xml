@@ -120,11 +120,22 @@
                             <apiVersion>v1</apiVersion>
                             <basePath>http://localhost:8082</basePath>
                             <outputTemplate>https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache</outputTemplate>
+                            <!--
+                            <apiInfo>
+                                <title>Kha API</title>
+                                <description>Documentation for Kha API</description>
+                                <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
+                                <contact>jerome.bernard#gmail$com</contact>
+                                <license>Apache 2.0</license>
+                                <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+                            </apiInfo>
+                            <outputTemplate>https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache</outputTemplate>
+                            -->
                             <outputPath>${basedir}/src/main/webapp/api-docs/strapdown.html</outputPath>
                             <!--<swaggerUIDocBasePath>http://www.example.com/apidocsf</swaggerUIDocBasePath>-->
                             <swaggerDirectory>${basedir}/src/main/webapp/api-docs</swaggerDirectory>
                             <!--<useOutputFlatStructure>false</useOutputFlatStructure>-->
-                            <!--<mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>-->
+                            <!--mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot-->
                         </apiSource>
                     </apiSources>
                 </configuration>

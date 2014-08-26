@@ -41,3 +41,6 @@ proguard_logs/
 
 ## Vagrant
 .vagrant
+
+# Kha generated logs
+*.log

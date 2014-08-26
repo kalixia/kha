@@ -52,11 +52,17 @@ public class SchemaCreator {
                 "    type text,\n" +
                 "    owner text,\n" +
                 "    name text,\n" +
-                "    sensors map<text,text>,\n" +
                 "    creation_date timestamp,\n" +
                 "    last_update_date timestamp\n" +
                 ");");
         session.execute("CREATE INDEX IF NOT EXISTS idx_devices_by_owner ON kha.devices (owner);");
         session.execute("CREATE INDEX IF NOT EXISTS idx_devices_by_name ON kha.devices (name);");
+        session.execute("CREATE TABLE IF NOT EXISTS kha.sensors (\n" +
+                "    device uuid,\n" +
+                "    name text,\n" +
+                "    unit text,\n" +
+                "    type text,\n" +
+                "    PRIMARY KEY(device, name)\n" +
+                ");");
     }
 }

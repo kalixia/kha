@@ -2,12 +2,11 @@ package com.kalixia.ha.devices.zibase.zapi2.commands;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kalixia.ha.devices.zibase.zapi2.ZibaseDeviceConfiguration;
-import com.kalixia.ha.model.configuration.AuthenticationConfiguration;
+import com.kalixia.ha.devices.zibase.zapi2.ZibaseDevice;
 import com.kalixia.ha.model.quantity.WattsPerHour;
-import com.kalixia.ha.model.sensors.BasicSensor;
 import com.kalixia.ha.model.sensors.DataPoint;
 import com.kalixia.ha.model.sensors.Sensor;
+import com.kalixia.ha.model.sensors.SensorBuilder;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
@@ -22,42 +21,45 @@ import rx.exceptions.Exceptions;
 
 import javax.measure.Measure;
 import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Quantity;
 import javax.measure.quantity.Temperature;
 import javax.measure.unit.NonSI;
 import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
 import java.io.IOException;
 import java.util.List;
+
+import static java.lang.String.format;
 
 /**
  * Fetch token from login and password in order to be able to make ZAPI2 calls.
  *
  * https://zibase.net/api/get/ZAPI.php?login=[your login]&password=[your password]&service=get&target=token
  */
-public class GetHomeDataCommand extends HystrixCommand<List<Sensor>> {
+public class GetHomeDataCommand extends HystrixCommand<List<Sensor<?>>> {
     private final String requestURL;
+    private final ZibaseDevice device;
     private final CloseableHttpAsyncClient httpClient;
     private final ObjectMapper mapper;
     private static final Logger logger = LoggerFactory.getLogger(GetHomeDataCommand.class);
 
-    public GetHomeDataCommand(String token, ZibaseDeviceConfiguration configuration,
+    public GetHomeDataCommand(String token, ZibaseDevice device,
                               CloseableHttpAsyncClient httpClient, ObjectMapper mapper) {
         super(Setter
                         .withGroupKey(HystrixCommandGroupKey.Factory.asKey("Zibase"))
                         .andCommandKey(HystrixCommandKey.Factory.asKey("GetHomeData"))
         );
-        AuthenticationConfiguration authentication = configuration.getAuthentication();
-        this.requestURL = String.format("%s?zibase=%s&token=%s&service=get&target=home",
-                configuration.getUrl(), configuration.getZibaseID(), token);
+        this.requestURL = format("%s?zibase=%s&token=%s&service=get&target=home",
+                device.getConfiguration().getUrl(), device.getConfiguration().getZibaseID(), token);
+        this.device = device;
         this.httpClient = httpClient;
         this.mapper = mapper;
     }
 
     @Override
-    protected List<Sensor> run() throws Exception {
+    protected List<Sensor<?>> run() throws Exception {
         logger.info("Collecting devices attached to the Zibase...");
         logger.debug("Request is: {}", requestURL);
-        List<Sensor> sensors = ObservableHttp.createGet(requestURL, httpClient)
+        List<Sensor<?>> sensors = ObservableHttp.createGet(requestURL, httpClient)
                 .toObservable()
                 .flatMap((response) -> response.getContent().map(String::new))
                 .flatMap(this::extractSensorsFromJson)
@@ -90,7 +92,7 @@ public class GetHomeDataCommand extends HystrixCommand<List<Sensor>> {
      * }
      * </pre>
      */
-    private Observable<Sensor> extractSensorsFromJson(String json) {
+    private Observable<Sensor<? extends Quantity>> extractSensorsFromJson(String json) {
         try {
             JsonNode rootNode = mapper.readTree(json);
             JsonNode probesNode = rootNode.get("body").get("probes");
@@ -113,23 +115,48 @@ public class GetHomeDataCommand extends HystrixCommand<List<Sensor>> {
                         else
                             instant = DateTime.now().toInstant();
 
-                        DataPoint dataPoint;
                         switch (sensorType) {
                             case "power":
                                 double wph = probe.get("val1").asDouble();
-                                dataPoint = new DataPoint<>(Measure.valueOf(wph, WattsPerHour.UNIT), instant);
-                                return Observable.just(new BasicSensor<>(sensorName, WattsPerHour.UNIT, dataPoint));
+                                DataPoint<WattsPerHour> dataPoint = new DataPoint<>(
+                                        Measure.valueOf(wph, WattsPerHour.UNIT), instant);
+                                Sensor<WattsPerHour> powerSensor = new SensorBuilder<ZibaseDevice>()
+                                        .forDevice(device)
+                                        .ofType("power")
+                                        .withName(sensorName)
+                                        .withUnit(WattsPerHour.UNIT)
+                                        .withLastValue(dataPoint)
+                                        .build();
+                                return Observable.just(powerSensor);
                             case "temperature":
                                 double tempInCelsius = probe.get("val1").asDouble();
                                 double humidityValue = probe.get("val2").asDouble();
-                                dataPoint = new DataPoint<>(Measure.valueOf(tempInCelsius, SI.CELSIUS), instant);
-                                BasicSensor<Temperature> tempSensor = new BasicSensor<>(sensorName, SI.CELSIUS, dataPoint);
-                                dataPoint = new DataPoint<>(Measure.valueOf(humidityValue, NonSI.PERCENT), instant);
-                                BasicSensor<Dimensionless> humiditySensor = new BasicSensor<>(sensorName, NonSI.PERCENT, dataPoint);
-                                return Observable.from(tempSensor, humiditySensor);
+
+                                DataPoint<Temperature> temperatureDataPoint = new DataPoint<>(
+                                        Measure.valueOf(tempInCelsius, SI.CELSIUS), instant);
+                                Sensor<Temperature> temperatureSensor = new SensorBuilder<ZibaseDevice>()
+                                        .forDevice(device)
+                                        .ofType("temperature")
+                                        .withName(sensorName)
+                                        .withUnit(SI.CELSIUS)
+                                        .withLastValue(temperatureDataPoint)
+                                        .build();
+
+                                DataPoint<Dimensionless> humidityDataPoint = new DataPoint<>(
+                                        Measure.valueOf(humidityValue, NonSI.PERCENT), instant);
+                                Sensor<Temperature> humiditySensor = new SensorBuilder<ZibaseDevice>()
+                                        .forDevice(device)
+                                        .ofType("humidity")
+                                        .withName(sensorName)
+                                        .withUnit(NonSI.PERCENT)
+                                        .withLastValue(humidityDataPoint)
+                                        .build();
+
+                                return Observable.from(temperatureSensor, humiditySensor);
                             default:
                                 logger.warn("Don't know what to do of sensor with type '{}'", sensorType);
-                                return Observable.just(new BasicSensor(sensorName, Unit.ONE));
+                                return Observable.error(new IllegalArgumentException(
+                                        format("Don't know what to do of sensor with type '{}'", sensorType)));
                         }
                     });
         } catch (IOException e) {

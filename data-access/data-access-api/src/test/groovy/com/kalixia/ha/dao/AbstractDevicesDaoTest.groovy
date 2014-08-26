@@ -4,15 +4,13 @@ import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.devices.DeviceBuilder
 import com.kalixia.ha.model.security.Role
 import com.kalixia.ha.model.User
-import com.kalixia.ha.model.devices.RGBLamp
-import com.kalixia.ha.model.sensors.DataPoint
+import com.kalixia.ha.devices.rgblamp.RGBLamp
 import com.kalixia.ha.model.sensors.Sensor
+import com.kalixia.ha.model.sensors.SensorBuilder
 import spock.lang.Specification
 
-import javax.measure.Measure
 import javax.measure.quantity.Duration
 import javax.measure.unit.SI
-import javax.measure.unit.Unit
 
 import static java.util.Collections.emptySet
 
@@ -80,22 +78,14 @@ abstract class AbstractDevicesDaoTest extends Specification {
                 .withOwner(user)
                 .build()
 
-        device.addSensor(new Sensor<Duration>() {
-            @Override
-            String getName() {
-                return "dummy"
-            }
+        def sensor = new SensorBuilder()
+                .forDevice(device)
+                .ofType("test-duration")
+                .withName('dummy')
+                .withUnit(SI.SECOND)
+                .build()
 
-            @Override
-            Unit getUnit() {
-                return SI.SECOND
-            }
-
-            @Override
-            DataPoint<Duration> getLastValue() {
-                return new DataPoint<Duration>(Measure.valueOf(123, SI.SECOND));
-            }
-        })
+        device.addSensor(sensor)
 
         when:
         usersDao.save(user)

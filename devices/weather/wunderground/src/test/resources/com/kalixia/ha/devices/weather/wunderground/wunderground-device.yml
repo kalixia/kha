@@ -1,5 +1,7 @@
 apiKey: 8ad077feebe28cb8
 station: IMOUYSUR2
+city: Paris
+country: France
 
 polling:
   interval: 5mn

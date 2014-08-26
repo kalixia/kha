@@ -1,4 +1,4 @@
-package com.kalixia.ha.model.devices;
+package com.kalixia.ha.devices.rgblamp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kalixia.ha.model.configuration.Configuration;

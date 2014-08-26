@@ -14,6 +14,10 @@ var app = angular.module('hub',
             .otherwise({ redirectTo: '/' });
 
         $httpProvider.defaults.headers.common['X-Api-Request-ID'] = guid();
+    })
+    .constant('USER_ROLES', {
+        administrator: 'ADMINISTRATOR',
+        user: 'USER'
     });
 
 // Generates a random UUID

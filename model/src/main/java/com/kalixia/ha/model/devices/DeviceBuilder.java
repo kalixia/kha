@@ -84,7 +84,4 @@ public class DeviceBuilder {
         return type;
     }
 
-    public Map<String, DeviceCreator> getDevicesCreatorsMap() {
-        return devicesCreatorsMap;
-    }
 }

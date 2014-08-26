@@ -18,4 +18,9 @@ public interface Sensor<Q extends Quantity> {
     @ApiModelProperty("last value of the sensor")
     DataPoint<Q> getLastValue();
 
+    /**
+     * The technical name of the device.
+     */
+    String getType();
+
 }

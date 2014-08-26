@@ -3,7 +3,7 @@ package com.kalixia.ha.model.sensors;
 import javax.measure.quantity.Quantity;
 import javax.measure.unit.Unit;
 
-public class BasicSensor<Q extends Quantity> implements Sensor<Q> {
+public abstract class BasicSensor<Q extends Quantity> extends AbstractSensor<Q> {
     private final String name;
     private final Unit<Q> unit;
     private DataPoint<Q> lastValue;

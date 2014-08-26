@@ -6,7 +6,7 @@ devicesServices.factory('DeviceService', ['Restangular', 'SecurityService', '$lo
     function deviceServiceFactory(Restangular, SecurityService, $log) {
         return {
             getUserDevices: function(username) {
-                return Restangular.one('', username).getList('devices').get();
+                return Restangular.one('', username).getList('devices');
             },
             createDevice: function(owner, device) {
                 return Restangular.one('', owner.username).all('devices').post(device);

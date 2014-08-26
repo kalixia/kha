@@ -50,7 +50,6 @@ public abstract class AbstractDevice<C extends Configuration> extends AbstractAu
         reloadConfiguration();
     }
 
-    @JsonIgnore
     public UUID getId() {
         return id;
     }

@@ -1,15 +1,14 @@
 package com.kalixia.ha.api
 
 import com.kalixia.ha.dao.DevicesDao
+import com.kalixia.ha.devices.rgblamp.RGBLamp
 import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.devices.DeviceBuilder
-import com.kalixia.ha.model.devices.RGBLamp
 import com.kalixia.ha.model.security.Role
 import rx.Observable
 import spock.lang.Specification
 
-import static java.util.Collections.emptyMap
 import static java.util.Collections.emptySet
 
 class DevicesServiceTest extends Specification {

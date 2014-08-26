@@ -6,15 +6,16 @@ import com.kalixia.ha.devices.weather.WeatherConditions;
 import com.kalixia.ha.devices.weather.WeatherIcon;
 import com.kalixia.ha.devices.weather.WeatherRequest;
 import com.kalixia.ha.devices.weather.wunderground.WundergroundDeviceConfiguration;
-import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
+import com.netflix.hystrix.HystrixObservableCommand;
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rx.Observable;
 import rx.exceptions.Exceptions;
 
 import javax.measure.Measure;
@@ -23,7 +24,6 @@ import javax.measure.unit.SI;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.util.Locale;
 
 import static javax.measure.unit.SI.PASCAL;
 
@@ -32,12 +32,12 @@ import static javax.measure.unit.SI.PASCAL;
  *
  * <a href="http://www.wunderground.com/weather/api/d/docs?d=data/conditions&MR=1">API Documentation</a>
  */
-public class ConditionsCommand extends HystrixCommand<WeatherConditions> {
+public class ConditionsCommand extends HystrixObservableCommand<WeatherConditions> {
     private final WeatherRequest request;
     private final String apiKey;
     private final HttpClient<ByteBuf, ByteBuf> httpClient;
     private final ObjectMapper mapper;
-    private static final Logger logger = LoggerFactory.getLogger(ConditionsCommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConditionsCommand.class);
 
     public ConditionsCommand(WeatherRequest request,
                              WundergroundDeviceConfiguration configuration,
@@ -53,7 +53,7 @@ public class ConditionsCommand extends HystrixCommand<WeatherConditions> {
     }
 
     @Override
-    protected WeatherConditions run() throws Exception {
+    protected Observable<WeatherConditions> run() {
         String requestURL = "";
         String requestPrefix;
         if (request.getLocale() != null)
@@ -62,39 +62,40 @@ public class ConditionsCommand extends HystrixCommand<WeatherConditions> {
             requestPrefix = String.format("/api/%s/conditions/q", apiKey);
 
         // build request URL depending on the location type chosen
-        switch (request.getLocationType()) {
-            case COORDINATES:
-                throw new IllegalArgumentException("COORDINATES is not a valid LocationType for Conditions requests");
-            case ZIPCODE:
-                String zipCode = request.getZipCode();
-                requestURL = String.format("%s/%s.json", requestPrefix, zipCode);
-                logger.info("Fetching Wunderground conditions for '{}'...", zipCode);
-                break;
-            case AUTO_IP:
-                throw new IllegalArgumentException("AUTO_IP is not a valid LocationType for Conditions requests");
-            case CITY_STATE:
-                String state = request.getState();
-                String city = URLEncoder.encode(request.getCity(), "UTF-8");
-                requestURL = String.format("%s/%s/%s.json", requestPrefix, state, city);
-                logger.info("Fetching Wunderground conditions for '{}', '{}'...", city, state);
-                break;
-            case CITY_COUNTRY:
-                String country = URLEncoder.encode(request.getCountry(), "UTF-8");
-                city = URLEncoder.encode(request.getCity(), "UTF-8");
-                requestURL = String.format("%s/%s/%s.json", requestPrefix, country, city);
-                logger.info("Fetching Wunderground conditions for '{}', '{}'...", city, country);
-                break;
+        try {
+            switch (request.getLocationType()) {
+                case COORDINATES:
+                    throw new IllegalArgumentException("COORDINATES is not a valid LocationType for Conditions requests");
+                case ZIPCODE:
+                    String zipCode = request.getZipCode();
+                    requestURL = String.format("%s/%s.json", requestPrefix, zipCode);
+                    LOGGER.info("Fetching Wunderground conditions for '{}'...", zipCode);
+                    break;
+                case AUTO_IP:
+                    throw new IllegalArgumentException("AUTO_IP is not a valid LocationType for Conditions requests");
+                case CITY_STATE:
+                    String state = request.getState();
+                    String city = URLEncoder.encode(request.getCity(), "UTF-8");
+                    requestURL = String.format("%s/%s/%s.json", requestPrefix, state, city);
+                    LOGGER.info("Fetching Wunderground conditions for '{}', '{}'...", city, state);
+                    break;
+                case CITY_COUNTRY:
+                    String country = URLEncoder.encode(request.getCountry(), "UTF-8");
+                    city = URLEncoder.encode(request.getCity(), "UTF-8");
+                    requestURL = String.format("%s/%s/%s.json", requestPrefix, country, city);
+                    LOGGER.info("Fetching Wunderground conditions for '{}', '{}'...", city, country);
+                    break;
+            }
+        } catch (Throwable t) {
+            LOGGER.error("Unexpected error", t);
+            return Observable.error(t);
         }
 
-        logger.debug("Request is: {}", requestURL);
-        WeatherConditions conditions = httpClient.submit(HttpClientRequest.<ByteBuf>createGet(requestURL))
+        LOGGER.debug("Request is: {}", requestURL);
+        return httpClient.submit(HttpClientRequest.<ByteBuf>createGet(requestURL))
                 .flatMap(HttpClientResponse::getContent)
                 .map(data -> data.toString(Charset.defaultCharset()))
-                .map(this::extractConditionsFromJsonResponse)
-                .toBlockingObservable().single();
-
-        logger.info("Fetched conditions '{}'", conditions);
-        return conditions;
+                .map(this::extractConditionsFromJsonResponse);
     }
 
     /**

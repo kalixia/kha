@@ -9,7 +9,7 @@ import static com.google.common.collect.Sets.newHashSet
 
 class EcoDeviceTest extends Specification {
     def setupSpec() {
-        System.setProperty("HA_HOME", new File("src/main").getAbsolutePath())
+        System.setProperty("app.home", new File("src/main").getAbsolutePath())
     }
 
     def "test configuration"() {

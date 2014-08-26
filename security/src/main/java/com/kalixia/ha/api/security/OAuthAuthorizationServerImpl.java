@@ -1,5 +1,6 @@
 package com.kalixia.ha.api.security;
 
+import com.kalixia.grapi.codecs.shiro.OAuth2Realm;
 import com.kalixia.grapi.codecs.shiro.OAuthAuthorizationServer;
 import com.kalixia.ha.dao.UsersDao;
 import com.kalixia.ha.model.User;
@@ -39,6 +40,6 @@ public class OAuthAuthorizationServerImpl implements OAuthAuthorizationServer {
                 .flatMap(role -> role.getPermissions().stream())
                 .map(WildcardPermission::new)
                 .collect(toSet());
-        return new SimpleAccount(user.getUsername(), accessToken, user.getName(), roles, permissions);
+        return new SimpleAccount(user.getUsername(), accessToken, OAuth2Realm.class.getSimpleName(), roles, permissions);
     }
 }

@@ -2,7 +2,7 @@ language: java
 jdk:
   - oraclejdk8
 
-# Install Grunt and Bower (required by the Hub and Cloud Platform modules)
+# Install Gulp and Bower (required by the Hub and Cloud Platform modules)
 before_install:
-  - npm install -g grunt-cli
+  - npm install -g gulp
   - npm install -g bower

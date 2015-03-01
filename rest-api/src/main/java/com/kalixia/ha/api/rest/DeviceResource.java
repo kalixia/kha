@@ -49,8 +49,9 @@ import static javax.ws.rs.core.Response.Status.EXPECTATION_FAILED;
         value = "devices",
         description = "API for Devices", position = 2,
         authorizations = {
-                @Authorization(value = "oauth2", scopes = {
-                        @AuthorizationScope(scope = "write", description = "write your devices")
+                @Authorization(value = "devices_auth", type = "oauth2", scopes = {
+                        @AuthorizationScope(scope = "write:devices", description = "modify your devices"),
+                        @AuthorizationScope(scope = "read:devices", description = "read your devices")
                 })
         }
 )

@@ -30,7 +30,7 @@ public class WundergroundTemperatureSensor extends TemperatureSensor {
 
     @Override
     protected Float getCelsius() {
-        return (float) command.execute().getTemperature().doubleValue(getUnit());
+        return (float) command.observe().last().toBlocking().single().getTemperature().doubleValue(getUnit());
     }
 
     @Override

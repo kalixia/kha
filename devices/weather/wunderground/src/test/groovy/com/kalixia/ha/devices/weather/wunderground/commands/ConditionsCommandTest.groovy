@@ -2,6 +2,8 @@ package com.kalixia.ha.devices.weather.wunderground.commands
 
 import com.kalixia.ha.devices.weather.WeatherRequest
 import junit.framework.Assert
+import rx.functions.Action0
+import rx.functions.Action1
 import spock.lang.Unroll
 
 import javax.measure.unit.SI
@@ -24,15 +26,15 @@ class ConditionsCommandTest extends AbstractWundergroundCommandTest {
                 new WeatherRequest().forZipCode("10001")
         ]
         cmd = new ConditionsCommand(request, configuration, httpClient, mapper)
-        conditions = cmd.execute()
+        conditions = cmd.observe().last().toBlocking().single()
     }
 
     @Unroll
     def "request current weather conditions with invalid location type #locationType"() {
         when:
-        new ConditionsCommand(request, configuration, httpClient, mapper).execute()
+        def obs = new ConditionsCommand(request, configuration, httpClient, mapper).observe()
         then:
-        thrown(RuntimeException)
+        obs.subscribe({ fail() } as Action1, { } as Action1, { } as Action0)
 
 //        when:
 //        def observable = new ConditionsCommand(request, configuration, httpClient, mapper).observe()

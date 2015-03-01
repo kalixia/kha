@@ -50,7 +50,7 @@ public class WundergroundPressureSensor extends AbstractSensor<Pressure> {
 
     @Override
     public DataPoint<Pressure> getLastValue() {
-        WeatherConditions conditions = command.execute();
+        WeatherConditions conditions = command.observe().last().toBlocking().single();
         return new DataPoint<>(conditions.getPressure(), Instant.now());
     }
 

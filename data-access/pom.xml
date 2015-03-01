@@ -16,7 +16,7 @@
     <modules>
         <module>data-access-api</module>
         <module>data-access-lucene</module>
-        <module>data-access-cassandra</module>
+        <!--module>data-access-cassandra</module-->
     </modules>
 
 </project>

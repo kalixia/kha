@@ -45,8 +45,7 @@ class TeleinfoSensorRetrieverTest extends Specification {
 
     def "test retrieval of teleinfo counter"() {
         when: "requesting for enabled teleinfoSensor1"
-        def iterator = teleinfoRetriever.retrieveIndexes(teleinfo1, ecoDeviceConfiguration)
-                .toBlockingObservable().iterator
+        def iterator = teleinfoRetriever.retrieveIndexes(teleinfo1, ecoDeviceConfiguration).toBlocking().iterator
         def instant = iterator.next()
         def hp = iterator.next()
         def hc = iterator.next()
@@ -59,8 +58,7 @@ class TeleinfoSensorRetrieverTest extends Specification {
 
     def "test retrieval of disabled teleinfo counter"() {
         when: "requesting for disabled teleinfoSensor2"
-        def iterator = teleinfoRetriever.retrieveIndexes(teleinfo2, ecoDeviceConfiguration)
-                .toBlockingObservable().iterator
+        def iterator = teleinfoRetriever.retrieveIndexes(teleinfo2, ecoDeviceConfiguration).toBlocking().iterator
         def instant = iterator.next()
         def hp = iterator.next()
         def hc = iterator.next()
@@ -75,8 +73,7 @@ class TeleinfoSensorRetrieverTest extends Specification {
         when: "requesting for enabled teleinfoSensor2 with no energy meter connected"
         //noinspection GroovyAccessibility
         ecoDeviceConfiguration.power2.enabled = true
-        def iterator = teleinfoRetriever.retrieveIndexes(teleinfo2, ecoDeviceConfiguration)
-                        .toBlockingObservable().iterator
+        def iterator = teleinfoRetriever.retrieveIndexes(teleinfo2, ecoDeviceConfiguration).toBlocking().iterator
         def instant = iterator.next()
         def hp = iterator.next()
         def hc = iterator.next()

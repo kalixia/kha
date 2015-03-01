@@ -10,6 +10,7 @@ import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.Authorization;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import rx.Observable;
 
@@ -52,10 +53,13 @@ public class AdminResource {
     @GET
     @Path("/users/count")
     @RequiresPermissions(Permissions.USERS_COUNT)
-    @ApiOperation(value = "Retrieve users count", response = Long.class)
+    @ApiOperation(value = "Retrieve users count",
+            response = Long.class,
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
     @ApiResponses({
             @ApiResponse(code = 200, message = "the count of users", response = Long.class),
-            @ApiResponse(code = 400, message = "if the request ID is not a valid UUID")
+            @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
+            @ApiResponse(code = 403, message = "if the authorization credentials are missing")
     })
     @ApiImplicitParams({
             @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,

@@ -145,28 +145,38 @@
             <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>2.2</version>
+                <version>3.0-SNAPSHOT</version>
                 <configuration>
                     <apiSources>
                         <apiSource>
                             <locations>com.kalixia.ha.api.rest</locations>
-                            <apiVersion>v1</apiVersion>
-                            <basePath>http://localhost:8082</basePath>
-                            <outputTemplate>https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache</outputTemplate>
-                            <!--
-                            <apiInfo>
+                            <schemes>http,https</schemes>
+                            <host>localhost:8082</host>
+                            <basePath>/</basePath>
+                            <info>
                                 <title>Kha API</title>
+                                <version>v1</version>
+                                <!-- use markdown here because I'm using markdown for output,
+                                if you need to use html or other markup language, you need to use your target language,
+                                 and note escape your description for xml -->
                                 <description>Documentation for Kha API</description>
-                                <termsOfServiceUrl>http://www.github.com/kongchen/swagger-maven-plugin</termsOfServiceUrl>
-                                <contact>jerome.bernard#gmail$com</contact>
-                                <license>Apache 2.0</license>
-                                <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
-                            </apiInfo>
-                            <outputTemplate>https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache</outputTemplate>
-                            -->
+                                <!--<termsOfService>http://www.github.com/kongchen/swagger-maven-plugin</termsOfService>-->
+                                <contact>
+                                    <email>jerome.bernard@gmail.com</email>
+                                    <name>Jerome Bernard</name>
+                                    <url>http://www.jerome-bernard.com</url>
+                                </contact>
+                                <license>
+                                    <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+                                    <name>Apache 2.0</name>
+                                </license>
+                            </info>
+                            <!--<templatePath>${basedir}/src/test/resources/strapdown.html.hbs</templatePath>-->
                             <outputPath>${basedir}/src/main/webapp/api-docs/strapdown.html</outputPath>
-                            <!--<swaggerUIDocBasePath>http://www.example.com/apidocsf</swaggerUIDocBasePath>-->
                             <swaggerDirectory>${basedir}/src/main/webapp/api-docs</swaggerDirectory>
+                            <!--<outputTemplate>https://raw.github.com/kongchen/api-doc-template/master/v2.0/markdown.mustache</outputTemplate>-->
+                            <!--<outputTemplate>https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache</outputTemplate>-->
+                            <!--<swaggerUIDocBasePath>http://www.example.com/apidocsf</swaggerUIDocBasePath>-->
                             <!--<useOutputFlatStructure>false</useOutputFlatStructure>-->
                             <!--mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot-->
                         </apiSource>

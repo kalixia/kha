@@ -5,6 +5,8 @@ import com.kalixia.ha.model.quantity.WattsPerHour
 import groovy.util.logging.Slf4j
 import io.reactivex.netty.protocol.http.client.HttpClient
 import rx.Observable
+import rx.functions.Action1
+import rx.functions.Func1
 
 import javax.measure.Measurable
 import javax.measure.Measure
@@ -46,6 +48,7 @@ class EcoDeviceTeleinfoRetriever implements TeleinfoRetriever {
                             new IllegalStateException("Should only have 2 values but got ${values.size()} instead"))
                 }
                 return Observable.from(values)
-            })
+            } as Func1)
+            .doOnError({ Throwable t -> LOGGER.error "Unexpected error", t } as Action1)
     }
 }

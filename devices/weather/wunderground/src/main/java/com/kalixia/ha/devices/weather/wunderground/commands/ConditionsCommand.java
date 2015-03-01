@@ -53,7 +53,7 @@ public class ConditionsCommand extends HystrixObservableCommand<WeatherCondition
     }
 
     @Override
-    protected Observable<WeatherConditions> run() {
+    protected Observable<WeatherConditions> construct() {
         String requestURL = "";
         String requestPrefix;
         if (request.getLocale() != null)

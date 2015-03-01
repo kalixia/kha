@@ -29,11 +29,11 @@ class SensorsServiceTest extends Specification {
 
         when: "requesting last sensor value"
         def observable = service.getLastValue(deviceAndSensor.id)
-        def DataPoint<LuminousFlux> dataPoint = observable.toBlockingObservable().iterator.next()
+        def DataPoint<LuminousFlux> dataPoint = observable.toBlocking().iterator.next()
 
         then: "expect to get it"
         dataPoint != null
-        Measure.valueOf(3, LuminousFlux.UNIT).equals(dataPoint.value)
+        Measure.valueOf(3, LuminousFlux.UNIT) == dataPoint.value
     }
 
 }

@@ -12,6 +12,7 @@ import io.netty.buffer.Unpooled
 import io.reactivex.netty.protocol.http.client.HttpClient
 import io.reactivex.netty.protocol.http.client.HttpClientRequest
 import io.reactivex.netty.protocol.http.client.HttpClientResponse
+import rx.functions.Func1
 
 import javax.measure.Measurable
 import javax.measure.Measure
@@ -55,8 +56,8 @@ class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<Quantity
         }
 
         List<Measurable<Quantity>> values = httpClient.submit(request)
-                .flatMap({ HttpClientResponse<ByteBuf> response -> response.getContent() })
-                .map({ ByteBuf data -> data.toString(Charset.defaultCharset()) })
+                .flatMap({ HttpClientResponse<ByteBuf> response -> response.getContent() } as Func1)
+                .map({ ByteBuf data -> data.toString(Charset.defaultCharset()) } as Func1)
                 .flatMap({ String content ->
                     def xml = new XmlParser().parseText(content)
                     def List<Measurable<Quantity>> values = []
@@ -73,9 +74,9 @@ class EcoDeviceXmlParsingCommand extends HystrixCommand<List<Measurable<Quantity
                             break
                     }
                     return rx.Observable.from(values)
-                })
+                } as Func1)
                 .toList()
-                .toBlockingObservable().single()
+                .toBlocking().single()
 
         LOGGER.info("Indexes: instant power=${values[0]}, HP=${values[1]}, HC=${values[2]}")
         return values

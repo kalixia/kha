@@ -24,7 +24,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <grapi.version>0.4.5-SNAPSHOT</grapi.version>
-        <hystrix.version>1.4.0-RC4</hystrix.version>
+        <hystrix.version>1.4.0-rc.9</hystrix.version>
         <rxjava.version>1.0.7</rxjava.version>
         <rxnetty.version>0.4.6</rxnetty.version>
         <netty.version>4.1.0.Beta3</netty.version>

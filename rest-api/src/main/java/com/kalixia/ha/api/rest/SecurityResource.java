@@ -68,7 +68,7 @@ public class SecurityResource {
     }
 
     @GET
-    @Path("/logout")
+    @Path("logout")
     @ApiOperation(value = "Logs out the user")
     @ApiResponses({
             @ApiResponse(code = 200, message = "if the user was logged out")

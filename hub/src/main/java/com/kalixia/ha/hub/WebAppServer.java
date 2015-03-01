@@ -1,6 +1,8 @@
 package com.kalixia.ha.hub;
 
 import com.kalixia.grapi.codecs.rest.RESTCodec;
+import com.kalixia.ha.hub.http.SmartHttpContentCompressor;
+import com.sun.org.apache.xalan.internal.xsltc.trax.SmartTransformerFactoryImpl;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -10,6 +12,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.oio.OioServerSocketChannel;
+import io.netty.handler.codec.http.HttpContentCompressor;
+import io.netty.handler.codec.http.HttpContentDecompressor;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -75,10 +79,11 @@ public class WebAppServer {
                             ChannelPipeline pipeline = ch.pipeline();
 
                             pipeline.addLast("http-request-decoder", new HttpRequestDecoder());
-                            pipeline.addLast("http-object-aggregator", new HttpObjectAggregator(1048576));
                             pipeline.addLast("http-response-encoder", new HttpResponseEncoder());
-//                            pipeline.addLast("deflater", new HttpContentDecompressor());
+                            pipeline.addLast("http-object-aggregator", new HttpObjectAggregator(1048576));
+                            pipeline.addLast("deflater", new HttpContentDecompressor());
 //                            pipeline.addLast("inflater", new HttpContentCompressor());
+                            pipeline.addLast("inflater", new SmartHttpContentCompressor());
                             pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
                             pipeline.addLast("cors", new CorsHandler(corsConfig));
                             pipeline.addLast("file-handler", new HttpStaticFileServerHandler(hubSiteDirectory, true));

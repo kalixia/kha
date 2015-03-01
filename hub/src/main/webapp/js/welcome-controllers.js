@@ -1,9 +1,7 @@
 'use strict';
 
-angular.module('hub.welcome.controllers', ['hub.welcome.services', 'hub.security.services', 'hub.devices.services'])
-    .controller('WelcomeController', ['$scope', 'WelcomeService', 'SecurityService', 'DeviceService', '$location', '$log', WelcomeController]);
-
-function WelcomeController($scope, WelcomeService, SecurityService, DeviceService, $location, $log) {
+hubApp
+  .controller('WelcomeController', function ($scope, WelcomeService, SecurityService, DeviceService, $location, $log) {
     $scope.user = { roles: [ 'ADMINISTRATOR']};
     $scope.device = {};
     WelcomeService.installDone().then(function(done) {
@@ -45,9 +43,11 @@ function WelcomeController($scope, WelcomeService, SecurityService, DeviceServic
     $scope.nextStep = function() {
         $scope.errorMessage = '';
         $scope.validForm = false;
+        $log.debug("Switching to step " + $scope.currentStep.number);
         $scope.currentStep = $scope.steps[$scope.currentStep.number];
     };
     $scope.previousStep = function() {
+        $log.debug("Switching to step " + ($scope.currentStep.number - 1));
         $scope.currentStep = $scope.steps[$scope.currentStep.number - 2];
     };
 
@@ -108,4 +108,5 @@ function WelcomeController($scope, WelcomeService, SecurityService, DeviceServic
         $scope.validForm = data.value;
         $scope.currentStepScope = data.scope;
     });
-}
+  }
+);

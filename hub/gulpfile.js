@@ -9,6 +9,7 @@ var gulp = require('gulp'),
   livereload = require('gulp-livereload'),
   imagemin = require('gulp-imagemin'),
   ngmin = require('gulp-ngmin'),
+  ngAnnotate = require('gulp-ng-annotate'),
   jshint = require('gulp-jshint'),
   rev = require('gulp-rev'),
   connect = require('gulp-connect'),
@@ -17,6 +18,7 @@ var gulp = require('gulp'),
   flatten = require('gulp-flatten'),
   clean = require('gulp-clean'),
   replace = require('gulp-replace'),
+  browserify = require('gulp-browserify'),
   less = require('gulp-less'),
   cache = require('gulp-cache'),
   debug = require('gulp-debug');
@@ -50,7 +52,7 @@ gulp.task('copy', ['clean'], function(){
   return es.merge(
       gulp.src(yeoman.app + 'i18n/**')
           .pipe(gulp.dest(yeoman.dist + 'i18n/')),
-      gulp.src(yeoman.app + '**/*.{woff,svg,ttf,eot}')
+      gulp.src(yeoman.app + 'fonts/*.{woff,svg,ttf,eot}')
           .pipe(flatten())
           .pipe(gulp.dest(yeoman.dist + 'fonts/')),
       gulp.src(yeoman.app + 'api-docs/**')
@@ -129,7 +131,7 @@ gulp.task('server', ['watch'], function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(yeoman.app + 'scripts/**', ['browserify']);
+  gulp.watch(yeoman.app + 'js/**', ['browserify']);
   gulp.watch('src/images/**', ['images']);
   livereload();
 });
@@ -188,22 +190,24 @@ gulp.task('build', ['clean', 'copy'], function() {
 });
 
 gulp.task('usemin', ['images', 'less'], function() {
-  return gulp.src([yeoman.app + '{,*/}*.html', yeoman.app + '{partials,*/}/**/*.html'])
+  //return gulp.src([yeoman.app + '{,views/}**/*.html', yeoman.app + '{,partials/}**/*.html'])
+  return gulp.src([yeoman.app + '{,views/**}/*.html', yeoman.app + '{,partials/**}/*.html'])
     .pipe(usemin({
       css: [
         prefix.apply(),
         replace(/[0-9a-zA-Z\-_\s\.\/]*\/([a-zA-Z\-_\.0-9]*\.(woff|eot|ttf|svg))/g, '/fonts/$1'),
-        minifyCss(),
-        rev(),
-        'concat'
+        //minifyCss(),
+        'concat',
+        rev()
       ],
       html: [
         minifyHtml({empty: true, conditionals:true}),
       ],
       js: [
-        ngmin(),
-        rev(),
-        'concat'
+        ngAnnotate(),
+        uglify(),
+        'concat',
+        rev()
       ]
     }))
     .pipe(gulp.dest(yeoman.dist));

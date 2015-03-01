@@ -1,11 +1,6 @@
 'use strict';
 
-angular.module('hub.users.controllers', ['hub.users.services', 'hub.devices.services', 'hub.security.services'])
-    .controller('LoginController', ['$scope', 'SecurityService', '$location', '$log', LoginController])
-    .controller('CreateUserController', ['$scope', 'UserService', CreateUserController])
-    .controller('UserDetailController', ['$scope', 'DeviceService', 'SecurityService', '$log', UserDetailController]);
-
-function LoginController($scope, SecurityService, $location, $log) {
+hubApp.controller('LoginController', function ($scope, SecurityService, $location, $log) {
     $scope.login = function() {
         SecurityService.login($scope.username, $scope.password).then(function() {
             $log.info("Logged in user:");
@@ -14,18 +9,18 @@ function LoginController($scope, SecurityService, $location, $log) {
             $location.path('/' + currentUser.username);
         });
     }
-}
+});
 
-function CreateUserController($scope, UserService, $log) {
+hubApp.controller('CreateUserController', function ($scope, UserService, $log) {
     $scope.create = function() {
         return UserService.createUser($scope.user);
     };
     $scope.$watch('createUserForm.$valid', function(val) {
         $scope.$emit('user.create.form.valid', { value: val, scope: $scope });
     });
-}
+});
 
-function UserDetailController($scope, DeviceService, SecurityService, $log) {
+hubApp.controller('UserDetailController', function ($scope, DeviceService, SecurityService, $log) {
     $scope.user = SecurityService.getCurrentUser();
     DeviceService.getUserDevices($scope.user.username).then(function(devices) {
         $log.info("Found devices:");
@@ -36,4 +31,4 @@ function UserDetailController($scope, DeviceService, SecurityService, $log) {
         $log.debug("Select device " + device.name);
         $scope.selectedDevice = device;
     };
-}
+});

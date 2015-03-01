@@ -1,9 +1,6 @@
 'use strict';
 
-angular.module('hub.devices.controllers', ['hub.devices.services', 'ngRoute', 'restangular', 'ui.bootstrap'])
-    .controller('CreateDeviceController', ['$scope', 'DeviceService', CreateDeviceController]);
-
-function CreateDeviceController($scope, DeviceService) {
+hubApp.controller('CreateDeviceController', function ($scope, DeviceService) {
     $scope.device = {};
     $scope.owner = $scope.user;
     $scope.supportedDevices = DeviceService.findAllSupportedDevices().$object;
@@ -26,7 +23,7 @@ function CreateDeviceController($scope, DeviceService) {
         if ($scope.createDeviceForm.$valid)
             $scope.$emit('device.create.form.valid', { value: true, scope: $scope });
     });
-}
+});
 
 /*
 function DeviceListController($scope, Device, DeviceWS) {

@@ -1,8 +1,6 @@
 'use strict';
 
-var usersServices = angular.module('hub.users.services', ['restangular']);
-
-usersServices.factory('UserService', ['Restangular', function userServiceFactory(Restangular) {
+hubApp.factory('UserService', function (Restangular) {
     return {
         getUser: function(username) {
             return Restangular.one('', username).get();
@@ -11,4 +9,4 @@ usersServices.factory('UserService', ['Restangular', function userServiceFactory
             return Restangular.all('').post(user);
         }
     }
-}]);
+});

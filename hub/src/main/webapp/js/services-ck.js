@@ -1,1 +1,0 @@
-"use strict";var hubServices=angular.module("hubServices",["ngResource","restangular"]).config(function(e){e.setBaseUrl("http://localhost:8082")});

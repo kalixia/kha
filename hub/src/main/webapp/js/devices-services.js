@@ -1,9 +1,6 @@
 'use strict';
 
-var devicesServices = angular.module('hub.devices.services', ['hub.security.services', 'restangular']);
-
-devicesServices.factory('DeviceService', ['Restangular', 'SecurityService', '$log',
-    function deviceServiceFactory(Restangular, SecurityService, $log) {
+hubApp.factory('DeviceService', function (Restangular, SecurityService, $log) {
         return {
             getUserDevices: function(username) {
                 return Restangular.one('', username).getList('devices');
@@ -25,7 +22,7 @@ devicesServices.factory('DeviceService', ['Restangular', 'SecurityService', '$lo
             }
         }
     }
-]);
+);
 
 //hubServices.factory('User', function($resource) {
 //    return $resource('http://localhost\\:8082/:username', {username: '@id'});

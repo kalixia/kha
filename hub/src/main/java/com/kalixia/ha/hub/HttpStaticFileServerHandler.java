@@ -430,11 +430,11 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
         String contentType;
         String path = file.getPath();
         if (path.endsWith(".html"))
-            contentType = "text/html";
+            contentType = "text/html; charset=UTF-8";
         else if (path.endsWith(".css"))
-            contentType = "text/css";
+            contentType = "text/css; charset=UTF-8";
         else if (path.endsWith(".js"))
-            contentType = "application/javascript";
+            contentType = "application/javascript; charset=UTF-8";
         else if (path.endsWith(".ttf"))
             contentType = "application/x-font-ttf";
         else if (path.endsWith(".woff"))
@@ -442,7 +442,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
         else if (path.endsWith(".eot"))
             contentType = "application/vnd.ms-fontobject";
         else if (path.endsWith(".svg"))
-            contentType = "image/svg+xml";
+            contentType = "image/svg+xml; charset=UTF-8";
         else
             contentType = "application/octet-stream";
 

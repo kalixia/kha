@@ -1,6 +1,8 @@
 {
   "name": "kha",
   "version": "0.0.0",
+  "appPath": "src/main/webapp",
+  "testPath": "src/test/javascript/spec",
   "dependencies": {
     "modernizr": "~2.8.2",
     "jquery": "~2.1.1",
@@ -19,7 +21,7 @@
     "restangular": "~1.4.0",
     "lodash": "2.4.1",
     "bootstrap-less": "~3.1.1",
-    "swagger-ui": "~2.0.17"
+    "swagger-ui": "~2.0.24"
   },
   "devDependencies": {
     "angular-mocks": "~1.3",

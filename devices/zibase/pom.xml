@@ -22,17 +22,13 @@
 
         <!-- RxJava dependencies -->
         <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-core</artifactId>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-groovy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-apache-http</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.netflix.rxjava</groupId>-->
+            <!--<artifactId>rxjava-apache-http</artifactId>-->
+        <!--</dependency>-->
 
         <!-- Hystrix dependencies -->
         <dependency>
@@ -78,9 +74,8 @@
             <artifactId>spock-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.netflix.rxnetty</groupId>
-            <artifactId>rx-netty</artifactId>
-            <version>0.3.3</version>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxnetty</artifactId>
             <scope>test</scope>
             <exclusions>
                 <exclusion>

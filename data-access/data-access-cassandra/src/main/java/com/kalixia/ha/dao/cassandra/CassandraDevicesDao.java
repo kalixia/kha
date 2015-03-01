@@ -4,23 +4,18 @@ import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.kalixia.ha.dao.DevicesDao;
 import com.kalixia.ha.dao.UsersDao;
 import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.devices.DeviceBuilder;
-import com.kalixia.ha.model.sensors.MutableSensor;
 import com.kalixia.ha.model.sensors.Sensor;
 import com.kalixia.ha.model.sensors.SensorBuilder;
 import org.joda.time.DateTime;
 import rx.Observable;
 
 import javax.measure.unit.Unit;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class CassandraDevicesDao implements DevicesDao {
@@ -65,7 +60,7 @@ public class CassandraDevicesDao implements DevicesDao {
                 .flatMap(result -> Observable.from(result.all()))
                 .map(this::buildDeviceFromRow)
                 .defaultIfEmpty(null)
-                .toBlockingObservable().single();
+                .toBlocking().single();
     }
 
     @Override
@@ -77,7 +72,7 @@ public class CassandraDevicesDao implements DevicesDao {
                 .flatMap(result -> Observable.from(result.all()))
                 .map(this::buildDeviceFromRow)
                 .defaultIfEmpty(null)
-                .toBlockingObservable().single();
+                .toBlocking().single();
     }
 
     @Override
@@ -145,7 +140,7 @@ public class CassandraDevicesDao implements DevicesDao {
                 .flatMap(result -> Observable.from(result.all()))
                 .map(row -> buildSensorFromRow(device, row))
                 .toList()
-                .toBlockingObservable().single();
+                .toBlocking().single();
         return sensors.toArray(new Sensor[sensors.size()]);
     }
 

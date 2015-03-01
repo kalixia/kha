@@ -38,7 +38,7 @@ abstract class AbstractUsersDaoTest extends Specification {
         found == null
 
         when:
-        def users = usersDao.findUsers().toList().toBlockingObservable().single()
+        def users = usersDao.findUsers().toList().toBlocking().single()
 
         then:
         users != null
@@ -46,7 +46,7 @@ abstract class AbstractUsersDaoTest extends Specification {
 
         when:
         usersDao.save(user)
-        users = usersDao.findUsers().toList().toBlockingObservable().single();
+        users = usersDao.findUsers().toList().toBlocking().single();
 
         then:
         usersDao.getUsersCount() == 1

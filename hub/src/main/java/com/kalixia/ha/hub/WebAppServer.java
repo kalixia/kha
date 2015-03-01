@@ -83,10 +83,10 @@ public class WebAppServer {
                             pipeline.addLast("http-object-aggregator", new HttpObjectAggregator(1048576));
                             pipeline.addLast("deflater", new HttpContentDecompressor());
 //                            pipeline.addLast("inflater", new HttpContentCompressor());
-                            pipeline.addLast("inflater", new SmartHttpContentCompressor());
+//                            pipeline.addLast("inflater", new SmartHttpContentCompressor());
                             pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
                             pipeline.addLast("cors", new CorsHandler(corsConfig));
-                            pipeline.addLast("file-handler", new HttpStaticFileServerHandler(hubSiteDirectory, true));
+                            pipeline.addLast("file-handler", new HttpStaticFileServerHandler(hubSiteDirectory));
                         }
                     });
 

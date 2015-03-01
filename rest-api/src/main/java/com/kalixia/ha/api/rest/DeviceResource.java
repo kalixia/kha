@@ -71,7 +71,7 @@ public class DeviceResource {
     public @NotNull Response findAllDevicesOfUser(
             @ApiParam(value = "the owner of the devices", required = true) @PathParam("username") String username) {
         List<? extends Device> devices = devicesService.findAllDevicesOfUser(username)
-                .toList().toBlockingObservable().single();
+                .toList().toBlocking().single();
         return Response
                 .ok(devices)
                 .link(UriTemplateUtils.createURI("/{username}", username), "owner")
@@ -194,7 +194,7 @@ public class DeviceResource {
     })
     public Response findAllSupportedDevices() {
         List<DeviceMetadata> devicesMetadata = devicesService.findAllSupportedDevices()
-                .toList().toBlockingObservable().single();
+                .toList().toBlocking().single();
         return Response
                 .ok(devicesMetadata)
                 .header(CACHE_CONTROL, "max-age=3600, must-revalidate")

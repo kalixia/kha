@@ -55,7 +55,7 @@ public class CassandraUsersDao implements UsersDao {
                 .flatMap(result -> Observable.from(result.all()))
                 .map(row -> buildUserFromRow(session, row))
                 .defaultIfEmpty(null)
-                .toBlockingObservable().single();
+                .toBlocking().single();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class CassandraUsersDao implements UsersDao {
                 .map(row -> row.getString(COL_USERNAME))
                 .map(this::findByUsername)
                 .defaultIfEmpty(null)
-                .toBlockingObservable().single();
+                .toBlocking().single();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class CassandraUsersDao implements UsersDao {
                 .flatMap(result -> Observable.from(result.all()))
                 .map(row -> row.getLong("count"))
                 .defaultIfEmpty(null)
-                .toBlockingObservable().single();
+                .toBlocking().single();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.kalixia.ha.model.devices;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
@@ -12,7 +11,6 @@ import com.kalixia.ha.model.configuration.ConfigurationBuilder;
 import com.kalixia.ha.model.internal.CapabilitiesSerializer;
 import com.kalixia.ha.model.internal.UserReferenceSerializer;
 import com.kalixia.ha.model.sensors.Sensor;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

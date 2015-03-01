@@ -16,7 +16,7 @@
     <modules>
         <module>gce</module>
         <module>weather</module>
-        <module>zibase</module>
+        <!--<module>zibase</module>-->
     </modules>
 
 </project>

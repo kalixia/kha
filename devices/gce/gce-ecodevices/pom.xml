@@ -22,19 +22,13 @@
 
         <!-- RxJava dependencies -->
         <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-core</artifactId>
-            <version>${rxjava.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-groovy</artifactId>
-            <version>${rxjava.version}</version>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
         </dependency>
         <!-- RxNetty dependencies -->
         <dependency>
-            <groupId>com.netflix.rxnetty</groupId>
-            <artifactId>rx-netty</artifactId>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxnetty</artifactId>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>

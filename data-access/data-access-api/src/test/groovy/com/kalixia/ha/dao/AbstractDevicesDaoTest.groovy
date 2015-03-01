@@ -51,7 +51,7 @@ abstract class AbstractDevicesDaoTest extends Specification {
         deviceFound.owner == user
 
         when:
-        def devices = devicesDao.findAllDevicesOfUser(user.username).toList().toBlockingObservable().single()
+        def devices = devicesDao.findAllDevicesOfUser(user.username).toList().toBlocking().single()
 
         then:
         devices.size() == 2

@@ -22,17 +22,17 @@
 
         <!-- RxJava dependencies -->
         <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-groovy</artifactId>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
         </dependency>
         <!-- RxNetty dependencies -->
         <dependency>
-            <groupId>com.netflix.rxnetty</groupId>
-            <artifactId>rx-netty</artifactId>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxnetty</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
         </dependency>
 
         <!-- Hystrix dependencies -->

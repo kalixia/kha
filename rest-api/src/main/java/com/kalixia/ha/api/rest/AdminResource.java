@@ -10,7 +10,6 @@ import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import rx.Observable;
 
@@ -43,7 +42,7 @@ public class AdminResource {
     })
     public Response getUsers() {
         Observable<User> userObs = service.findUsers();
-        List<User> users = userObs.toList().toBlockingObservable().single();
+        List<User> users = userObs.toList().toBlocking().single();
         return Response
                 .status(Response.Status.OK)
                 .entity(users)

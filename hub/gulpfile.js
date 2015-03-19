@@ -52,7 +52,7 @@ gulp.task('copy', ['clean'], function(){
   return es.merge(
       gulp.src(yeoman.app + 'i18n/**')
           .pipe(gulp.dest(yeoman.dist + 'i18n/')),
-      gulp.src(yeoman.app + 'fonts/*.{woff,svg,ttf,eot}')
+      gulp.src(yeoman.app + 'fonts/*.{woff2,woff,svg,ttf,eot}')
           .pipe(flatten())
           .pipe(gulp.dest(yeoman.dist + 'fonts/')),
       gulp.src(yeoman.app + 'api-docs/**')

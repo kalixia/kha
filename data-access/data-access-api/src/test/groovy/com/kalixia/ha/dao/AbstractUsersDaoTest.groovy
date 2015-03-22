@@ -26,16 +26,16 @@ abstract class AbstractUsersDaoTest extends Specification {
         usersDao.getUsersCount() == 0
 
         when:
-        User found = usersDao.findByUsername('foo')
+        Optional<User> found = usersDao.findByUsername('foo')
 
         then:
-        found == null
+        !found.isPresent()
 
         when:
         found = usersDao.findByOAuthAccessToken(UUID.randomUUID().toString())
 
         then:
-        found == null
+        !found.isPresent()
 
         when:
         def users = usersDao.findUsers().toList().toBlocking().single()
@@ -46,11 +46,13 @@ abstract class AbstractUsersDaoTest extends Specification {
 
         when:
         usersDao.save(user)
+        found = usersDao.findByUsername(user.getUsername())
         users = usersDao.findUsers().toList().toBlocking().single();
 
         then:
         usersDao.getUsersCount() == 1
-        user == usersDao.findByUsername(user.getUsername())
+        found.isPresent()
+        user == found.get()
         users != null
         users.size() == 1
         user == users.get(0)
@@ -59,8 +61,8 @@ abstract class AbstractUsersDaoTest extends Specification {
         found = usersDao.findByOAuthAccessToken(accessToken1)
 
         then:
-        found != null
-        user == found
+        found.isPresent()
+        user == found.get()
     }
 
 }

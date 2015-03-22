@@ -66,7 +66,9 @@ public class DeviceResource {
 
     @GET
     @RequiresPermissions(Permissions.DEVICES_VIEW)
-    @ApiOperation(value = "Retrieve the list of devices of a user", response = Device.class, responseContainer = "List")
+    @ApiOperation(value = "Retrieve the devices of a user",
+            response = Device.class, responseContainer = "List",
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
     @ApiResponses({
             @ApiResponse(code = 200, message = "the list of devices the user has"),
             @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
@@ -90,7 +92,9 @@ public class DeviceResource {
     @GET
     @Path("/{name}")
     @RequiresPermissions(Permissions.DEVICES_VIEW)
-    @ApiOperation(value = "Retrieve the device of a user having the given name", response = Device.class)
+    @ApiOperation(value = "Retrieve the device of a user having the given name",
+            response = Device.class,
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
     @ApiResponses({
             @ApiResponse(code = 200, message = "the device"),
             @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
@@ -119,6 +123,20 @@ public class DeviceResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiresPermissions(Permissions.DEVICES_CREATE)
+    @ApiOperation(value = "Create a new device for the user",
+            response = Device.class,
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "the created device"),
+            @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
+            @ApiResponse(code = 403, message = "if the request is denied for security reasons"),
+            @ApiResponse(code = 409, message = "if the device already exists"),
+            @ApiResponse(code = 417, message = "if the user for whom the device should be created can't be found")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,
+                    dataType = "uuid", paramType = "header")
+    })
     public Response createDevice(@PathParam("username") String username, Map json) throws URISyntaxException {
         String name = (String) json.get("name");
         String type = (String) json.get("type");
@@ -156,6 +174,20 @@ public class DeviceResource {
     @Path("/{name}")
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiresPermissions(Permissions.DEVICES_CREATE)
+//    @ApiOperation(value = "Update a device",
+//            response = Device.class,
+//            authorizations = @Authorization(value = "api_key", type = "api_key"))
+//    @ApiResponses({
+//            @ApiResponse(code = 201, message = "the created device"),
+//            @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
+//            @ApiResponse(code = 403, message = "if the request is denied for security reasons"),
+//            @ApiResponse(code = 409, message = "if the device already exists"),
+//            @ApiResponse(code = 417, message = "if the user for whom the device should be created can't be found")
+//    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,
+                    dataType = "uuid", paramType = "header")
+    })
     public Response updateDevice(@PathParam("username") String username, @PathParam("name") String name, Map json)
             throws URISyntaxException {
         String newName = (String) json.get("name");
@@ -169,9 +201,21 @@ public class DeviceResource {
 
     @PUT
     @Path("/{name}/configuration")
-    @ApiOperation(value = "Configure the device of a user having the given name", response = Device.class)
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiresPermissions(Permissions.DEVICES_CONFIGURE)
+    @ApiOperation(value = "Configure a device",
+            response = Device.class,
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "the configured device"),
+            @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),
+            @ApiResponse(code = 403, message = "if the request is denied for security reasons"),
+            @ApiResponse(code = 404, message = "if the device can't be found")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,
+                    dataType = "uuid", paramType = "header")
+    })
     public Response configureDevice(
             @ApiParam(value = "the owner of the device", required = true) @PathParam("username") String username,
             @ApiParam(value = "the name of the device", required = true) @PathParam("name") String name,
@@ -188,7 +232,9 @@ public class DeviceResource {
     @GET
     @Path("/supported")
     @RequiresPermissions(Permissions.DEVICES_SUPPORTED)
-    @ApiOperation(value = "Find all supported devices", response = DeviceMetadata.class, responseContainer = "List")
+    @ApiOperation(value = "Find all supported devices",
+            response = DeviceMetadata.class, responseContainer = "List",
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
     @ApiResponses({
             @ApiResponse(code = 200, message = "the list of devices metadata"),
             @ApiResponse(code = 400, message = "if the request ID is not a valid UUID"),

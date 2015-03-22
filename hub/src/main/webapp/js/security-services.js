@@ -1,6 +1,6 @@
 'use strict';
 
-hubApp.factory('SecurityService', function (Restangular, $log) {
+hubApp.factory('SecurityService', function (Restangular, $http, $log) {
     var currentUser;
 
     function setCurrentUser(user) {
@@ -10,9 +10,9 @@ hubApp.factory('SecurityService', function (Restangular, $log) {
         if (user != null) {
             var accessToken = user.oauthTokens[0].accessToken;
             $log.debug("Access token is: " + accessToken);
-            $httpProvider.defaults.headers.common['Authorization'] = "Bearer " + accessToken;
+            $http.defaults.headers.common['Authorization'] = "Bearer " + accessToken;
         }
-    };
+    }
 
     return {
         setCurrentUser: setCurrentUser,

@@ -2,6 +2,8 @@ package com.kalixia.ha.dao;
 
 import com.kalixia.ha.model.devices.Device;
 import rx.Observable;
+
+import java.util.Optional;
 import java.util.UUID;
 
 public interface DevicesDao {
@@ -12,7 +14,7 @@ public interface DevicesDao {
      * @param id the ID of the device to look for
      * @return the device if found, null otherwise
      */
-    Device findById(UUID id);
+    Optional<Device> findById(UUID id);
 
     /**
      * Search for a device having the given <tt>owner</tt> and <tt>name</tt>.
@@ -21,7 +23,7 @@ public interface DevicesDao {
      * @param name          the name of the device
      * @return the device if found, null otherwise
      */
-    Device findByOwnerAndName(String ownerUsername, String name);
+    Optional<Device> findByOwnerAndName(String ownerUsername, String name);
 
     /**
      * Observe user's devices.

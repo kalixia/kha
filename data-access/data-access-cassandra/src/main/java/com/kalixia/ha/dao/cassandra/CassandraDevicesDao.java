@@ -16,6 +16,7 @@ import rx.Observable;
 
 import javax.measure.unit.Unit;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class CassandraDevicesDao implements DevicesDao {
@@ -53,25 +54,23 @@ public class CassandraDevicesDao implements DevicesDao {
     }
 
     @Override
-    public Device findById(UUID id) {
+    public Optional<Device> findById(UUID id) {
         BoundStatement boundStatement = new BoundStatement(psFindDeviceById)
                 .setUUID(COL_ID, id);
         return Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
                 .map(this::buildDeviceFromRow)
-                .defaultIfEmpty(null)
                 .toBlocking().single();
     }
 
     @Override
-    public Device findByOwnerAndName(String owner, String name) {
+    public Optional<Device> findByOwnerAndName(String owner, String name) {
         BoundStatement boundStatement = new BoundStatement(psFindDeviceByOwnerAndName)
                 .setString(COL_OWNER, owner)
                 .setString(COL_NAME, name);
         return Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
                 .map(this::buildDeviceFromRow)
-                .defaultIfEmpty(null)
                 .toBlocking().single();
     }
 
@@ -81,7 +80,9 @@ public class CassandraDevicesDao implements DevicesDao {
                 .setString(COL_OWNER, username);
         return Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
-                .map(this::buildDeviceFromRow);
+                .map(this::buildDeviceFromRow)
+                .filter(Optional::isPresent)
+                .map(Optional::get);
     }
 
     @Override
@@ -113,9 +114,11 @@ public class CassandraDevicesDao implements DevicesDao {
     }
 
     @SuppressWarnings("unchecked")
-    private Device buildDeviceFromRow(Row row) {
+    private Optional<Device> buildDeviceFromRow(Row row) {
         UUID id = row.getUUID(COL_ID);
-        User owner = usersDao.findByUsername(row.getString(COL_OWNER));
+        Optional<User> owner = usersDao.findByUsername(row.getString(COL_OWNER));
+        if (!owner.isPresent())
+            return Optional.empty();
         String name = row.getString(COL_NAME);
         String type = row.getString(COL_TYPE);
         DateTime creationDate = new DateTime(row.getDate(COL_CREATION_DATE));
@@ -125,12 +128,12 @@ public class CassandraDevicesDao implements DevicesDao {
                 .ofType(type)
                 .withID(id)
                 .withName(name)
-                .withOwner(owner)
+                .withOwner(owner.get())
                 .withCreationDate(creationDate)
                 .withLastUpdateDate(lastUpdateDate)
                 .build();
         device.addSensors(findSensorsOfDevice(device));
-        return device;
+        return Optional.of(device);
     }
 
     private Sensor[] findSensorsOfDevice(Device<?> device) {

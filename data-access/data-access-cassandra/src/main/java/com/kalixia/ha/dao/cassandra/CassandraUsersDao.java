@@ -12,6 +12,7 @@ import com.kalixia.ha.model.security.Role;
 import org.joda.time.DateTime;
 import rx.Observable;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -48,25 +49,23 @@ public class CassandraUsersDao implements UsersDao {
     }
 
     @Override
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         BoundStatement boundStatement = new BoundStatement(psFindUserByUsername)
                 .setString(COL_USERNAME, username);
-        return Observable.from(session.executeAsync(boundStatement))
+        return Optional.of(Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
                 .map(row -> buildUserFromRow(session, row))
-                .defaultIfEmpty(null)
-                .toBlocking().single();
+                .toBlocking().single());
     }
 
     @Override
-    public User findByOAuthAccessToken(String token) {
+    public Optional<User> findByOAuthAccessToken(String token) {
         BoundStatement boundStatement = new BoundStatement(psFindUsernameByAccessToken)
                 .setString("access_token", token);
         return Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
                 .map(row -> row.getString(COL_USERNAME))
                 .map(this::findByUsername)
-                .defaultIfEmpty(null)
                 .toBlocking().single();
     }
 

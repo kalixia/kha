@@ -7,6 +7,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.Authorization;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -43,7 +44,9 @@ public class SecurityResource {
 
     @POST
     @Path("login")
-    @ApiOperation(value = "Logs in the user", response = User.class)
+    @ApiOperation(value = "Logs in the user",
+            response = User.class,
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
     @ApiResponses({
             @ApiResponse(code = 200, message = "if the user credentials are valid", response = User.class),
             @ApiResponse(code = 401, message = "if the user credentials are invalid")
@@ -69,7 +72,8 @@ public class SecurityResource {
 
     @GET
     @Path("logout")
-    @ApiOperation(value = "Logs out the user")
+    @ApiOperation(value = "Logs out the user",
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
     @ApiResponses({
             @ApiResponse(code = 200, message = "if the user was logged out")
     })

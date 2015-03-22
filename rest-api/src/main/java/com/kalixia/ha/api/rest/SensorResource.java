@@ -1,12 +1,20 @@
 package com.kalixia.ha.api.rest;
 
 import com.kalixia.grapi.codecs.jaxrs.UriTemplateUtils;
+import com.kalixia.grapi.codecs.rest.RESTCodec;
 import com.kalixia.ha.api.DevicesService;
+import com.kalixia.ha.model.User;
 import com.kalixia.ha.model.devices.Device;
 import com.kalixia.ha.model.sensors.MutableSensor;
 import com.kalixia.ha.model.sensors.Sensor;
 import com.kalixia.ha.model.sensors.SensorBuilder;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.Authorization;
 
 import javax.inject.Inject;
 import javax.measure.unit.Unit;
@@ -32,6 +40,17 @@ public class SensorResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Create a sensor",
+            response = Sensor.class,
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "if the sensor was created"),
+            @ApiResponse(code = 417, message = "if the device for which the sensor should be created can't be found")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,
+                    dataType = "uuid", paramType = "header")
+    })
     public Response createSensor(@PathParam("username") String owner, @PathParam("device") String deviceName, Map json) throws URISyntaxException {
         String sensorName = (String) json.get("name");
         String unit = (String) json.get("unit");
@@ -57,6 +76,6 @@ public class SensorResource {
         devicesService.saveDevice(device);
 
         URI deviceURI = new URI(UriTemplateUtils.createURI("/{username}/devices/{device}", owner, device.getName()));
-        return Response.created(deviceURI).build();
+        return Response.created(deviceURI).entity(sensor).build();
     }
 }

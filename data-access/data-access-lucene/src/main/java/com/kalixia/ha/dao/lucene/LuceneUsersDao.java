@@ -26,6 +26,7 @@ import rx.exceptions.Exceptions;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -56,7 +57,7 @@ public class LuceneUsersDao implements UsersDao {
     }
 
     @Override
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         LOGGER.info("Searching for user '{}' in Lucene indexes", username);
         try {
             IndexSearcher indexSearcher = buildIndexSearcher();
@@ -67,20 +68,20 @@ public class LuceneUsersDao implements UsersDao {
             TopDocs hits = indexSearcher.search(q, 1);
             if (hits.totalHits == 0) {
                 LOGGER.warn("No user found with login '{}'", username);
-                return null;            // no result found
+                return Optional.empty();            // no result found
             }
             ScoreDoc[] scoreDocs = hits.scoreDocs;
             ScoreDoc scoreDoc = scoreDocs[0];
             Document doc = indexSearcher.doc(scoreDoc.doc);
-            return extractUserFromDoc(doc);
+            return Optional.of(extractUserFromDoc(doc));
         } catch (IOException e) {
             LOGGER.error("Unexpected Lucene error", e);
-            return null;
+            return Optional.empty();
         }
     }
 
     @Override
-    public User findByOAuthAccessToken(String token) {
+    public Optional<User> findByOAuthAccessToken(String token) {
         LOGGER.info("Searching for user with OAuth2 access token '{}' in Lucene indexes", token);
         try {
             IndexSearcher indexSearcher = buildIndexSearcher();
@@ -91,15 +92,15 @@ public class LuceneUsersDao implements UsersDao {
             TopDocs hits = indexSearcher.search(q, 1);
             if (hits.totalHits == 0) {
                 LOGGER.warn("No user found with OAuth access token '{}'", token);
-                return null;            // no result found
+                return Optional.empty();            // no result found
             }
             ScoreDoc[] scoreDocs = hits.scoreDocs;
             ScoreDoc scoreDoc = scoreDocs[0];
             Document doc = indexSearcher.doc(scoreDoc.doc);
-            return extractUserFromDoc(doc);
+            return Optional.of(extractUserFromDoc(doc));
         } catch (IOException e) {
             LOGGER.error("Unexpected Lucene error", e);
-            return null;
+            return Optional.empty();
         }
     }
 

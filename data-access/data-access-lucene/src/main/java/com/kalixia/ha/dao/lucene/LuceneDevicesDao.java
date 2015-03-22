@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.measure.quantity.Quantity;
 import javax.measure.unit.Unit;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -66,7 +67,7 @@ public class LuceneDevicesDao implements DevicesDao {
     }
 
     @Override
-    public Device findById(UUID id) {
+    public Optional<Device> findById(UUID id) {
         LOGGER.info("Searching for device {} in Lucene indexes", id);
         try {
             IndexSearcher indexSearcher = buildIndexSearcher();
@@ -77,7 +78,7 @@ public class LuceneDevicesDao implements DevicesDao {
             TopDocs hits = indexSearcher.search(q, 1);
             if (hits.totalHits == 0) {
                 LOGGER.warn("No device found with ID {}", id);
-                return null;            // no result found
+                return Optional.empty();            // no result found
             }
             ScoreDoc[] scoreDocs = hits.scoreDocs;
             ScoreDoc scoreDoc = scoreDocs[0];
@@ -90,7 +91,7 @@ public class LuceneDevicesDao implements DevicesDao {
     }
 
     @Override
-    public Device findByOwnerAndName(String ownerUsername, String name) {
+    public Optional<Device> findByOwnerAndName(String ownerUsername, String name) {
         LOGGER.info("Searching for device '{}' of user '{}' in Lucene indexes", name, ownerUsername);
         try {
             IndexSearcher indexSearcher = buildIndexSearcher();
@@ -101,7 +102,7 @@ public class LuceneDevicesDao implements DevicesDao {
             TopDocs hits = indexSearcher.search(q, 1);
             if (hits.totalHits == 0) {
                 LOGGER.warn("No device found with name '{}' for user '{}'", name, ownerUsername);
-                return null;            // no result found
+                return Optional.empty();            // no result found
             }
             ScoreDoc[] scoreDocs = hits.scoreDocs;
             ScoreDoc scoreDoc = scoreDocs[0];
@@ -139,7 +140,7 @@ public class LuceneDevicesDao implements DevicesDao {
                         throw Exceptions.propagate(e);
                     }
                 })
-                .map(doc -> buildDeviceFromDocument(doc, indexSearcher));
+                .map(doc -> buildDeviceFromDocument(doc, indexSearcher).get());
     }
 
     @Override
@@ -215,17 +216,14 @@ public class LuceneDevicesDao implements DevicesDao {
         throw new UnsupportedOperationException();
     }
 
-    private Device buildDeviceFromDocument(Document doc, IndexSearcher indexSearcher) {
+    private Optional<Device> buildDeviceFromDocument(Document doc, IndexSearcher indexSearcher) {
         UUID id = UUID.fromString(doc.get(FIELD_ID));
         String type = doc.get(FIELD_DEVICE_TYPE);
         String name = doc.get(FIELD_NAME);
         String username = doc.get(FIELD_OWNER);
-        User owner = null;
-        try {
-            owner = usersDao.findByUsername(username);
-        } catch (Exception e) {
-            throw new RuntimeException("Can't find user " + username, e);
-        }
+        Optional<User> owner = owner = usersDao.findByUsername(username);
+        if (!owner.isPresent())
+            return Optional.empty();
         DateTime creationDate = DateTime.parse(doc.get(FIELD_CREATION_DATE));
         DateTime lastUpdateDate = DateTime.parse(doc.get(FIELD_LAST_UPDATE_DATE));
         // create the appropriate device
@@ -233,7 +231,7 @@ public class LuceneDevicesDao implements DevicesDao {
                 .ofType(type)
                 .withID(id)
                 .withName(name)
-                .withOwner(owner)
+                .withOwner(owner.get())
                 .withCreationDate(creationDate)
                 .withLastUpdateDate(lastUpdateDate)
                 .build();
@@ -244,7 +242,7 @@ public class LuceneDevicesDao implements DevicesDao {
         } catch (IOException e) {
             throw Exceptions.propagate(e);
         }
-        return device;
+        return Optional.of(device);
     }
 
     private Sensor[] findSensorsOfDevice(Device device) throws IOException {

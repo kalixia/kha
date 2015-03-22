@@ -101,6 +101,16 @@
             <artifactId>jackson-module-afterburner</artifactId>
         </dependency>
 
+        <!-- Metrics dependencies -->
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-jetty9</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-jvm</artifactId>
+        </dependency>
+
         <!-- Tests dependencies -->
         <dependency>
             <groupId>org.spockframework</groupId>

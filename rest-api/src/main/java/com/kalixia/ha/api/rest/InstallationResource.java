@@ -10,6 +10,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.Authorization;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -34,7 +35,9 @@ public class InstallationResource {
 
     @GET
     @Path("/done")
-    @ApiOperation(value = "Indicates if the installation is already done", response = Boolean.class)
+    @ApiOperation(value = "Indicates if the installation is already done",
+            response = Boolean.class,
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
     @ApiResponses({
             @ApiResponse(code = 200, message = "whether or not installation is already done", response = Boolean.class),
             @ApiResponse(code = 400, message = "if the request ID is not a valid UUID")
@@ -52,7 +55,9 @@ public class InstallationResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Setup the Hub with the given user as the administrator", response = User.class)
+    @ApiOperation(value = "Setup the Hub with the given user as the administrator",
+            response = User.class,
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
     @ApiResponses({
             @ApiResponse(code = 201, message = "when the user if properly created", response = User.class),
             @ApiResponse(code = 400, message = "if the user to create and use as the administrator is invalid"),

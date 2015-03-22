@@ -1,13 +1,17 @@
 package com.kalixia.ha.api.rest;
 
 import com.kalixia.grapi.codecs.jaxrs.UriTemplateUtils;
+import com.kalixia.grapi.codecs.rest.RESTCodec;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.Authorization;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -35,9 +39,15 @@ public class UserResource {
 
     @GET
     @Path("{username}")
-    @ApiOperation(value = "Retrieve user by login", response = User.class)
+    @ApiOperation(value = "Retrieve user by login",
+            response = User.class,
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
     @ApiResponses({
             @ApiResponse(code = 404, message = "user not found")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,
+                    dataType = "uuid", paramType = "header")
     })
     public Response findByUsername(@PathParam("username") @ApiParam(value = "login of the user", required = true) String username) {
         User user = service.findByUsername(username);
@@ -54,12 +64,23 @@ public class UserResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Create a user",
+            response = User.class,
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "created user"),
+            @ApiResponse(code = 409, message = "if the user already exists")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,
+                    dataType = "uuid", paramType = "header")
+    })
     public Response createUser(@Valid User user) throws URISyntaxException {
         if (service.findByUsername(user.getUsername()) == null) {
             service.createUser(user);
             URI userURI = new URI(UriTemplateUtils.createURI("/{username}", user.getUsername()));
             return Response
-                    .created(userURI).build();
+                    .created(userURI).entity(user).build();
         } else {    // user already exists; should use PUT method on the resource instead!
             return Response
                     .status(Response.Status.CONFLICT)
@@ -73,6 +94,16 @@ public class UserResource {
     @PUT
     @Path("{username}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Update a user",
+            authorizations = @Authorization(value = "api_key", type = "api_key"))
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "if the user was updated"),
+            @ApiResponse(code = 404, message = "if the user can't be found")
+    })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = RESTCodec.HEADER_REQUEST_ID, value = "ID of the request", required = false,
+                    dataType = "uuid", paramType = "header")
+    })
     public Response updateUser(@PathParam("username") @ApiParam(value = "login of the user", required = true) String username,
                                @Valid User user) throws URISyntaxException {
         if (service.findByUsername(username) == null) {

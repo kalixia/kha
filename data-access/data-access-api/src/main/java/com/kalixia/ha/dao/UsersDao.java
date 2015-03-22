@@ -4,9 +4,11 @@ import com.kalixia.ha.model.User;
 import groovy.lang.Closure;
 import rx.Observable;
 
+import java.util.Optional;
+
 public interface UsersDao {
-    User findByUsername(String username);
-    User findByOAuthAccessToken(String token);
+    Optional<User> findByUsername(String username);
+    Optional<User> findByOAuthAccessToken(String token);
     Observable<User> findUsers();
     long getUsersCount();
     void save(User user);

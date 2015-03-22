@@ -42,10 +42,12 @@ abstract class AbstractDevicesDaoTest extends Specification {
         usersDao.save(user)
         devicesDao.save(device1)
         devicesDao.save(device2)
+        def userFound = usersDao.findByUsername(user.getUsername())
         def deviceFound = devicesDao.findById(deviceId1)
 
         then:
-        user == usersDao.findByUsername(user.getUsername())
+        userFound.isPresent()
+        user == userFound.get()
         deviceFound != null
         deviceFound.name == 'my lamp'
         deviceFound.owner == user
@@ -58,13 +60,17 @@ abstract class AbstractDevicesDaoTest extends Specification {
         devices.any { device -> device.name == 'another lamp' && device.owner == user }
 
         when:
+        userFound = usersDao.findByUsername(user.getUsername())
         deviceFound = devicesDao.findByOwnerAndName(user.username, device1.name)
 
         then:
-        user == usersDao.findByUsername(user.getUsername())
-        deviceFound != null
-        deviceFound.name == 'my lamp'
-        deviceFound.owner == user
+        userFound.isPresent()
+        user == userFound.get()
+        deviceFound.isPresent()
+        with (deviceFound.get()) {
+            name == 'my lamp'
+            owner == user
+        }
     }
 
     def "create a user with one device with one sensor and retrieve the created device"() {
@@ -90,29 +96,34 @@ abstract class AbstractDevicesDaoTest extends Specification {
         when:
         usersDao.save(user)
         devicesDao.save(device)
+        def userFound = usersDao.findByUsername(user.getUsername())
         def deviceFound = devicesDao.findById(deviceId)
 
         then:
-        user == usersDao.findByUsername(user.getUsername())
-        deviceFound.name == 'my lamp'
-        deviceFound.owner == user
-        deviceFound.sensors.size() == 1
-        deviceFound.sensors[0].name == 'dummy'
-        deviceFound.sensors[0].unit == SI.SECOND
+        userFound.isPresent()
+        user == userFound.get()
+        deviceFound.isPresent()
+        with (deviceFound.get()) {
+            name == 'my lamp'
+            owner == user
+            sensors.size() == 1
+            sensors[0].name == 'dummy'
+            sensors[0].unit == SI.SECOND
+        }
     }
 
     def "test searching for a missing sensor"() {
         when:
-        Device found = devicesDao.findById(UUID.randomUUID())
+        def deviceFound = devicesDao.findById(UUID.randomUUID())
 
         then:
-        found == null
+        !deviceFound.isPresent()
 
         when:
-        found = devicesDao.findByOwnerAndName("john", "doe")
+        deviceFound = devicesDao.findByOwnerAndName("john", "doe")
 
         then:
-        found == null
+        !deviceFound.isPresent()
     }
 
 }

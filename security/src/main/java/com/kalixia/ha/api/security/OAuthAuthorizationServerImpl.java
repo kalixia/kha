@@ -10,6 +10,7 @@ import org.apache.shiro.authz.permission.WildcardPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -24,15 +25,17 @@ public class OAuthAuthorizationServerImpl implements OAuthAuthorizationServer {
 
     @Override
     public SimpleAccount getAccountFromAccessToken(String accessToken) {
-        User user = null;
+        Optional<User> optionalUser;
         try {
-            user = usersDao.findByOAuthAccessToken(accessToken);
+            optionalUser = usersDao.findByOAuthAccessToken(accessToken);
         } catch (Exception e) {
             LOGGER.error(String.format("Can't find user from OAuth2 access token '%s'", accessToken), e);
+            return null;
         }
-        if (user == null)
+        if (!optionalUser.isPresent())
             return null;
 
+        User user = optionalUser.get();
         Set<String> roles = user.getRoles().stream()
                 .map(Enum::name)
                 .collect(toSet());

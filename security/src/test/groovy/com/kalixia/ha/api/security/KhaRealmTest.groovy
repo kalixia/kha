@@ -20,9 +20,9 @@ class KhaRealmTest extends Specification {
     def "test Shiro realm"() {
         given: "a user service having only John Doe as an administrator"
         def dao = Mock(UsersDao)
-        dao.findByUsername('john') >> new User("john", "doe", "john@doe.com", "John", "Doe",
-                [Role.ADMINISTRATOR] as Set<Role>, emptySet(), DateTime.now(), DateTime.now())
-        dao.findByUsername(_) >> null
+        dao.findByUsername('john') >> Optional.of(new User("john", "doe", "john@doe.com", "John", "Doe",
+                [Role.ADMINISTRATOR] as Set<Role>, emptySet(), DateTime.now(), DateTime.now()))
+        dao.findByUsername(_) >> Optional.empty()
 
         and:
         Factory<SecurityManager> factory = new org.apache.shiro.util.AbstractFactory<SecurityManager>() {

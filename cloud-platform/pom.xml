@@ -21,10 +21,10 @@
         </dependency>
         
         <!-- Metrics dependencies -->
-        <dependency>
-            <groupId>com.codahale.metrics</groupId>
-            <artifactId>metrics-graphite</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.codahale.metrics</groupId>-->
+            <!--<artifactId>metrics-graphite</artifactId>-->
+        <!--</dependency>-->
 
         <!-- Hystrix dependencies -->
         <!--<dependency>-->

@@ -37,6 +37,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static javax.ws.rs.core.HttpHeaders.CACHE_CONTROL;
@@ -108,9 +109,10 @@ public class DeviceResource {
     public @NotNull Response findDeviceByName(
             @ApiParam(value = "the owner of the device", required = true) @PathParam("username") String username,
             @ApiParam(value = "the name of the device", required = true) @PathParam("name") String name) {
-        Device device = devicesService.findDeviceByName(username, name);
-        if (device == null)
+        Optional<Device> optionalDevice = devicesService.findDeviceByName(username, name);
+        if (!optionalDevice.isPresent())
             throw new WebApplicationException(Response.Status.NOT_FOUND);
+        Device device = optionalDevice.get();
         return Response
                 .ok(device)
                 .link(UriTemplateUtils.createURI("/{username}", username), "owner")
@@ -142,15 +144,16 @@ public class DeviceResource {
         String type = (String) json.get("type");
         checkArgument(name != null, "Missing device name");
         checkArgument(type != null, "Missing device type");
-        User owner = usersService.findByUsername(username);
-        if (owner == null) {
+        Optional<User> optionalOwner = usersService.findByUsername(username);
+        if (!optionalOwner.isPresent()) {
             return Response
                     .status(EXPECTATION_FAILED)
                     .entity(Errors.withErrors(new ErrorMessage("Can't find user '%s'", username)))
                     .build();
         }
+        User owner = optionalOwner.get();
         Device device = devicesService.create(owner, name, type);
-        if (devicesService.findDeviceById(device.getId()) == null) {
+        if (!devicesService.findDeviceById(device.getId()).isPresent()) {
             devicesService.saveDevice(device);
             URI deviceURI = new URI(UriTemplateUtils.createURI(
                     "/{username}/devices/{device}",
@@ -221,8 +224,14 @@ public class DeviceResource {
             @ApiParam(value = "the name of the device", required = true) @PathParam("name") String name,
             @ApiParam(value = "the configuration of the device to merge with the existing one", required = true) Map json)
             throws URISyntaxException {
-        Device device = devicesService.findDeviceByName(username, name);
-        device = devicesService.configure(device.getId(), json);
+        Optional<Device> optionalDevice = devicesService.findDeviceByName(username, name);
+        if (!optionalDevice.isPresent()) {
+            return Response
+                    .status(EXPECTATION_FAILED)
+                    .entity(Errors.withErrors(new ErrorMessage("Can't find device '%s'", name)))
+                    .build();
+        }
+        Device device = devicesService.configure(optionalDevice.get().getId(), json);
         return Response
                 .ok()
                 .entity(device)

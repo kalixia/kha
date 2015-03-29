@@ -3,7 +3,6 @@ package com.kalixia.ha.api
 import com.kalixia.ha.dao.DevicesDao
 import com.kalixia.ha.devices.rgblamp.RGBLamp
 import com.kalixia.ha.model.User
-import com.kalixia.ha.model.devices.Device
 import com.kalixia.ha.model.devices.DeviceBuilder
 import com.kalixia.ha.model.security.Role
 import rx.Observable
@@ -48,10 +47,10 @@ class DevicesServiceTest extends Specification {
                 .withName('lamp2')
                 .withOwner(user)
                 .build()
-        dao.findById(device1.id) >> device1
-        dao.findById(device2.id) >> device2
-        dao.findByOwnerAndName(user.username, device1.name) >> device1
-        dao.findByOwnerAndName(user.username, device2.name) >> device2
+        dao.findById(device1.id) >> Optional.of(device1)
+        dao.findById(device2.id) >> Optional.of(device2)
+        dao.findByOwnerAndName(user.username, device1.name) >> Optional.of(device1)
+        dao.findByOwnerAndName(user.username, device2.name) >> Optional.of(device2)
         dao.findAllDevicesOfUser(user.username) >> Observable.from(device1, device2)
 
         when: "who has two devices"
@@ -69,16 +68,20 @@ class DevicesServiceTest extends Specification {
         def foundDevice2 = service.findDeviceById(device2.id)
 
         then: "expect to find them"
-        foundDevice1 == device1
-        foundDevice2 == device2
+        foundDevice1.isPresent()
+        foundDevice2.isPresent()
+        foundDevice1.get() == device1
+        foundDevice2.get() == device2
 
         when: "searching for each device by ID"
         foundDevice1 = service.findDeviceByName(user.username, device1.name)
         foundDevice2 = service.findDeviceByName(user.username, device2.name)
 
         then: "expect to find them"
-        foundDevice1 == device1
-        foundDevice2 == device2
+        foundDevice1.isPresent()
+        foundDevice2.isPresent()
+        foundDevice1.get() == device1
+        foundDevice2.get() == device2
     }
 
     def "test user with two devices for whom we delete the first one"() {
@@ -146,7 +149,7 @@ class DevicesServiceTest extends Specification {
 
         when:
         def device = service.create(owner, "my lamp", "rgb-lamp")
-        dao.findById(device.id) >> device
+        dao.findById(device.id) >> Optional.of(device)
 
         then:
         device != null

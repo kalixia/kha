@@ -30,13 +30,13 @@ class DevicesServiceImpl implements DevicesService {
     }
 
     @Override
-    def Device findDeviceById(UUID id) {
+    def Optional<Device> findDeviceById(UUID id) {
         LOGGER.info("Searching for device with ID {}'", id)
         return devicesDao.findById(id)
     }
 
     @Override
-    def Device findDeviceByName(String ownerUsername, String name) {
+    def Optional<Device> findDeviceByName(String ownerUsername, String name) {
         LOGGER.info("Searching for device of user '{}' named '{}'", ownerUsername, name)
         return devicesDao.findByOwnerAndName(ownerUsername, name)
     }
@@ -57,9 +57,11 @@ class DevicesServiceImpl implements DevicesService {
 
     @Override
     Device configure(UUID id, Map configurationData) {
-        Device device = findDeviceById(id)
-        if (device == null)
-            return device
+        Optional<Device> optionalDevice = findDeviceById(id)
+        if (!optionalDevice.isPresent())
+            return null
+
+        def device = optionalDevice.get()
         Configuration configuration = mergeWithConfigurationData(device, configurationData)
         // save it to the configuration file
         device.saveConfiguration(configuration)

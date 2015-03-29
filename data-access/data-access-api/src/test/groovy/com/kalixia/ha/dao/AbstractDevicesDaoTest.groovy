@@ -1,15 +1,12 @@
 package com.kalixia.ha.dao
 
-import com.kalixia.ha.model.devices.Device
+import com.kalixia.ha.devices.rgblamp.RGBLamp
+import com.kalixia.ha.model.User
 import com.kalixia.ha.model.devices.DeviceBuilder
 import com.kalixia.ha.model.security.Role
-import com.kalixia.ha.model.User
-import com.kalixia.ha.devices.rgblamp.RGBLamp
-import com.kalixia.ha.model.sensors.Sensor
 import com.kalixia.ha.model.sensors.SensorBuilder
 import spock.lang.Specification
 
-import javax.measure.quantity.Duration
 import javax.measure.unit.SI
 
 import static java.util.Collections.emptySet
@@ -48,16 +45,21 @@ abstract class AbstractDevicesDaoTest extends Specification {
         then:
         userFound.isPresent()
         user == userFound.get()
-        deviceFound != null
-        deviceFound.name == 'my lamp'
-        deviceFound.owner == user
+        deviceFound.isPresent()
+
+        when:
+        def device = deviceFound.get()
+
+        then:
+        device.name == 'my lamp'
+        device.owner == user
 
         when:
         def devices = devicesDao.findAllDevicesOfUser(user.username).toList().toBlocking().single()
 
         then:
         devices.size() == 2
-        devices.any { device -> device.name == 'another lamp' && device.owner == user }
+        devices.any { d -> d.name == 'another lamp' && d.owner == user }
 
         when:
         userFound = usersDao.findByUsername(user.getUsername())
@@ -67,10 +69,13 @@ abstract class AbstractDevicesDaoTest extends Specification {
         userFound.isPresent()
         user == userFound.get()
         deviceFound.isPresent()
-        with (deviceFound.get()) {
-            name == 'my lamp'
-            owner == user
-        }
+
+        when:
+        device = deviceFound.get()
+
+        then:
+        device.name == 'my lamp'
+        device.owner == user
     }
 
     def "create a user with one device with one sensor and retrieve the created device"() {
@@ -103,13 +108,16 @@ abstract class AbstractDevicesDaoTest extends Specification {
         userFound.isPresent()
         user == userFound.get()
         deviceFound.isPresent()
-        with (deviceFound.get()) {
-            name == 'my lamp'
-            owner == user
-            sensors.size() == 1
-            sensors[0].name == 'dummy'
-            sensors[0].unit == SI.SECOND
-        }
+
+        when:
+        def d = deviceFound.get()
+
+        then:
+        d.name == 'my lamp'
+        d.owner == user
+        d.sensors.size() == 1
+        d.sensors[0].name == 'dummy'
+        d.sensors[0].unit == SI.SECOND
     }
 
     def "test searching for a missing sensor"() {

@@ -20,7 +20,7 @@ class UsersServiceImpl extends Service<UsersServiceConfiguration> implements Use
     }
 
     @Override
-    User findByUsername(String username) {
+    Optional<User> findByUsername(String username) {
         LOGGER.info("Searching for user '{}'...", username)
         return dao.findByUsername(username)
     }

@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -58,14 +59,15 @@ public class SensorResource {
         checkArgument(sensorName != null, "Missing device name");
         checkArgument(unit != null, "Missing device type");
 
-        Device device = devicesService.findDeviceByName(owner, deviceName);
-        if (device == null) {
+        Optional<Device> optionalDevice = devicesService.findDeviceByName(owner, deviceName);
+        if (!optionalDevice.isPresent()) {
             return Response
                     .status(Response.Status.EXPECTATION_FAILED)
                     .entity(Errors.withErrors(new ErrorMessage("Can't find device '%s' of '%s'", deviceName, owner)))
                     .build();
         }
 
+        Device device = optionalDevice.get();
         Sensor sensor = new SensorBuilder()
                 .forDevice(device)
                 .ofType(type)

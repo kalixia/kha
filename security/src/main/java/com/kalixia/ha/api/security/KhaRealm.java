@@ -17,6 +17,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -55,15 +56,11 @@ class KhaRealm extends AuthorizingRealm {
     }
 
     private SimpleAccount getAccountFromUsername(String username) {
-        User user = null;
-        try {
-            user = usersDao.findByUsername(username);
-        } catch (Exception e) {
-            LOGGER.error("Can't find user '{}'", e);
-        }
-        if (user == null)
+        Optional<User> optionalUser = usersDao.findByUsername(username);
+        if (!optionalUser.isPresent())
             return null;
 
+        User user = optionalUser.get();
         Set<String> roles = user.getRoles().stream()
                 .map(Enum::name)
                 .collect(toSet());

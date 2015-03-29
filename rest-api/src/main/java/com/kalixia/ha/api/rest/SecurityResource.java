@@ -2,6 +2,7 @@ package com.kalixia.ha.api.rest;
 
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
+import com.kalixia.ha.model.devices.Device;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -26,6 +27,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.Optional;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
@@ -58,11 +61,17 @@ public class SecurityResource {
         try {
             Subject subject = (new Subject.Builder(securityManager)).buildSubject();
             securityManager.login(subject, new UsernamePasswordToken(login, password));
-            User user = usersService.findByUsername(login);
-            return Response
-                    .status(OK)
-                    .entity(user)
-                    .build();
+            Optional<User> user = usersService.findByUsername(login);
+            if (user.isPresent()) {
+                return Response
+                        .status(OK)
+                        .entity(user)
+                        .build();
+            } else {
+                return Response
+                        .status(UNAUTHORIZED)
+                        .build();
+            }
         } catch (AuthenticationException e) {
             return Response
                     .status(UNAUTHORIZED)

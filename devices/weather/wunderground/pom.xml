@@ -48,6 +48,14 @@
             <!--<groupId>com.netflix.hystrix</groupId>-->
             <!--<artifactId>hystrix-metrics-event-stream</artifactId>-->
         <!--</dependency>-->
+        <dependency>
+            <groupId>com.netflix.archaius</groupId>
+            <artifactId>archaius-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.archaius</groupId>
+            <artifactId>archaius-legacy</artifactId>
+        </dependency>
 
         <!-- Groovy dependencies -->
         <dependency>

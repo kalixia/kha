@@ -8,6 +8,7 @@ import rx.Observable;
 
 import java.beans.IntrospectionException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface DevicesService {
@@ -24,7 +25,7 @@ public interface DevicesService {
      * @param id the ID of the {@link Device} to search for
      * @return the device
      */
-    Device findDeviceById(UUID id);
+    Optional<Device> findDeviceById(UUID id);
 
     /**
      * Return the {@link Device} having the specified <tt>ownerUsername</tt> and <tt>name</tt>.
@@ -32,7 +33,7 @@ public interface DevicesService {
      * @param name the name of the device
      * @return the device
      */
-    Device findDeviceByName(String ownerUsername, String name);
+    Optional<Device> findDeviceByName(String ownerUsername, String name);
 
     /**
      * Return an {@link Observable} of supported {@link Device}s, via the {@link DeviceMetadata}s

@@ -43,7 +43,7 @@ class UsersServiceTest extends Specification {
         def passwordService = Mock(PasswordService)
         def service = new UsersServiceImpl(dao, passwordService)
         def user = new User('johndoe', 'missingpwd', 'john@doe.com', 'John', 'Doe', [Role.USER] as Set<Role>, newHashSet())
-        dao.findByUsername(user.username) >> user
+        dao.findByUsername(user.username) >> Optional.of(user)
 
         when: "creating a user"
         service.init()
@@ -58,7 +58,7 @@ class UsersServiceTest extends Specification {
         def found = service.findByUsername('johndoe')
 
         then: "expect changes to be retrieved"
-        found != null
-        found.email == 'johndoe@gmail.com'
+        found.isPresent()
+        found.get().email == 'johndoe@gmail.com'
     }
 }

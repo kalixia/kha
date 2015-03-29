@@ -4,6 +4,7 @@ import com.kalixia.grapi.codecs.jaxrs.UriTemplateUtils;
 import com.kalixia.grapi.codecs.rest.RESTCodec;
 import com.kalixia.ha.api.UsersService;
 import com.kalixia.ha.model.User;
+import com.kalixia.ha.model.devices.Device;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiImplicitParams;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 import static javax.ws.rs.core.HttpHeaders.CACHE_CONTROL;
 
@@ -50,14 +52,14 @@ public class UserResource {
                     dataType = "uuid", paramType = "header")
     })
     public Response findByUsername(@PathParam("username") @ApiParam(value = "login of the user", required = true) String username) {
-        User user = service.findByUsername(username);
-        if (user == null)
+        Optional<User> user = service.findByUsername(username);
+        if (!user.isPresent())
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         return Response
                 .ok(user)
                 .link(UriTemplateUtils.createURI("/{username}/devices", username), "devices")
-                .lastModified(user.getLastUpdateDate().toDate())
-                .tag(Long.toString(user.getLastUpdateDate().getMillis()))
+                .lastModified(user.get().getLastUpdateDate().toDate())
+                .tag(Long.toString(user.get().getLastUpdateDate().getMillis()))
                 .header(CACHE_CONTROL, "max-age=60, must-revalidate")
                 .build();
     }

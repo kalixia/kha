@@ -17,7 +17,7 @@ class OAuthAuthorizationServerTest extends Specification {
         User user = new User("johndoe", "password", "john@doe.com", "John", "Doe",
                 [Role.USER] as Set<Role>, [tokens] as Set<OAuthTokens>
         )
-        usersDao.findByOAuthAccessToken(tokens.accessToken) >> user
+        usersDao.findByOAuthAccessToken(tokens.accessToken) >> Optional.of(user)
         OAuthAuthorizationServer authServer = new OAuthAuthorizationServerImpl(usersDao)
 
         when:

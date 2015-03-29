@@ -36,6 +36,8 @@
         <hibernate-validator.version>5.1.2.Final</hibernate-validator.version>
         <jacoco.version>0.7.1.201405082137</jacoco.version>
         <shiro.version>1.2.3</shiro.version>
+        <ribbon.version>2.0.0</ribbon.version>
+        <archaius.version>2.0.0-rc.6</archaius.version>
     </properties>
 
     <dependencyManagement>
@@ -108,6 +110,10 @@
                 <version>${hystrix.version}</version>
                 <exclusions>
                     <exclusion>
+                        <groupId>com.netflix.archaius</groupId>
+                        <artifactId>archaius-core</artifactId>
+                    </exclusion>
+                    <exclusion>
                         <groupId>org.slf4j</groupId>
                         <artifactId>slf4j-api</artifactId>
                     </exclusion>
@@ -132,6 +138,42 @@
                 <!--<artifactId>turbine-core</artifactId>-->
                 <!--<version>0.2-SNAPSHOT</version>-->
             <!--</dependency>-->
+
+            <!-- Ribbon dependencies -->
+            <dependency>
+                <groupId>com.netflix.ribbon</groupId>
+                <artifactId>ribbon</artifactId>
+                <version>${ribbon.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.netflix.archaius</groupId>
+                        <artifactId>archaius-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.netflix.ribbon</groupId>
+                <artifactId>ribbon-loadbalancer</artifactId>
+                <version>${ribbon.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.netflix.archaius</groupId>
+                        <artifactId>archaius-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Archaius dependencies -->
+            <dependency>
+                <groupId>com.netflix.archaius</groupId>
+                <artifactId>archaius-core</artifactId>
+                <version>${archaius.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netflix.archaius</groupId>
+                <artifactId>archaius-legacy</artifactId>
+                <version>${archaius.version}</version>
+            </dependency>
 
             <!-- Dagger dependencies -->
             <dependency>

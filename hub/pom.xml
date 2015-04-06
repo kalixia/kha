@@ -207,6 +207,21 @@
                 <version>1.3.2</version>
                 <executions>
                     <execution>
+                        <id>Run npm install</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${runner}</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>${runprefix}</argument>
+                                <argument>npm install</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>Build Frontend with Gulp.JS</id>
                         <phase>generate-resources</phase>
                         <goals>

@@ -8,7 +8,6 @@ var gulp = require('gulp'),
   minifyHtml = require('gulp-minify-html'),
   livereload = require('gulp-livereload'),
   imagemin = require('gulp-imagemin'),
-  ngmin = require('gulp-ngmin'),
   ngAnnotate = require('gulp-ng-annotate'),
   jshint = require('gulp-jshint'),
   rev = require('gulp-rev'),
@@ -16,11 +15,12 @@ var gulp = require('gulp'),
   proxy = require('proxy-middleware'),
   es = require('event-stream'),
   flatten = require('gulp-flatten'),
-  clean = require('gulp-clean'),
   replace = require('gulp-replace'),
   browserify = require('gulp-browserify'),
   less = require('gulp-less'),
   cache = require('gulp-cache'),
+  del = require('del'),
+  vinylPaths = require('vinyl-paths'),
   debug = require('gulp-debug');
 
 var karma = require('gulp-karma')({configFile: 'src/test/javascript/karma.conf.js'});
@@ -36,12 +36,12 @@ var yeoman = {
 
 gulp.task('clean', function(){
   return gulp.src(yeoman.dist, {read: false}).
-    pipe(clean());
+    pipe(vinylPaths(del));
 });
 
 gulp.task('clean:tmp', function(){
   return gulp.src(yeoman.tmp, {read: false}).
-    pipe(clean());
+    pipe(vinylPaths(del));
 });
 
 gulp.task('test', function(){

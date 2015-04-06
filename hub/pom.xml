@@ -207,7 +207,7 @@
                 <version>1.3.2</version>
                 <executions>
                     <execution>
-                        <id>Run npm install</id>
+                        <id>npm install</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>exec</goal>
@@ -218,6 +218,21 @@
                             <arguments>
                                 <argument>${runprefix}</argument>
                                 <argument>npm install</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>bower install</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${runner}</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>${runprefix}</argument>
+                                <argument>bower install</argument>
                             </arguments>
                         </configuration>
                     </execution>

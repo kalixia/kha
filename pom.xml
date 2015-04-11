@@ -16,7 +16,7 @@
         <module>security</module>
         <module>rest-api</module>
         <module>hub</module>
-        <module>cloud-platform</module>
+        <!--module>cloud-platform</module-->
         <!--<module>android</module>-->
         <module>devices</module>
     </modules>

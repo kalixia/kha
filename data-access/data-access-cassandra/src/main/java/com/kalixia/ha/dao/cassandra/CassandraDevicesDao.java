@@ -60,6 +60,7 @@ public class CassandraDevicesDao implements DevicesDao {
         return Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
                 .map(this::buildDeviceFromRow)
+                .defaultIfEmpty(Optional.empty())
                 .toBlocking().single();
     }
 
@@ -71,6 +72,7 @@ public class CassandraDevicesDao implements DevicesDao {
         return Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
                 .map(this::buildDeviceFromRow)
+                .defaultIfEmpty(Optional.empty())
                 .toBlocking().single();
     }
 

@@ -52,10 +52,11 @@ public class CassandraUsersDao implements UsersDao {
     public Optional<User> findByUsername(String username) {
         BoundStatement boundStatement = new BoundStatement(psFindUserByUsername)
                 .setString(COL_USERNAME, username);
-        return Optional.of(Observable.from(session.executeAsync(boundStatement))
+        return Observable.from(session.executeAsync(boundStatement))
                 .flatMap(result -> Observable.from(result.all()))
-                .map(row -> buildUserFromRow(session, row))
-                .toBlocking().single());
+                .map(row -> Optional.of(buildUserFromRow(session, row)))
+                .defaultIfEmpty(Optional.empty())
+                .toBlocking().single();
     }
 
     @Override
@@ -66,6 +67,7 @@ public class CassandraUsersDao implements UsersDao {
                 .flatMap(result -> Observable.from(result.all()))
                 .map(row -> row.getString(COL_USERNAME))
                 .map(this::findByUsername)
+                .defaultIfEmpty(Optional.empty())
                 .toBlocking().single();
     }
 

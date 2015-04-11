@@ -16,7 +16,6 @@ var gulp = require('gulp'),
   es = require('event-stream'),
   flatten = require('gulp-flatten'),
   replace = require('gulp-replace'),
-  browserify = require('gulp-browserify'),
   less = require('gulp-less'),
   cache = require('gulp-cache'),
   del = require('del'),
@@ -131,7 +130,8 @@ gulp.task('server', ['watch'], function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch(yeoman.app + 'js/**', ['browserify']);
+  //gulp.watch(yeoman.app + 'js/**', ['browserify']);
+  gulp.watch(yeoman.app + 'js/**');
   gulp.watch('src/images/**', ['images']);
   livereload();
 });
@@ -190,8 +190,13 @@ gulp.task('build', ['clean', 'copy'], function() {
 });
 
 gulp.task('usemin', ['images', 'less'], function() {
-  //return gulp.src([yeoman.app + '{,views/}**/*.html', yeoman.app + '{,partials/}**/*.html'])
   return gulp.src([yeoman.app + '{,views/**}/*.html', yeoman.app + '{,partials/**}/*.html'])
+  //return gulp.src([
+  //    yeoman.app + 'index.html',
+  //    yeoman.app + 'views/**/*.html',
+  //    yeoman.app + 'partials/**/*.html'
+  //  ])
+  //  .pipe(addsrc.append(yeoman.app + 'swagger-ui.html'))
     .pipe(usemin({
       css: [
         prefix.apply(),
@@ -200,9 +205,9 @@ gulp.task('usemin', ['images', 'less'], function() {
         'concat',
         rev()
       ],
-      html: [
-        minifyHtml({empty: true, conditionals:true}),
-      ],
+      //html: [
+      //  minifyHtml({empty: true, conditionals:true}),
+      //],
       js: [
         ngAnnotate(),
         uglify(),
